@@ -1,14 +1,13 @@
 # free
 
-A Clojure library designed to ... well, that part is up to you.
-
-## Usage
-
-FIXME
+Experiments with free energy minimization, i.e. prediction error
+minimization, i.e. predictive processing, in the neuroscience sense.
 
 ## License
 
-Copyright © 2016 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+This software is copyright 2016 by [Marshall
+Abrams](http://members.logical.net/~marshall/), and is distributed under
+the [Gnu General Public License version
+3.0](http://www.gnu.org/copyleft/gpl.html) as specified in the file
+LICENSE, except where noted, or where code has been included that was
+released under a different license.
