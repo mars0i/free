@@ -3,13 +3,11 @@
 Experiments with free energy minimization, i.e. prediction error
 minimization, i.e. predictive processing--in the neuroscience sense.
 
-My starting point is this beautiful article:
-
+(My starting point is this beautiful article:
 Rafal Bogacz, "A tutorial on the free-energy framework for modelling
 perception and learning", *Journal of Mathematical Psychology*,
 Available online 14 December 2015, ISSN 0022-2496,
-http://dx.doi.org/10.1016/j.jmp.2015.11.003.
-(http://www.sciencedirect.com/science/article/pii/S0022249615000759)
+http://dx.doi.org/10.1016/j.jmp.2015.11.003.)
 
 ## License
 
