@@ -4,4 +4,8 @@
   :license {:name "Gnu General Public License version 3.0"
             :url "http://www.gnu.org/copyleft/gpl.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [net.mikera/core.matrix "0.54.0"]])
+                 [net.mikera/core.matrix "0.54.0"]
+                 ;[clatrix "0.5.0"]
+                 ;[net.mikera/vectorz "0.45.0"]
+                 ;[thinktopic/aljabr "0.1.1"] ; there's a more recent version
+                 ])
