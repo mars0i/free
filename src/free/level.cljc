@@ -3,6 +3,11 @@
 ;; Perception and Learning", *Journal of Mathematical Psychology*,
 ;; http://dx.doi.org/10.1016/j.jmp.2015.11.003 .)
 
+;; Conventions:
+;; The derivative of x is called x-tick.
+;; A value of x from the next level down is called lower-x.
+;; A value of x from the next level up is called upper-x.
+
 (ns free.level
   (:require
     [clojure.core.matrix :as mx :exclude [e*]])) ; e* isn't completely equiv to mul as it claims, maybe
@@ -12,11 +17,6 @@
   ;(:refer-clojure :exclude [+ -])
   ;(:use [clojure.core.matrix :only [mmul mul add sub]])
   ;; It might be better to use core.matrix.operators for + and -.
-
-;; Conventions:
-;; The derivative of x is called x-tick.
-;; A value of x from the next level down is called lower-x.
-;; A value of x from the next level up is called upper-x.
 
 
 ;; It looks like the matrix operators all work on scalars.  
