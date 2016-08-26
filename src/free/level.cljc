@@ -18,13 +18,13 @@
 
 (defn g'-fn
   [h' theta]
-  (fn [phi] (e* theta (h' phi))))
+  (fn [phi] (e* theta (h' phi)))) ; ADD TRANSPOSE?
 
 (defn phi-inc
   "Equation (53) in Bogacz's \"Tutoria\"."
   [phi eps eps- g']
   (e+ (e- eps)
-      (m* (g' phi) eps-))) ; is this right?
+      (m* (g' phi) eps-))) ; IS THIS RIGHT?
 
 (defn next-phi 
   "Usage e.g. (next-phi phi eps eps- (g'-fn h theta))."
