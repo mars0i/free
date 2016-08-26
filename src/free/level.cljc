@@ -10,26 +10,10 @@
 
 (ns free.level
   (:require
-    [clojure.core.matrix :as mx :exclude [e*]])) ; e* isn't completely equiv to mul as it claims, maybe
-  ;[free.scalar-arithmetic :refer [mul mmul add sub]] ; use only one
-  ;[free.matrix-arithmetic :refer [mul mmul add sub]] ; of these (this seems to work with scalars!)
-  ;; This may be a bad idea:
-  ;(:refer-clojure :exclude [+ -])
-  ;(:use [clojure.core.matrix :only [mmul mul add sub]])
-  ;; It might be better to use core.matrix.operators for + and -.
+    [free.scalar-arithmetic :refer [e* m* e+ e-]]   ; use only one
+    ;[free.matrix-arithmetic :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
+   ))
 
-
-;; It looks like the matrix operators all work on scalars.  
-;; Not sure if this is guaranteed.
-(def m* mx/mmul) ; matrix multiplication, inner product
-(def e* mx/mul)  ; elementwise multiplication
-(def e+ mx/add)  ; elementwise addition
-(def e- mx/sub)  ; elementwise subtraction
-
-(defn g-fn
-  [h theta]
-  (fn [phi]
-    (m* theta (h phi))))
 
 (defn g'-fn
   [h theta]
@@ -40,14 +24,19 @@
   "Equation (53) in Bogacz's \"Tutoria\"."
   [phi eps lower-eps g']
   (e+ (e- eps)
-      (e* (h-tick phi)
-          (m* lower-theta lower-eps))))
+      (m* (g' phi) lower-eps))) ; is this right?
 
 (defn next-phi 
   "Usage e.g. (next-phi phi eps lower-eps (g'-fn h theta))."
   [phi eps lower-eps g']
   (e+ phi 
       (phi-inc phi eps lower-eps g')))
+
+
+(defn g-fn
+  [h theta]
+  (fn [phi]
+    (m* theta (h phi))))
 
 (defn eps-inc 
   "Equation (54) in Bogacz's \"Tutoria\"."
@@ -57,10 +46,10 @@
       (m* sigma eps)))
 
 (defn next-eps
-  "Usage e.g. (next-eps eps phil upper-phi sgma (g-fn h theta))."
+  "Usage e.g. (next-eps eps phl upper-phi sigma (g-fn h theta))."
   [eps phi upper-phi sigma g]
   (+ eps 
-     (eps-inc eps phi sigma (g upper-phi))))
+     (eps-inc eps phi upper-phi sigma g)))
 
 
 ;; Ex. 3
