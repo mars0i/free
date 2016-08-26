@@ -5,54 +5,55 @@
 
 ;; Conventions:
 ;; The derivative of x is called x' .
-;; A value of x from the next level down is called lower-x.
-;; A value of x from the next level up is called upper-x.
+;; A value of x from the next level down is called x-.
+;; A value of x from the next level up is called x+.
 
 (ns free.level
   (:require
-    [free.scalar-arithmetic :refer [e* m* e+ e-]]   ; use only one
-    ;[free.matrix-arithmetic :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
+    ;[free.scalar-arithmetic :refer [e* m* e+ e-]]   ; use only one
+    [free.matrix-arithmetic :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
    ))
 
+;; phi update
 
 (defn g'-fn
-  [h theta]
-  (fn [phi]
-    (e* theta (h phi))))
+  [h' theta]
+  (fn [phi] (e* theta (h' phi))))
 
 (defn phi-inc
   "Equation (53) in Bogacz's \"Tutoria\"."
-  [phi eps lower-eps g']
+  [phi eps eps- g']
   (e+ (e- eps)
-      (m* (g' phi) lower-eps))) ; is this right?
+      (m* (g' phi) eps-))) ; is this right?
 
 (defn next-phi 
-  "Usage e.g. (next-phi phi eps lower-eps (g'-fn h theta))."
-  [phi eps lower-eps g']
+  "Usage e.g. (next-phi phi eps eps- (g'-fn h theta))."
+  [phi eps eps- g']
   (e+ phi 
-      (phi-inc phi eps lower-eps g')))
+      (phi-inc phi eps eps- g')))
 
+
+;; epsilon update
 
 (defn g-fn
   [h theta]
-  (fn [phi]
-    (m* theta (h phi))))
+  (fn [phi] (m* theta (h phi))))
 
 (defn eps-inc 
   "Equation (54) in Bogacz's \"Tutoria\"."
-  [eps phi upper-phi sigma g] 
+  [eps phi phi+ sigma g] 
   (e- phi 
-      (g upper-phi)
+      (g phi+)
       (m* sigma eps)))
 
 (defn next-eps
-  "Usage e.g. (next-eps eps phl upper-phi sigma (g-fn h theta))."
-  [eps phi upper-phi sigma g]
+  "Usage e.g. (next-eps eps phl phi+ sigma (g-fn h theta))."
+  [eps phi phi+ sigma g]
   (+ eps 
-     (eps-inc eps phi upper-phi sigma g)))
+     (eps-inc eps phi phi+ sigma g)))
 
 
-;; Ex. 3
+;; from ex. 3
 (def v-p 3)
 (def sigma-p 1)
 (def sigma-u 1)
@@ -63,14 +64,14 @@
 (def error-u 0)
 
 
-;(defn phi-inc [eps h-tick phi lower-theta lower-eps] 
+;(defn phi-inc [eps h-tick phi theta- eps-] 
 ;  "Equation (53) in Bogacz's \"Tutoria\"."
 ;  (e+ (e- eps)
 ;      (e* (h-tick phi)
-;          (m* lower-theta lower-eps))))
+;          (m* theta- eps-))))
 ;
-;(defn eps-inc [eps h phi theta sigma upper-phi] 
+;(defn eps-inc [eps h phi theta sigma phi+] 
 ;  "Equation (54) in Bogacz's \"Tutoria\"."
 ;  (e- phi 
-;      (m* theta (h upper-phi))
+;      (m* theta (h phi+))
 ;      (m* sigma eps)))
