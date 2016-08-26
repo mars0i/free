@@ -51,10 +51,17 @@
 
 (defn eps-inc 
   "Equation (54) in Bogacz's \"Tutoria\"."
-  [eps phi g sigma upper-phi] 
+  [eps phi upper-phi sigma g] 
   (e- phi 
-      (m* theta (h upper-phi))
+      (g upper-phi)
       (m* sigma eps)))
+
+(defn next-eps
+  "Usage e.g. (next-eps eps phil upper-phi sgma (g-fn h theta))."
+  [eps phi upper-phi sigma g]
+  (+ eps 
+     (eps-inc eps phi sigma (g upper-phi))))
+
 
 ;; Ex. 3
 (def v-p 3)
