@@ -17,17 +17,22 @@
 ;; phi update
 
 (defn g'-fn
+  "Return the first derivative of a function that chooses mean(s) for 
+  the phi likelihood distribution."
   [h' theta]
   (fn [phi] (e* theta (h' phi))))
 
 (defn phi-inc
-  "Equation (53) in Bogacz's \"Tutoria\"."
+  "Calculate slope/increment to the next 'hypothesis' phi from the 
+  current phi.  Equation (53) in Bogacz's \"Tutorial\".  
+  Tip: At level 1, phi is sensory input."
   [phi eps eps- g']
   (e+ (e- eps)
       (m* (g' phi) eps-))) ; is this right?
 
 (defn next-phi 
-  "Usage e.g. (next-phi phi eps eps- (g'-fn h theta))."
+  "Calculate then next 'hypothesis' phi.  Usage e.g. 
+  (next-phi phi eps eps- (g'-fn h theta))."
   [phi eps eps- g']
   (e+ phi 
       (phi-inc phi eps eps- g')))
@@ -36,18 +41,22 @@
 ;; epsilon update
 
 (defn g-fn
+  "Return a function that chooses mean(s) for the phi likelihood distribution."
   [h theta]
   (fn [phi] (m* theta (h phi))))
 
 (defn eps-inc 
-  "Equation (54) in Bogacz's \"Tutoria\"."
+  "Calculate slope/increment to the next 'error' epsilon from the 
+  current epsilon.  Equation (54) in Bogacz's \"Tutorial\".
+  Tip: At level 1, phi is sensory input."
   [eps phi phi+ sigma g] 
   (e- phi 
       (g phi+)
       (m* sigma eps)))
 
 (defn next-eps
-  "Usage e.g. (next-eps eps phl phi+ sigma (g-fn h theta))."
+  "Calculate the next 'error' epsilon.  Usage e.g. 
+  (next-eps eps phl phi+ sigma (g-fn h theta))."
   [eps phi phi+ sigma g]
   (+ eps 
      (eps-inc eps phi phi+ sigma g)))
