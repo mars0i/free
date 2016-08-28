@@ -20,7 +20,7 @@
   "Return the first derivative of a function that chooses mean(s) for 
   the phi likelihood distribution."
   [h' theta]
-  (fn [phi] (e* theta (h' phi))))
+  (fn [phi] (e* theta (h' phi)))) ; ADD TRANSPOSE?
 
 (defn phi-inc
   "Calculate slope/increment to the next 'hypothesis' phi from the 
@@ -28,7 +28,7 @@
   Tip: At level 1, phi is sensory input."
   [phi eps eps- g']
   (e+ (e- eps)
-      (m* (g' phi) eps-))) ; is this right?
+      (m* (g' phi) eps-))) ; IS THIS RIGHT?
 
 (defn next-phi 
   "Calculate then next 'hypothesis' phi.  Usage e.g. 
