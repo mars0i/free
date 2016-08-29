@@ -9,5 +9,5 @@
                  [thinktopic/aljabr "0.1.1"] ; ignore [... "0.4.0-SNAPSHOT"] in README.md--wishful thinking
                  [clatrix "0.5.0"]
                  ;[org.clojars.ds923y/nd4clj "0.1.0-SNAPSHOT"] ; not ready for use
-                 [criterium "0.4.4"]
+                 [criterium "0.4.4"] ; to use, e.g.: (use '[criterium.core :as c])
                  ])
