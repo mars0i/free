@@ -10,9 +10,9 @@
 
 (ns free.level
   (:require
-    ;[free.scalar-arithmetic :refer [e* m* e+ e-]]   ; use only one
+    [free.scalar-arithmetic :refer [e* m* e+ e-]]   ; use only one
     ;[free.matrix-arithmetic :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
-    [free.quant :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
+    ;[free.quant :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
    ))
 
 ;; phi update
