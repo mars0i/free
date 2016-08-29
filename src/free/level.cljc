@@ -10,10 +10,27 @@
 
 (ns free.level
   (:require
-    [free.scalar-arithmetic :refer [e* m* e+ e-]]   ; use only one
-    ;[free.matrix-arithmetic :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
-    ;[free.quant :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
+    ;[clojure.core.matrix :as m]
+    ; eh: ;[free.scalar-arithmetic :refer [e* m* e+ e-]]   ; use only one
+    ; eh: ;[free.matrix-arithmetic :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
+    ; eh: ;[free.quant :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
    ))
+
+;; Distasteful kludge since using another name for basic scalar operators slows them down.
+;; i.e. (def m* *) makes multiplication order of mag slower.  Solution for
+;; scalars is to use a macro--ugh--which preserves speed.  But if we need
+;; matrices, then core.matrix will be available, and just alias the core.matrix 
+;; operators.
+(if (find-ns 'clojure.core.matrix)
+  (do 
+    (def * m/mmul)
+    (def + m/add)
+    (def - m/sub)
+    (def e* m/mul)
+    (def tran m/transpose))
+  (do
+    (defmacro e* [x y] `(* ~x ~y))
+    (defmacro tran [x] `(identity ~x))))
 
 ;; phi update
 
@@ -28,14 +45,14 @@
   current phi.  Equation (53) in Bogacz's \"Tutorial\".  
   Tip: At level 1, phi is sensory input."
   [phi eps eps- g']
-  (e+ (e- eps)
-      (m* (g' phi) eps-))) ; IS THIS RIGHT?
+  (+ (- eps)
+      (* (g' phi) eps-))) ; IS THIS RIGHT?
 
 (defn next-phi 
   "Calculate then next 'hypothesis' phi.  Usage e.g. 
   (next-phi phi eps eps- (g'-fn h theta))."
   [phi eps eps- g']
-  (e+ phi 
+  (+ phi 
       (phi-inc phi eps eps- g')))
 
 
@@ -44,16 +61,16 @@
 (defn g-fn
   "Return a function that chooses mean(s) for the phi likelihood distribution."
   [h theta]
-  (fn [phi] (m* theta (h phi))))
+  (fn [phi] (* theta (h phi))))
 
 (defn eps-inc 
   "Calculate slope/increment to the next 'error' epsilon from the 
   current epsilon.  Equation (54) in Bogacz's \"Tutorial\".
   Tip: At level 1, phi is sensory input."
   [eps phi phi+ sigma g] 
-  (e- phi 
+  (- phi 
       (g phi+)
-      (m* sigma eps)))
+      (* sigma eps)))
 
 (defn next-eps
   "Calculate the next 'error' epsilon.  Usage e.g. 
