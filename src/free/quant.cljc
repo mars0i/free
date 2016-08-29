@@ -1,5 +1,6 @@
 (ns free.quant
-  (:require [clojure.core.matrix :as m]))
+  (:require [clojure.core.matrix :as m]
+            [clojure.core.matrix.impl.ndarray_object]))
 
 (defprotocol Quant
   (m* [x] [x y])
