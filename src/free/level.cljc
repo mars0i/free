@@ -8,32 +8,19 @@
 ;; A value of x from the next level down is called x-.
 ;; A value of x from the next level up is called x+.
 
-(ns free.level)
-;; cf. this question that I asked a couple of years ago:
-;; http://stackoverflow.com/questions/26366251/how-to-require-namespace-inside-function-main
-;; and this one that I linked to:
-;; http://stackoverflow.com/questions/23584223/how-to-require-a-namespace-programmatically
-;; Can I use reader conditionals? or do they only work with :clj, :cljs, :cljc?
+(ns free.level
+  ;(:require
+  ;  [free.scalar-arithmetic :refer [e* m* m+ m- neg trans]]  ; use only one
+  ;  ;[free.matrix-arithmetic :refer [e* m* m+ m- neg trans]] ; of these
+  ; )
+  )
 
-;; move this elsewhere later?
+;; maybe move elsewhere so can be defined on command line?
 (def ^:const use-core-matrix false)
 
-
-;; THIS DOESN'T WORK
 (if use-core-matrix
-  (do 
-    (println "Redefining scalar arithmetic operators as matrix operators.")
-    (refer-clojure :exclude [* + -])
-    (require '[clojure.core.matrix])
-    (def * clojure.core.matrix/mmul)
-    (def + clojure.core.matrix/add)
-    (def - clojure.core.matrix/sub)
-    (def e* clojure.core.matrix/mul)
-    (def tran clojure.core.matrix/transpose))
-  (do
-    (println "Using scalar arithmetic operators.")
-    (defmacro e* [x y] `(* ~x ~y))
-    (defmacro tran [x] `(identity ~x))))
+  (require '[free.matrix-arithmetic :refer [e* m* m+ m- neg trans]])
+  (require '[free.scalar-arithmetic :refer [e* m* m+ m- neg trans]]))
 
 ;; phi update
 
@@ -48,14 +35,14 @@
   current phi.  Equation (53) in Bogacz's \"Tutorial\".  
   Tip: At level 1, phi is sensory input."
   [phi eps eps- g']
-  (+ (- eps)
-      (* (g' phi) eps-))) ; IS THIS RIGHT?
+  (m+ (m- eps)
+      (m* (g' phi) eps-))) ; IS THIS RIGHT?
 
 (defn next-phi 
   "Calculate then next 'hypothesis' phi.  Usage e.g. 
   (next-phi phi eps eps- (g'-fn h theta))."
   [phi eps eps- g']
-  (+ phi 
+  (m+ phi 
       (phi-inc phi eps eps- g')))
 
 
@@ -64,22 +51,22 @@
 (defn g-fn
   "Return a function that chooses mean(s) for the phi likelihood distribution."
   [h theta]
-  (fn [phi] (* theta (h phi))))
+  (fn [phi] (m* theta (h phi))))
 
 (defn eps-inc 
   "Calculate slope/increment to the next 'error' epsilon from the 
   current epsilon.  Equation (54) in Bogacz's \"Tutorial\".
   Tip: At level 1, phi is sensory input."
   [eps phi phi+ sigma g] 
-  (- phi 
+  (m- phi 
       (g phi+)
-      (* sigma eps)))
+      (m* sigma eps)))
 
 (defn next-eps
   "Calculate the next 'error' epsilon.  Usage e.g. 
   (next-eps eps phl phi+ sigma (g-fn h theta))."
   [eps phi phi+ sigma g]
-  (+ eps 
+  (m+ eps 
      (eps-inc eps phi phi+ sigma g)))
 
 

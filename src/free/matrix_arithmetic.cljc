@@ -19,8 +19,8 @@
 ;; scalar analogues.
 (def m* mx/mmul) ; matrix multiplication and inner product
 (def e* mx/mul)  ; elementwise (Hadamard) and scalar multiplication
-(def e+ mx/add)  ; elementwise addition
-(def e- mx/sub)  ; elementwise subtraction, or elementwise negation
+(def m+ mx/add)  ; elementwise addition
+(def m- mx/sub)  ; elementwise subtraction, or elementwise negation
 (def neg mx/sub) ; elementwise sign change--for use with single argument
 (def trans mx/transpose)
 

@@ -19,11 +19,11 @@
  [x y] 
  `(* ~x ~y)) 
 
-(defmacro e+ 
+(defmacro m+ 
  "Scalar analogue of elementwise addition, i.e. scalar addition."
  [x y] `(+ ~x ~y))
 
-(defmacro e- 
+(defmacro m- 
  "Scalar analogue of elementwise subtraction, i.e. scalar subtraction."
  [x y] 
  `(- ~x ~y))
