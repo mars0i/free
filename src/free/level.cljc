@@ -18,9 +18,12 @@
 ;; move this elsewhere later?
 (def ^:const use-core-matrix false)
 
+
+;; THIS DOESN'T WORK
 (if use-core-matrix
   (do 
     (println "Redefining scalar arithmetic operators as matrix operators.")
+    (refer-clojure :exclude [* + -])
     (require '[clojure.core.matrix])
     (def * clojure.core.matrix/mmul)
     (def + clojure.core.matrix/add)
