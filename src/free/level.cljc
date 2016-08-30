@@ -10,27 +10,16 @@
 
 (ns free.level
   (:require
-    ;[clojure.core.matrix :as m]
-    ; eh: ;[free.scalar-arithmetic :refer [e* m* e+ e-]]   ; use only one
-    ; eh: ;[free.matrix-arithmetic :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
+    [free.scalar-arithmetic :refer [e* m* e+ e- neg trans]]  ; use only one
+    ;[free.matrix-arithmetic :refer [e* m* e+ e- neg trans]] ; of these
     ; eh: ;[free.quant :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
+    ;[clojure.core.matrix :as m]
    ))
-
-;; Distasteful kludge since using another name for basic scalar operators slows them down.
-;; i.e. (def m* *) makes multiplication order of mag slower.  Solution for
-;; scalars is to use a macro--ugh--which preserves speed.  But if we need
-;; matrices, then core.matrix will be available, and just alias the core.matrix 
-;; operators.
-(if (find-ns 'clojure.core.matrix)
-  (do 
-    (def * m/mmul)
-    (def + m/add)
-    (def - m/sub)
-    (def e* m/mul)
-    (def tran m/transpose))
-  (do
-    (defmacro e* [x y] `(* ~x ~y))
-    (defmacro tran [x] `(identity ~x))))
+;; cf. this question that I asked a couple of years ago:
+;; http://stackoverflow.com/questions/26366251/how-to-require-namespace-inside-function-main
+;; and this one that I linked to:
+;; http://stackoverflow.com/questions/23584223/how-to-require-a-namespace-programmatically
+;; Can I use reader conditionals? or do they only work with :clj, :cljs, :cljc?
 
 ;; phi update
 
