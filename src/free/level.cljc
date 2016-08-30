@@ -35,7 +35,7 @@
   current phi.  Equation (53) in Bogacz's \"Tutorial\".  
   Tip: At level 1, phi is sensory input."
   [phi eps eps- g']
-  (m+ (m- eps)
+  (m+ (neg eps)
       (m* (g' phi) eps-))) ; IS THIS RIGHT?
 
 (defn next-phi 
