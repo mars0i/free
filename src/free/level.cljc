@@ -8,18 +8,29 @@
 ;; A value of x from the next level down is called x-.
 ;; A value of x from the next level up is called x+.
 
-(ns free.level
-  (:require
-    [free.scalar-arithmetic :refer [e* m* e+ e- neg trans]]  ; use only one
-    ;[free.matrix-arithmetic :refer [e* m* e+ e- neg trans]] ; of these
-    ; eh: ;[free.quant :refer [e* m* e+ e-]] ; of these (this seems to work with scalars!)
-    ;[clojure.core.matrix :as m]
-   ))
+(ns free.level)
 ;; cf. this question that I asked a couple of years ago:
 ;; http://stackoverflow.com/questions/26366251/how-to-require-namespace-inside-function-main
 ;; and this one that I linked to:
 ;; http://stackoverflow.com/questions/23584223/how-to-require-a-namespace-programmatically
 ;; Can I use reader conditionals? or do they only work with :clj, :cljs, :cljc?
+
+;; move this elsewhere later?
+(def ^:const use-core-matrix false)
+
+(if use-core-matrix
+  (do 
+    (println "Redefining scalar arithmetic operators as matrix operators.")
+    (require '[clojure.core.matrix])
+    (def * clojure.core.matrix/mmul)
+    (def + clojure.core.matrix/add)
+    (def - clojure.core.matrix/sub)
+    (def e* clojure.core.matrix/mul)
+    (def tran clojure.core.matrix/transpose))
+  (do
+    (println "Using scalar arithmetic operators.")
+    (defmacro e* [x y] `(* ~x ~y))
+    (defmacro tran [x] `(identity ~x))))
 
 ;; phi update
 
