@@ -35,28 +35,31 @@
 ;; to functions?  What initializes it?
 (defrecord Level [phi eps sigma theta h h' e])
 (us/add-to-docstr! ->Level
-   "A Level records values at one level of a prediction-error/free-energy
-   minimization model.  phi, eps, and e can be scalars, in which case
-   theta and sigma are as well.  Or phi, eps, and e can be vectors of length
-   n, in which case sigma and theta are n x n square matrices.  h and h' are
-   functions that can be applied to things with the form of phi.  These
-   variables and defined in Bogacz's \"Tutorial\" paper and are used in one
-   form or another throughout the paper (q.v.).  e is a helper variable
-   used to represent additional nodes used to update sigma; see section 5.  
-   h and h' are usually the same on every level.  Together with theta they
-   define the functions g and g' in the paper.)
 
-   A model consists of a sequence of three or more levels: A first and
-   last level, and one or more inner levels.  It's only in the inner
-   levels that phi and eps are fully calculated according to equations
-   (53) and (54) in Bogacz.  The first level captures sensory
-   input--i.e.  it records the prediction error eps, which is calculated
-   from sensory input phi at that level, along with a function theta h
-   of the next level phi.  i.e. at this level, phi is simply provided by
-   the system, and is not calculated from lower level prediction errors
-   as in (53). (??) The last level simply provides a phi, which is the
-   mean of a prior distribution at that level.  This phi never changes
-   (?).  The other terms at this level can be ignored.")
+  "\n  A Level records values at one level of a prediction-error/free-energy
+  minimization model.  phi, eps, and e can be scalars, in which case
+  theta and sigma are as well.  Or phi, eps, and e can be vectors of
+  length n, in which case sigma and theta are n x n square matrices.  h
+  and h' are functions that can be applied to things with the form of
+  phi.  These variables are defined in Bogacz's \"Tutorial\" paper and
+  are used in one form or another throughout the paper (q.v.).  e is a
+  helper variable used to represent additional nodes used to update
+  sigma; see section 5 of the paper.  h and h' are usually the same on
+  every level.  Together with theta they define the functions g and g'
+  appearing in the paper (q.v.).
+
+  The state of a network consists of a sequence of three or more levels:
+  A first and last level, and one or more inner levels.  It's only the
+  inner levels that should be updated according to central equations in
+  Bogacz such as (53) and (54).  The first level captures sensory
+  input-- i.e. it records the prediction error eps, which is calculated
+  from sensory input phi at that level, along with a function theta h of
+  the next level phi.  i.e. at this level, phi is simply provided by the
+  system outside of the levels, and is not calculated from lower level
+  prediction errors as in (53). The last level simply provides a phi,
+  which is the mean of a prior distribution at that level.  This phi
+  typically never changes. (It's genetically or developmentally
+  determined.) The other terms at this top level can be ignored.")
 
 
 ;; phi update
@@ -89,7 +92,6 @@
       (m* theta (h phi+))
       (m* sigma eps)))
 
-;; TODO revise to fit eps-inc (or replace with another strategy)
 (defn next-eps
   "Accepts two levels, this one and the one above, and calculates the
   the next-timestep 'error' epsilon."
