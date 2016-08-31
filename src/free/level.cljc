@@ -1,12 +1,25 @@
-;; Based on
-;; Rafal Bogacz, "A Tutorial on the Free-energy Framework for Modelling
-;; Perception and Learning", *Journal of Mathematical Psychology*,
-;; http://dx.doi.org/10.1016/j.jmp.2015.11.003 .)
+;;; This software is copyright 2016 by Marshall Abrams, and
+;;; is distributed under the Gnu General Public License version 3.0 as
+;;; specified in the file LICENSE.
+
+;; Based on Rafal Bogacz's, "A Tutorial on the Free-energy Framework 
+;; for Modelling Perception and Learning", _Journal of Mathematical 
+;; Psychology_ (online 2015), http://dx.doi.org/10.1016/j.jmp.2015.11.003
 
 ;; Conventions:
 ;; The derivative of x is called x' .
-;; A value of x from the next level down is called x-.
-;; A value of x from the next level up is called x+.
+;; A value of x at the next level down is called x-.
+;; A value of x at the next level up is called x+.
+;; However, + and - are also used in matrix/scalar operators
+;; m+ (addition) and m- (subtraction).
+
+;; TODO:
+;; Write update functions for sigma (using e) and theta.
+;; Alternatively we could calculate sigma directly using matrix inversion.
+
+;; This version doesn't use function g, but assumes that g is a product
+;; of theta with another function h, as in Bogacz's examples.
+;; (See older commits for g defs.)
 
 (ns free.level
   (:require [utils.string :as us]))
@@ -17,10 +30,6 @@
 (if use-core-matrix
   (require '[free.matrix-arithmetic :refer [e* m* m+ m- trans]])
   (require '[free.scalar-arithmetic :refer [e* m* m+ m- trans]]))
-
-;; This version doesn't use function g, but assumes that g is a product
-;; of theta with another function h, as in Bogacz's examples.
-;; (See older commits for g defs.)
 
 ;; Q: Does e need to be in the record structure, or can it be local
 ;; to functions?  What initializes it?
@@ -48,18 +57,6 @@
    as in (53). (??) The last level simply provides a phi, which is the
    mean of a prior distribution at that level.  This phi never changes
    (?).  The other terms at this level can be ignored.")
-
-
-;; TODO:
-;; In order to calculate new values for an inner level, collect
-;; relevant values from the levels below and above, and then calculate
-;; next values for this level.
-
-
-;; TODO:
-;; Write update functions for sigma (using e) and theta.
-;; Alternatively we could calculate sigma directly using matrix inversion.
-
 
 
 ;; phi update
