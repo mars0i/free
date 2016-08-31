@@ -12,6 +12,7 @@
 ;(set-current-implementation :clatrix)
 ;(set-current-implementation :nd4clj)
 
+(println "Loading core.matrix operators.  Matrix implementation:" (mx/current-implementation))
 
 ;; Note that these are functions, but in free.scalar-arithmetic, I define 
 ;; them as macros for the sake of performance.  So don't e.g. map the functions 
@@ -21,35 +22,4 @@
 (def e* mx/mul)  ; elementwise (Hadamard) and scalar multiplication
 (def m+ mx/add)  ; elementwise addition
 (def m- mx/sub)  ; elementwise subtraction, or elementwise negation
-(def neg mx/sub) ; elementwise sign change--for use with single argument
 (def trans mx/transpose)
-
-;(defmacro m* 
-; "Scalar analogue of matrix multiplication and inner product, i.e. scalar
-; multiplication."
-; [x y] 
-; `(mx/mmul ~x ~y))
-;
-;(defmacro e* 
-; "Scalar analogue of elementwise (Hadamard) multiplication, i.e. scalar 
-; multiplication."
-; [x y] 
-; `(mx/mul ~x ~y)) 
-;
-;(defmacro e+ 
-; "Scalar analogue of elementwise addition, i.e. scalar addition."
-; [x y] `(mx/add ~x ~y))
-;
-;(defmacro e- 
-; "Scalar analogue of elementwise subtraction, i.e. scalar subtraction."
-; [x y] 
-; `(mx/sub ~x ~y))
-;
-;(defmacro neg  ; multi-arity macros are messy. easier to use two definitions.
-; "Switches sign of argument."
-; [x] 
-; `(mx/sub ~x)) 
-;
-;(defmacro trans
-; "Scalar analogoue of transposition; returns the argument unchanged."
-; [x] `(mx/transpose ~x))

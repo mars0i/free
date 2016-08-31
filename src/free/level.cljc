@@ -19,8 +19,8 @@
 (def ^:const use-core-matrix false)
 
 (if use-core-matrix
-  (require '[free.matrix-arithmetic :refer [e* m* m+ m- neg trans]])
-  (require '[free.scalar-arithmetic :refer [e* m* m+ m- neg trans]]))
+  (require '[free.matrix-arithmetic :refer [e* m* m+ m- trans]])
+  (require '[free.scalar-arithmetic :refer [e* m* m+ m- trans]]))
 
 ;; phi update
 
@@ -35,7 +35,7 @@
   current phi.  Equation (53) in Bogacz's \"Tutorial\".  
   Tip: At level 1, phi is sensory input."
   [phi eps eps- g']
-  (m+ (neg eps)
+  (m+ (m- eps)
       (m* (g' phi) eps-))) ; IS THIS RIGHT?
 
 (defn next-phi 
@@ -79,16 +79,3 @@
 (def phi v-p)
 (def error-p 0)
 (def error-u 0)
-
-
-;(defn phi-inc [eps h-tick phi theta- eps-] 
-;  "Equation (53) in Bogacz's \"Tutoria\"."
-;  (e+ (e- eps)
-;      (e* (h-tick phi)
-;          (m* theta- eps-))))
-;
-;(defn eps-inc [eps h phi theta sigma phi+] 
-;  "Equation (54) in Bogacz's \"Tutoria\"."
-;  (e- phi 
-;      (m* theta (h phi+))
-;      (m* sigma eps)))
