@@ -7,32 +7,37 @@
 ;; matrices, then core.matrix will be available, and just alias the core.matrix 
 ;; operators.
 
+(println "Loading scalar operators.")
+
+;; My cheesey macros only accept three arguments
+
 (defmacro m* 
  "Scalar analogue of matrix multiplication and inner product, i.e. scalar
  multiplication."
- [x y] 
- `(* ~x ~y))
+ ([x] x) ; is this right?
+ ([x y] `(* ~x ~y))
+ ([x y z] `(* ~x ~y ~z)))
 
 (defmacro e* 
  "Scalar analogue of elementwise (Hadamard) multiplication, i.e. scalar 
  multiplication."
- [x y] 
- `(* ~x ~y)) 
+ ([x] x)
+ ([x y] `(* ~x ~y))
+ ([x y z] `(* ~x ~y ~z)))
 
 (defmacro m+ 
  "Scalar analogue of elementwise addition, i.e. scalar addition."
- [x y] `(+ ~x ~y))
+ ([x] x)
+ ([x y] `(+ ~x ~y))
+ ([x y z] `(+ ~x ~y ~z)))
 
 (defmacro m- 
  "Scalar analogue of elementwise subtraction, i.e. scalar subtraction."
- [x y] 
- `(- ~x ~y))
+ ([x] `(- ~x))
+ ([x y] `(- ~x ~y))
+ ([x y z] `(- ~x ~y ~z)))
 
-(defmacro neg  ; multi-arity macros are messy. easier to use two definitions.
- "Switches sign of argument."
- [x] 
- `(- ~x)) 
-
+;; doesn't have to be a macro--just for consistency
 (defmacro trans
  "Scalar analogoue of transposition; returns the argument unchanged."
  [x] `(identity ~x))
