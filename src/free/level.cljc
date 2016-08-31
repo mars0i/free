@@ -9,11 +9,7 @@
 ;; A value of x from the next level up is called x+.
 
 (ns free.level
-  ;(:require
-  ;  [free.scalar-arithmetic :refer [e* m* m+ m- neg trans]]  ; use only one
-  ;  ;[free.matrix-arithmetic :refer [e* m* m+ m- neg trans]] ; of these
-  ; )
-  )
+  (require [utils.string :as us]))
 
 ;; maybe move elsewhere so can be defined on command line?
 (def ^:const use-core-matrix false)
@@ -26,34 +22,36 @@
 ;; of theta with another function h, as in Bogacz's examples.
 ;; (See older commits for g defs.)
 
-(defrecord Level [phi eps sigma theta h h' e])
-;; phi, eps, and e can be scalars, in which case theta and sigma are 
-;; as well.  Or phi, eps, and e are vectors of length n, in which 
-;; case sigma and theta are nxn matrices.  h and h' are functions 
-;; that can be applied to things with the form of phi.  Most of these
-;; variables are used, in one form or another, throughout Bogacz's
-;; paper.  e is a helper node; for its meaning see section 5.
 ;; Q: Does e need to be in the record structure, or can it be local
 ;; to functions?  What initializes it?
+(defrecord Level [phi eps sigma theta h h' e])
+(us/add-to-docstring! ->Level
+   "A Level records values at one level of a prediction-error/free-energy
+   minimization model.  phi, eps, and e can be scalars, in which case
+   theta and sigma are as well.  Or phi, eps, and e can be vectors of length
+   n, in which case sigma and theta are n x n square matrices.  h and h' are
+   functions that can be applied to things with the form of phi.  These
+   variables and defined in Bogacz's \"Tutorial\" paper and are used in one
+   form or another throughout the paper (q.v.).  e is a helper variable
+   used to represent additional nodes used to update sigma; see section 5.  
+   h and h' are usually the same on every level.  Together with theta they
+   define the functions g and g' in the paper.)
 
-;; ??:
-;;
-;; A model would consist of a sequence (or map?) of three or more levels:
-;; A first and last level, and one or more inner levels.  It's only in
-;; the inner levels that phi and eps are fully calculated according to 
-;; (53) and (54).
-;; 
-;; The first level captures sensory input--i.e.  it records the 
-;; prediction error eps, which is calculated from sensory input 
-;; phi at that level, along with a function theta h of the next level phi.
-;; i.e. at this level, phi is simply provided by the system, and is
-;; not calculated from lower level prediction errors as in (53). (??)
-;; 
-;; The last level simply provides a phi, which is the mean of a prior
-;; distribution at that level.  This phi never changes (?).  The other
-;; terms at this level can be ignored.
-;; 
-;; h and h' are probably the same on every level.
+   A model consists of a sequence of three or more levels:
+   A first and last level, and one or more inner levels.  It's only in
+   the inner levels that phi and eps are fully calculated according to 
+   equations (53) and (54) in Bogacz.
+
+   The first level captures sensory input--i.e.  it records the 
+   prediction error eps, which is calculated from sensory input 
+   phi at that level, along with a function theta h of the next level phi.
+   i.e. at this level, phi is simply provided by the system, and is
+   not calculated from lower level prediction errors as in (53). (??)
+
+   The last level simply provides a phi, which is the mean of a prior
+   distribution at that level.  This phi never changes (?).  The other
+   terms at this level can be ignored.")
+
 
 ;; TODO:
 ;; In order to calculate new values for an inner level, collect
