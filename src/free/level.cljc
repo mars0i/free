@@ -9,7 +9,7 @@
 ;; A value of x from the next level up is called x+.
 
 (ns free.level
-  (require [utils.string :as us]))
+  (:require [utils.string :as us]))
 
 ;; maybe move elsewhere so can be defined on command line?
 (def ^:const use-core-matrix false)
@@ -25,7 +25,7 @@
 ;; Q: Does e need to be in the record structure, or can it be local
 ;; to functions?  What initializes it?
 (defrecord Level [phi eps sigma theta h h' e])
-(us/add-to-docstring! ->Level
+(us/add-to-docstr! ->Level
    "A Level records values at one level of a prediction-error/free-energy
    minimization model.  phi, eps, and e can be scalars, in which case
    theta and sigma are as well.  Or phi, eps, and e can be vectors of length
@@ -37,20 +37,17 @@
    h and h' are usually the same on every level.  Together with theta they
    define the functions g and g' in the paper.)
 
-   A model consists of a sequence of three or more levels:
-   A first and last level, and one or more inner levels.  It's only in
-   the inner levels that phi and eps are fully calculated according to 
-   equations (53) and (54) in Bogacz.
-
-   The first level captures sensory input--i.e.  it records the 
-   prediction error eps, which is calculated from sensory input 
-   phi at that level, along with a function theta h of the next level phi.
-   i.e. at this level, phi is simply provided by the system, and is
-   not calculated from lower level prediction errors as in (53). (??)
-
-   The last level simply provides a phi, which is the mean of a prior
-   distribution at that level.  This phi never changes (?).  The other
-   terms at this level can be ignored.")
+   A model consists of a sequence of three or more levels: A first and
+   last level, and one or more inner levels.  It's only in the inner
+   levels that phi and eps are fully calculated according to equations
+   (53) and (54) in Bogacz.  The first level captures sensory
+   input--i.e.  it records the prediction error eps, which is calculated
+   from sensory input phi at that level, along with a function theta h
+   of the next level phi.  i.e. at this level, phi is simply provided by
+   the system, and is not calculated from lower level prediction errors
+   as in (53). (??) The last level simply provides a phi, which is the
+   mean of a prior distribution at that level.  This phi never changes
+   (?).  The other terms at this level can be ignored.")
 
 
 ;; TODO:
@@ -68,45 +65,42 @@
 ;; phi update
 
 (defn phi-inc
-  "Accepts two Levels, the current one and the one below, as arguments 
-  and Calculate slope/increment to the next 'hypothesis' phi from the 
+  "Calculates slope/increment to the next 'hypothesis' phi from the 
   current phi.  See equations (44), (53) in Bogacz's \"Tutorial\"."
-  [level level-]
+  [phi eps eps- theta h']
+  (m+ (m- eps)
+      (e* (h' phi)
+          (m* (trans theta) eps-))))
+
+(defn next-phi 
+  "Accepts two levels, this one and the one below, and calculates the
+  the next-timestep 'hypothesis' phi."
+  [level- level]
   (let [{:keys [phi eps theta h']} level
         eps- (:eps level-)]
-    (m+ (m- eps)
-        (e* (h' phi)
-            (m* (trans theta) eps-)))))
-
-;; TODO revise to fit phi-inc (or replace with another strategy)
-(defn next-phi 
-  "Calculate then next 'hypothesis' phi.  Usage e.g. 
-  (next-phi phi eps eps- (g'-fn h theta))."
-  [phi eps eps- theta h']
-  (m+ phi 
-      (phi-inc phi eps eps- theta h')))
+    (m+ phi 
+        (phi-inc phi eps eps- theta h'))))
 
 
 ;; epsilon update
 
 (defn eps-inc 
-  "Accepts two levels, this one and the one above, and calculates the
-  slope/increment to the next 'error' epsilon from the current epsilon.  
-  See equation (54) in Bogacz's \"Tutorial\"."
-  [level level+]
-  (let [{:keys [eps phi sigma theta h]} level
-        phi+ (:phi level+)]
-    (m- phi 
-        (m* theta (h phi+))
-        (m* sigma eps))))
+  "Calculates the slope/increment to the next 'error' epsilon from 
+  the current epsilon.  See equation (54) in Bogacz's \"Tutorial\"."
+  [eps phi phi+ sigma theta h]
+  (m- phi 
+      (m* theta (h phi+))
+      (m* sigma eps)))
 
 ;; TODO revise to fit eps-inc (or replace with another strategy)
 (defn next-eps
-  "Calculate the next 'error' epsilon.  Usage e.g. 
-  (next-eps eps phl phi+ sigma (g-fn h theta))."
-  [eps phi phi+ sigma g]
-  (m+ eps
-      (eps-inc eps phi phi+ sigma theta h)))
+  "Accepts two levels, this one and the one above, and calculates the
+  the next-timestep 'error' epsilon."
+  [level level+]
+  (let [{:keys [eps phi sigma theta h]} level
+        phi+ (:phi level+)]
+    (m+ eps
+        (eps-inc eps phi phi+ sigma theta h))))
 
 
 ;; from ex. 3
