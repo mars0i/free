@@ -35,7 +35,6 @@
 ;; to functions?  What initializes it?
 (defrecord Level [phi eps sigma theta h h' e])
 (us/add-to-docstr! ->Level
-
   "\n  A Level records values at one level of a prediction-error/free-energy
   minimization model.  phi, eps, and e can be scalars, in which case
   theta and sigma are as well.  Or phi, eps, and e can be vectors of
