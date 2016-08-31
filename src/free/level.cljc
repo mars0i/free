@@ -58,7 +58,10 @@
   prediction errors as in (53). The last level simply provides a phi,
   which is the mean of a prior distribution at that level.  This phi
   typically never changes. (It's genetically or developmentally
-  determined.) The other terms at this top level can be ignored.")
+  determined.) The other terms at this top level can be ignored.
+  Note that Bogacz's examples typically use two inner levels; his
+  representation captures what's called the first and last levels
+  here using individual parameters such as u and v_p.")
 
 
 ;; phi update
