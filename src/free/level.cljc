@@ -22,54 +22,93 @@
   (require '[free.matrix-arithmetic :refer [e* m* m+ m- trans]])
   (require '[free.scalar-arithmetic :refer [e* m* m+ m- trans]]))
 
-(defrecord Level [phi eps theta h h'])
+;; This version doesn't use function g, but assumes that g is a product
+;; of theta with another function h, as in Bogacz's examples.
+;; (See older commits for g defs.)
+
+(defrecord Level [phi eps sigma theta h h' e])
+;; phi, eps, and e can be scalars, in which case theta and sigma are 
+;; as well.  Or phi, eps, and e are vectors of length n, in which 
+;; case sigma and theta are nxn matrices.  h and h' are functions 
+;; that can be applied to things with the form of phi.  Most of these
+;; variables are used, in one form or another, throughout Bogacz's
+;; paper.  e is a helper node; for its meaning see section 5.
+;; Q: Does e need to be in the record structure, or can it be local
+;; to functions?  What initializes it?
+
+;; ??:
+;;
+;; A model would consist of a sequence (or map?) of three or more levels:
+;; A first and last level, and one or more inner levels.  It's only in
+;; the inner levels that phi and eps are fully calculated according to 
+;; (53) and (54).
+;; 
+;; The first level captures sensory input--i.e.  it records the 
+;; prediction error eps, which is calculated from sensory input 
+;; phi at that level, along with a function theta h of the next level phi.
+;; i.e. at this level, phi is simply provided by the system, and is
+;; not calculated from lower level prediction errors as in (53). (??)
+;; 
+;; The last level simply provides a phi, which is the mean of a prior
+;; distribution at that level.  This phi never changes (?).  The other
+;; terms at this level can be ignored.
+;; 
+;; h and h' are probably the same on every level.
+
+;; TODO:
+;; In order to calculate new values for an inner level, collect
+;; relevant values from the levels below and above, and then calculate
+;; next values for this level.
+
+
+;; TODO:
+;; Write update functions for sigma (using e) and theta.
+;; Alternatively we could calculate sigma directly using matrix inversion.
+
+
 
 ;; phi update
 
-(defn g'-fn
-  "Return the first derivative of a function that chooses mean(s) for 
-  the phi likelihood distribution."
-  [h' theta]
-  (fn [phi] (e* theta (h' phi)))) ; ADD TRANSPOSE?
-
 (defn phi-inc
-  "Calculate slope/increment to the next 'hypothesis' phi from the 
-  current phi.  Equation (53) in Bogacz's \"Tutorial\".  
-  Tip: At level 1, phi is sensory input."
-  [phi eps eps- g']
-  (m+ (m- eps)
-      (m* (g' phi) eps-))) ; IS THIS RIGHT?
+  "Accepts two Levels, the current one and the one below, as arguments 
+  and Calculate slope/increment to the next 'hypothesis' phi from the 
+  current phi.  See equations (44), (53) in Bogacz's \"Tutorial\"."
+  [level level-]
+  (let [{:keys [phi eps theta h']} level
+        eps- (:eps level-)]
+    (m+ (m- eps)
+        (e* (h' phi)
+            (m* (trans theta) eps-)))))
 
+;; TODO revise to fit phi-inc (or replace with another strategy)
 (defn next-phi 
   "Calculate then next 'hypothesis' phi.  Usage e.g. 
   (next-phi phi eps eps- (g'-fn h theta))."
-  [phi eps eps- g']
+  [phi eps eps- theta h']
   (m+ phi 
-      (phi-inc phi eps eps- g')))
+      (phi-inc phi eps eps- theta h')))
 
 
 ;; epsilon update
 
-(defn g-fn
-  "Return a function that chooses mean(s) for the phi likelihood distribution."
-  [h theta]
-  (fn [phi] (m* theta (h phi))))
-
 (defn eps-inc 
-  "Calculate slope/increment to the next 'error' epsilon from the 
-  current epsilon.  Equation (54) in Bogacz's \"Tutorial\".
-  Tip: At level 1, phi is sensory input."
-  [eps phi phi+ sigma g] 
-  (m- phi 
-      (g phi+)
-      (m* sigma eps)))
+  "Accepts two levels, this one and the one above, and calculates the
+  slope/increment to the next 'error' epsilon from the current epsilon.  
+  See equation (54) in Bogacz's \"Tutorial\"."
+  [level level+]
+  (let [{:keys [eps phi sigma theta h]} level
+        phi+ (:phi level+)]
+    (m- phi 
+        (m* theta (h phi+))
+        (m* sigma eps))))
 
+;; TODO revise to fit eps-inc (or replace with another strategy)
 (defn next-eps
   "Calculate the next 'error' epsilon.  Usage e.g. 
   (next-eps eps phl phi+ sigma (g-fn h theta))."
   [eps phi phi+ sigma g]
-  (m+ eps 
-     (eps-inc eps phi phi+ sigma g)))
+  (m+ eps
+      (eps-inc eps phi phi+ sigma theta h)))
 
 
 ;; from ex. 3
