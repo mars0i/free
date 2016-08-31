@@ -22,6 +22,8 @@
   (require '[free.matrix-arithmetic :refer [e* m* m+ m- trans]])
   (require '[free.scalar-arithmetic :refer [e* m* m+ m- trans]]))
 
+(defrecord Level [phi eps theta h h'])
+
 ;; phi update
 
 (defn g'-fn
