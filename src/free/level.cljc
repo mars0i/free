@@ -22,7 +22,9 @@
 ;; (See older commits for g defs.)
 
 (ns free.level
-  (:require [utils.string :as us]))
+  (:require 
+    [free.dists :as prob]
+    [utils.string :as us]))
 
 ;; maybe move elsewhere so can be defined on command line?
 (def ^:const use-core-matrix false)
