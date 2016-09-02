@@ -21,6 +21,9 @@
 ;; of theta with another function h, as in Bogacz's examples.
 ;; (See older commits for g defs.)
 
+;; On p.2 Bogacz uses g(v) = v^2 as his example.
+;; i.e. h(phi) = phi^2, theta = 1, h'(phi) = 2*phi.
+
 (ns free.level
   (:require 
     [free.dists :as prob]
@@ -66,7 +69,7 @@
   here using individual parameters such as u and v_p.")
 
 
-;; phi update
+;;; phi update
 
 (defn phi-inc
   "Calculates slope/increment to the next 'hypothesis' phi from the 
@@ -86,7 +89,14 @@
         (phi-inc phi eps eps- theta h'))))
 
 
-;; epsilon update
+;;; epsilon update
+
+;; Note per (73), (58), sigma is supposed to be:
+;    (let [g-phi+ (m* theta (h phi+)) ; g(phi+)
+;          d (m- phi g-phi+)]         ; phi - g(phi+)
+;      (E (m* d (trans d))))          ; expectation of square of d
+;; where E is the expectation operator (over the empirical
+;; distribution of values?).
 
 (defn eps-inc 
   "Calculates the slope/increment to the next 'error' epsilon from 
