@@ -8,10 +8,11 @@
 
 ;; Conventions:
 ;; The derivative of x is called x' .
-;; A value of x at the next level down is called x-.
-;; A value of x at the next level up is called x+.
-;; However, + and - are also used in matrix/scalar operators
-;; m+ (addition) and m- (subtraction).
+;; A value of x at the next level down is called -x.
+;; A value of x at the next level up is called +x.
+;; m*, m+, m- are either scalar or matrix *, +, and -, depending
+;; on which namespace you load.  e* is *, or elementwise matrix
+;; multiplication.
 
 ;; TODO:
 ;; Write update functions for sigma (using e) and theta.
@@ -74,26 +75,26 @@
 (defn phi-inc
   "Calculates slope/increment to the next 'hypothesis' phi from the 
   current phi.  See equations (44), (53) in Bogacz's \"Tutorial\"."
-  [phi eps eps- theta h']
+  [phi eps -eps theta h']
   (m+ (m- eps)
       (e* (h' phi)
-          (m* (trans theta) eps-))))
+          (m* (trans theta) -eps))))
 
 (defn next-phi 
   "Accepts two levels, this one and the one below, and calculates the
   the next-timestep 'hypothesis' phi."
-  [level- level]
+  [-level level]
   (let [{:keys [phi eps theta h']} level
-        eps- (:eps level-)]
+        -eps (:eps -level)]
     (m+ phi 
-        (phi-inc phi eps eps- theta h'))))
+        (phi-inc phi eps -eps theta h'))))
 
 
 ;;; epsilon update
 
 ;; Note per (73), (58), sigma is supposed to be:
-;    (let [g-phi+ (m* theta (h phi+)) ; g(phi+)
-;          d (m- phi g-phi+)]         ; phi - g(phi+)
+;    (let [g-phi+ (m* theta (h +phi)) ; g(+phi)
+;          d (m- phi g-phi+)]         ; phi - g(+phi)
 ;      (E (m* d (trans d))))          ; expectation of square of d
 ;; where E is the expectation operator (over the empirical
 ;; distribution of values?).
@@ -101,19 +102,19 @@
 (defn eps-inc 
   "Calculates the slope/increment to the next 'error' epsilon from 
   the current epsilon.  See equation (54) in Bogacz's \"Tutorial\"."
-  [eps phi phi+ sigma theta h]
+  [eps phi +phi sigma theta h]
   (m- phi 
-      (m* theta (h phi+))
+      (m* theta (h +phi))
       (m* sigma eps)))
 
 (defn next-eps
   "Accepts two levels, this one and the one above, and calculates the
   the next-timestep 'error' epsilon."
-  [level level+]
+  [level +level]
   (let [{:keys [eps phi sigma theta h]} level
-        phi+ (:phi level+)]
+        +phi (:phi +level)]
     (m+ eps
-        (eps-inc eps phi phi+ sigma theta h))))
+        (eps-inc eps phi +phi sigma theta h))))
 
 
 ;; from ex. 3
