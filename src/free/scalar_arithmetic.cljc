@@ -12,32 +12,40 @@
 ;; My cheesey macros only accept three arguments
 
 (defmacro m* 
- "Scalar analogue of matrix multiplication and inner product, i.e. scalar
- multiplication."
- ([x] x) ; is this right?
- ([x y] `(* ~x ~y))
- ([x y z] `(* ~x ~y ~z)))
+  "Scalar analogue of matrix multiplication and inner product, i.e. scalar
+  multiplication."
+  ([x] x) ; is this right?
+  ([x y] `(* ~x ~y))
+  ([x y z] `(* ~x ~y ~z)))
 
 (defmacro e* 
- "Scalar analogue of elementwise (Hadamard) multiplication, i.e. scalar 
- multiplication."
- ([x] x)
- ([x y] `(* ~x ~y))
- ([x y z] `(* ~x ~y ~z)))
+  "Scalar analogue of elementwise (Hadamard) multiplication, i.e. scalar 
+  multiplication."
+  ([x] x)
+  ([x y] `(* ~x ~y))
+  ([x y z] `(* ~x ~y ~z)))
 
 (defmacro m+ 
- "Scalar analogue of elementwise addition, i.e. scalar addition."
- ([x] x)
- ([x y] `(+ ~x ~y))
- ([x y z] `(+ ~x ~y ~z)))
+  "Scalar analogue of elementwise addition, i.e. scalar addition."
+  ([x] x)
+  ([x y] `(+ ~x ~y))
+  ([x y z] `(+ ~x ~y ~z)))
 
 (defmacro m- 
- "Scalar analogue of elementwise subtraction, i.e. scalar subtraction."
- ([x] `(- ~x))
- ([x y] `(- ~x ~y))
- ([x y z] `(- ~x ~y ~z)))
+  "Scalar analogue of elementwise subtraction, i.e. scalar subtraction."
+  ([x] `(- ~x))
+  ([x y] `(- ~x ~y))
+  ([x y z] `(- ~x ~y ~z)))
 
-;; doesn't have to be a macro--just for consistency
-(defmacro trans
- "Scalar analogoue of transposition; returns the argument unchanged."
- [x] `(identity ~x))
+
+;; These don't have to be macros for speed??  Could just define as functions??
+
+(defmacro tr
+  "Scalar analogue of transposition; returns the argument unchanged."
+  [x]
+  `(identity ~x))
+
+(defmacro inv
+  "Scalar analogue of matrix inversion, i.e. scalar reciprocal, divide into 1.0."
+  [x]
+  `(/ 1.0 ~x))
