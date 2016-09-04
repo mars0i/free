@@ -60,3 +60,12 @@
 ;  (sigma-p [update] "Variance of prior dist.")
 ;  (v-p [update] "Mean of prior dist.")
 ;  (g [update] "Function for chosing mean of likelihood."))
+
+
+
+;; Note per (73), (58), sigma is supposed to be:
+;    (let [g-phi+ (m* theta (h +phi)) ; g(+phi)
+;          d (m- phi g-phi+)]         ; phi - g(+phi)
+;      (E (m* d (tr d))))          ; expectation of square of d
+;; where E is the expectation operator (over the empirical
+;; distribution of values?).
