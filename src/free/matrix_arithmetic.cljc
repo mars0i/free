@@ -22,4 +22,5 @@
 (def e* mx/mul)  ; elementwise (Hadamard) and scalar multiplication
 (def m+ mx/add)  ; elementwise addition
 (def m- mx/sub)  ; elementwise subtraction, or elementwise negation
-(def trans mx/transpose)
+(def tr mx/transpose)
+(def inv mx/inverse)
