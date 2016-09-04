@@ -27,31 +27,29 @@
 
 (ns free.level
   (:require 
-    [free.dists :as prob]
+    ;[free.dists :as prob]
     [utils.string :as us]))
 
 ;; maybe move elsewhere so can be defined on command line?
 (def ^:const use-core-matrix false)
 
 (if use-core-matrix
-  (require '[free.matrix-arithmetic :refer [e* m* m+ m- trans]])
-  (require '[free.scalar-arithmetic :refer [e* m* m+ m- trans]]))
+  (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv]])
+  (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv]]))
 
 ;; Q: Does e need to be in the record structure, or can it be local
 ;; to functions?  What initializes it?
-(defrecord Level [phi eps sigma theta h h' e])
+(defrecord Level [phi eps sigma theta h h']) ; to add?: e for Hebbian sigma calculation
 (us/add-to-docstr! ->Level
   "\n  A Level records values at one level of a prediction-error/free-energy
-  minimization model.  phi, eps, and e can be scalars, in which case
-  theta and sigma are as well.  Or phi, eps, and e can be vectors of
+  minimization model.  phi and eps can be scalars, in which case
+  theta and sigma are as well.  Or phi and eps can be vectors of
   length n, in which case sigma and theta are n x n square matrices.  h
   and h' are functions that can be applied to things with the form of
   phi.  These variables are defined in Bogacz's \"Tutorial\" paper and
-  are used in one form or another throughout the paper (q.v.).  e is a
-  helper variable used to represent additional nodes used to update
-  sigma; see section 5 of the paper.  h and h' are usually the same on
-  every level.  Together with theta they define the functions g and g'
-  appearing in the paper (q.v.).
+  are used in one form or another throughout the paper (q.v.).  
+  h and h' might be the same on every level.  Together with theta they 
+  define the functions g and g' appearing in the paper (q.v.).
 
   The state of a network consists of a sequence of three or more levels:
   A first and last level, and one or more inner levels.  It's only the
@@ -70,7 +68,8 @@
   here using individual parameters such as u and v_p.")
 
 
-;;; phi update
+;;;;;;;;;;;;;;;;;;;;;
+;; phi update
 
 (defn phi-inc
   "Calculates slope/increment to the next 'hypothesis' phi from the 
@@ -78,26 +77,20 @@
   [phi eps -eps theta h']
   (m+ (m- eps)
       (e* (h' phi)
-          (m* (trans theta) -eps))))
+          (m* (tr theta) -eps))))
 
 (defn next-phi 
-  "Accepts two levels, this one and the one below, and calculates the
-  the next-timestep 'hypothesis' phi."
-  [-level level]
+  "Accepts three subsequent levels, but only uses this one and the one below. 
+  Calculates the the next-timestep 'hypothesis' phi."
+  [-level level _]
   (let [{:keys [phi eps theta h']} level
         -eps (:eps -level)]
     (m+ phi 
         (phi-inc phi eps -eps theta h'))))
 
 
-;;; epsilon update
-
-;; Note per (73), (58), sigma is supposed to be:
-;    (let [g-phi+ (m* theta (h +phi)) ; g(+phi)
-;          d (m- phi g-phi+)]         ; phi - g(+phi)
-;      (E (m* d (trans d))))          ; expectation of square of d
-;; where E is the expectation operator (over the empirical
-;; distribution of values?).
+;;;;;;;;;;;;;;;;;;;;;
+;; epsilon update
 
 (defn eps-inc 
   "Calculates the slope/increment to the next 'error' epsilon from 
@@ -108,21 +101,65 @@
       (m* sigma eps)))
 
 (defn next-eps
-  "Accepts two levels, this one and the one above, and calculates the
-  the next-timestep 'error' epsilon."
-  [level +level]
+  "Accepts three subsequent levels, but only uses this one and the one above. 
+  Calculates the next-timestep 'error' epsilon."
+  [_ level +level]
   (let [{:keys [eps phi sigma theta h]} level
         +phi (:phi +level)]
     (m+ eps
         (eps-inc eps phi +phi sigma theta h))))
 
+;;;;;;;;;;;;;;;;;;;;;
+;; theta update
+
+(defn theta-inc
+  "Calculates the slope/increment to the next theta component of the mean
+  value function from the current theta.  See equation (56) in Bogacz's 
+  \"Tutorial\"."
+  [eps +phi h]
+  (m* eps 
+      (tr (h +phi))))
+
+(defn next-theta
+  "Accepts three subsequent levels, but only uses this one and the one above. 
+  Calculates the next-timestep theta component of the mean value function."
+  [_ level +level]
+  (let [{:keys [eps theta h]} level
+        +phi (:phi +level)]
+    (m+ theta
+        (theta-inc eps +phi h))))
+
+;;;;;;;;;;;;;;;;;;;;;
+;; sigma update
+
+(defn sigma-inc
+  "Calculates the slope/increment to the next sigma from the current sigma,
+  i.e.  the variance or the covariance matrix of the distribution of inputs 
+  at this level.  See equation (55) in Bogacz's \"Tutorial\".  (Note uses 
+  matrix inversion for vector/matrix calcualtions, a non-Hebbian calculation,
+  rather than the local update methods of section 5.)"
+  [eps sigma]
+  (* 0.5 (m- (m* eps (tr eps))
+             (inv sigma))))
+
+(defn next-sigma
+  "Accepts three subsequent levels, but only uses this one, not the ones
+  above or below.  Calculates the next-timestep sigma, i.e. the variance 
+  or the covariance matrix of the distribution of inputs at this level."
+  [_ level _]
+  (let [{:keys [eps sigma]} level]
+    (m+ sigma
+        (sigma-inc eps sigma))))
+
+
+;;;;;;;;;;;;;;;;;;;;;
 
 ;; from ex. 3
-(def v-p 3)
-(def sigma-p 1)
-(def sigma-u 1)
-(def u 2)
-(def dt 0.01)
-(def phi v-p)
-(def error-p 0)
-(def error-u 0)
+;(def v-p 3)
+;(def sigma-p 1)
+;(def sigma-u 1)
+;(def u 2)
+;(def dt 0.01)
+;(def phi v-p)
+;(def error-p 0)
+;(def error-u 0)
