@@ -9,13 +9,23 @@
 ;; Tips:
 ;;
 ;; m*, m+, m- are either scalar or matrix *, +, and -, depending
-;; on which namespace you load.  e* is *, or elementwise matrix
-;; multiplication.
+;; on the value of use-core-matrix, which determines which namespace 
+;; is loaded.  e* is *, or elementwise matrix multiplication.
 ;;
 ;; The derivative of x is called x' .
 ;; A value of x at the next level down is called -x.
 ;; A value of x at the next level up is called +x.
-
+;;
+;; Also see the docstring for Level and for the functions defined below.
+;;
+;; The functions next-<foo> calculate the next value of <foo> (replace <foo>
+;; by the name of an element in a Level structure, defined below).
+;; Each next-<foo> function accepts three Level structures as values:
+;; The next Level down, the current Level, and the next Level up.  However,
+;; some of these Levels might not be used for a given calculation, in which
+;; case the parameter for that level will be _ , indicating that that Level
+;; will be ignored.
+;;
 ;; This version doesn't use function g, but assumes that g is a product
 ;; of theta with another function h, as in many Bogacz's examples.
 
@@ -35,19 +45,25 @@
   (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv]])
   (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv]]))
 
-;; Q: Does e need to be in the record structure, or can it be local
-;; to functions?  What initializes it?
 (defrecord Level [phi eps sigma theta h h']) ; to add?: e for Hebbian sigma calculation
 (us/add-to-docstr! ->Level
   "\n  A Level records values at one level of a prediction-error/free-energy
-  minimization model.  phi and eps can be scalars, in which case
-  theta and sigma are as well.  Or phi and eps can be vectors of
-  length n, in which case sigma and theta are n x n square matrices.  h
-  and h' are functions that can be applied to things with the form of
-  phi.  These variables are defined in Bogacz's \"Tutorial\" paper and
-  are used in one form or another throughout the paper (q.v.).  
-  h and h' might be the same on every level.  Together with theta they 
-  define the functions g and g' appearing in the paper (q.v.).
+  minimization model.  
+  phi:   Current value of input at this level.
+  eps:   Epsilon--the error at this level.
+  sigma: Covariance matrix or variance of assumed distribution over inputs 
+         at this level.
+  theta: When theta is multiplied by result of h(phi), the result is the 
+         current estimated mean of the assumed distrubtion.  
+         i.e. g(phi) = theta * h(phi), where '*' here is scalar or matrix 
+         multiplication as appropriate.
+  h, h': See theta; h' is the derivative of h.
+
+  All of these notations are defined in Bogacz's \"Tutorial\" paper.
+  phi and eps can be scalars, in which case theta and sigma are as well.  
+  Or phi and eps can be vectors of length n, in which case sigma and theta
+  are n x n square matrices.  h and h' are functions that can be applied to 
+  phi.  
 
   The state of a network consists of a sequence of three or more levels:
   A first and last level, and one or more inner levels.  It's only the
@@ -65,15 +81,44 @@
   representation captures what's called the first and last levels
   here using individual parameters such as u and v_p.")
 
+;;;;;;;;;;;;;;;;;;;;;
+(declare phi-inc   next-phi 
+         eps-inc   next-eps 
+         sigma-inc next-sigma
+         theta-inc next-theta
+         constant-h
+         constant-h')
 
 ;;;;;;;;;;;;;;;;;;;;;
-(declare phi-inc next-phi 
-         eps-inc next-eps 
-         theta-inc next-theta 
-         sigma-inc next-sigma)
+;; Functions to calculate next state of system
 
-;;;;;;;;;;;;;;;;;;;;;
+(defn next-level
+  "Returns the value of this level for the next timestep."
+  [next-h next-h' [-level level +level]]
+  (Level. (next-phi   -level level +level)
+          (next-eps   -level level +level)
+          (next-sigma -level level +level)
+          (next-theta -level level +level)
+          (next-h  level)
+          (next-h' level)))
 
+(defn next-levels
+  "Given a functions for updating h, h', a bottom level, and a top level, along
+  with a sequence of levels at one timestep, returns a vector of levels at the 
+  next timestep.
+
+  Here is a way of defining a function that accepts a levels-at-a-time sequence 
+  and returns a levels sequence for the next timestep:
+  (def my-next-levels (partial next-levels 
+                               (constantly my-h)    ; same h function every time
+                               (constantly my-h')   ; so same h', too
+                               my-sensory-input-fn  ; inputs from outside
+                               (constantly my-prior-means))) ; unchanging priors"
+  [next-h next-h' next-bottom next-top levels]
+  (concat [(next-bottom (first levels))]
+          (map (partial next-level next-h next-h')
+               (partition 3 1 levels))
+          [(next-top (last levels))]))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; phi update
@@ -117,26 +162,6 @@
         (eps-inc eps phi +phi sigma theta h))))
 
 ;;;;;;;;;;;;;;;;;;;;;
-;; theta update
-
-(defn theta-inc
-  "Calculates the slope/increment to the next theta component of the mean
-  value function from the current theta.  See equation (56) in Bogacz's 
-  \"Tutorial\"."
-  [eps +phi h]
-  (m* eps 
-      (tr (h +phi))))
-
-(defn next-theta
-  "Accepts three subsequent levels, but only uses this one and the one above. 
-  Calculates the next-timestep theta component of the mean value function."
-  [_ level +level]
-  (let [{:keys [eps theta h]} level
-        +phi (:phi +level)]
-    (m+ theta
-        (theta-inc eps +phi h))))
-
-;;;;;;;;;;;;;;;;;;;;;
 ;; sigma update
 
 (defn sigma-inc
@@ -158,6 +183,26 @@
     (m+ sigma
         (sigma-inc eps sigma))))
 
+
+;;;;;;;;;;;;;;;;;;;;;
+;; theta update
+
+(defn theta-inc
+  "Calculates the slope/increment to the next theta component of the mean
+  value function from the current theta.  See equation (56) in Bogacz's 
+  \"Tutorial\"."
+  [eps +phi h]
+  (m* eps 
+      (tr (h +phi))))
+
+(defn next-theta
+  "Accepts three subsequent levels, but only uses this one and the one above. 
+  Calculates the next-timestep theta component of the mean value function."
+  [_ level +level]
+  (let [{:keys [eps theta h]} level
+        +phi (:phi +level)]
+    (m+ theta
+        (theta-inc eps +phi h))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 
