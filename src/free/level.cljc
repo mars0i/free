@@ -6,22 +6,20 @@
 ;; for Modelling Perception and Learning", _Journal of Mathematical 
 ;; Psychology_ (online 2015), http://dx.doi.org/10.1016/j.jmp.2015.11.003
 
-;; Conventions:
-;; The derivative of x is called x' .
-;; A value of x at the next level down is called -x.
-;; A value of x at the next level up is called +x.
+;; Tips:
+;;
 ;; m*, m+, m- are either scalar or matrix *, +, and -, depending
 ;; on which namespace you load.  e* is *, or elementwise matrix
 ;; multiplication.
-
-;; TODO:
-;; Write update functions for sigma (using e) and theta.
-;; Alternatively we could calculate sigma directly using matrix inversion.
+;;
+;; The derivative of x is called x' .
+;; A value of x at the next level down is called -x.
+;; A value of x at the next level up is called +x.
 
 ;; This version doesn't use function g, but assumes that g is a product
-;; of theta with another function h, as in Bogacz's examples.
-;; (See older commits for g defs.)
+;; of theta with another function h, as in many Bogacz's examples.
 
+;; use this?
 ;; On p.2 Bogacz uses g(v) = v^2 as his example.
 ;; i.e. h(phi) = phi^2, theta = 1, h'(phi) = 2*phi.
 
@@ -66,6 +64,15 @@
   Note that Bogacz's examples typically use two inner levels; his
   representation captures what's called the first and last levels
   here using individual parameters such as u and v_p.")
+
+
+;;;;;;;;;;;;;;;;;;;;;
+(declare phi-inc next-phi 
+         eps-inc next-eps 
+         theta-inc next-theta 
+         sigma-inc next-sigma)
+
+;;;;;;;;;;;;;;;;;;;;;
 
 
 ;;;;;;;;;;;;;;;;;;;;;
