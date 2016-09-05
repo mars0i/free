@@ -11,27 +11,40 @@
 ;; m*, m+, m- are either scalar or matrix *, +, and -, depending
 ;; on the value of use-core-matrix, which determines which namespace 
 ;; is loaded.  e* is *, or elementwise matrix multiplication.
+;; tr is matrix transpose, or the identity function for scalars.
+;; inv is reciprocal, for scalars, or matrix inverse, for matrices.
 ;;
-;; The derivative of x is called x' .
-;; A value of x at the next level down is called -x.
-;; A value of x at the next level up is called +x.
+;; The derivative of function f is called f' .
+;; A value of foo at the next level down is called -foo
+;; A value of foo at the next level up is called +foo
+;; Also see the docstrings for Level and functions defined below.
 ;;
-;; Also see the docstring for Level and for the functions defined below.
-;;
-;; The functions next-<foo> calculate the next value of <foo> (replace <foo>
-;; by the name of an element in a Level structure, defined below).
-;; Each next-<foo> function accepts three Level structures as values:
+;; The functions next-foo calculate the next value of foo
+;; Each next-foo function accepts three Level structures as values:
 ;; The next Level down, the current Level, and the next Level up.  However,
 ;; some of these Levels might not be used for a given calculation, in which
-;; case the parameter for that level will be _ , indicating that that Level
-;; will be ignored.
+;; case the parameter for that level will be _ , indicating that it will be 
+;; ignored.
 ;;
 ;; This version doesn't use function g, but assumes that g is a product
 ;; of theta with another function h, as in many Bogacz's examples.
 
-;; use this?
-;; On p.2 Bogacz uses g(v) = v^2 as his example.
-;; i.e. h(phi) = phi^2, theta = 1, h'(phi) = 2*phi.
+
+;; TODO NOTE: On p7c2, end of section 3, Bogacz says:
+;; "Thus on each trial we need to modify the model parameters a little bit
+;; (rather than until minimum of free energy is reached as was the case for
+;; phi)."  i.e., I think, this means that updating sigma and theta
+;; should be done more gradually, i.e. over more timesteps, i.e. based
+;; on more sensory input filtering up, than updating phi.  What about
+;; epsilon?  I think that should go at the speed of phi, right?
+;; 
+;; cf. end of section 5, where he says that the Hebbian Sigma update 
+;; methods (which I'm not using, initially) introduced there depend on phi 
+;; changing more slowly.  But isn't that the opposite of what I just said??
+;; 
+;; Also, should the higher levels also go more slowly??  i.e. as you go
+;; higher, you update less often?  Or not?
+
 
 (ns free.level
   (:require 
@@ -52,7 +65,7 @@
   phi:   Current value of input at this level.
   eps:   Epsilon--the error at this level.
   sigma: Covariance matrix or variance of assumed distribution over inputs 
-         at this level.
+         at this level.  Variance should usually be >= 1 (p. 5 col 2).
   theta: When theta is multiplied by result of h(phi), the result is the 
          current estimated mean of the assumed distrubtion.  
          i.e. g(phi) = theta * h(phi), where '*' here is scalar or matrix 
@@ -205,6 +218,12 @@
         (theta-inc eps +phi h))))
 
 ;;;;;;;;;;;;;;;;;;;;;
+;; These define the function g that Bogacz offers as an example on p. 2.
+;; i.e. for g(phi) = theta * h(phi), where g just squares its argument.
+
+(def example-theta 1)
+(defn example-h  [phi] (* phi phi))
+(defn example-h' [phi] (* 2 phi))
 
 ;; from ex. 3
 ;(def v-p 3)
