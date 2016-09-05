@@ -107,8 +107,8 @@
   with a sequence of levels at one timestep, returns a vector of levels at the 
   next timestep.
 
-  Here is a way of defining a function that accepts a levels-at-a-time sequence 
-  and returns a levels sequence for the next timestep:
+  Here is a way of defining a function that accepts a levels sequence and 
+  returns a levels sequence for the next timestep:
   (def my-next-levels (partial next-levels 
                                (constantly my-h)    ; same h function every time
                                (constantly my-h')   ; so same h', too
