@@ -77,23 +77,29 @@
 (declare phi-inc   next-phi 
          eps-inc   next-eps 
          sigma-inc next-sigma
-         theta-inc next-theta
-         constant-h
-         constant-h')
+         theta-inc next-theta)
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Utility functions
+
+(defn m-square
+  [x]
+  (m* x (tr x)))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Functions to calculate next state of system
 
 (defn next-level
   "Returns the value of this level for the next timestep."
-  [next-h next-h' [-level level +level]]
-  (Level. (next-phi   -level level +level)
-          (next-eps   -level level +level)
-          (next-sigma -level level +level)
-          (next-theta -level level +level)
-          (next-h  level)
-          (next-h' level)))
+  [[-level level +level]]
+  (->Level (next-phi   -level level +level)
+           (next-eps   -level level +level)
+           (next-sigma -level level +level)
+           (next-theta -level level +level)
+           (:h  level)
+           (:h' level)))
 
+;; TODO producing too few levels
 (defn next-levels
   "Given a functions for updating h, h', a bottom level, and a top level, along
   with a sequence of levels at one timestep, returns a vector of levels at the 
@@ -106,9 +112,9 @@
                                (constantly my-h')   ; so same h', too
                                my-sensory-input-fn  ; inputs from outside
                                (constantly my-prior-means))) ; unchanging priors"
-  [next-h next-h' next-bottom next-top levels]
+  [next-bottom next-top levels]
   (concat [(next-bottom (first levels))]
-          (map (partial next-level next-h next-h')
+          (map next-level
                (partition 3 1 levels))
           [(next-top (last levels))]))
 
@@ -163,7 +169,7 @@
   matrix inversion for vector/matrix calcualtions, a non-Hebbian calculation,
   rather than the local update methods of section 5.)"
   [eps sigma]
-  (* 0.5 (m- (m* eps (tr eps))
+  (* 0.5 (m- (m-square eps)
              (inv sigma))))
 
 (defn next-sigma
@@ -201,8 +207,14 @@
 ;; i.e. for g(phi) = theta * h(phi), where g just squares its argument.
 
 (def example-theta 1)
-(defn example-h  [phi] (* phi phi))
-(defn example-h' [phi] (* 2 phi))
+
+(defn example-h
+  [phi]
+  (m-square phi))
+
+(defn example-h' 
+  [phi]
+  (m* phi 2))
 
 ;; from ex. 3
 ;(def v-p 3)
