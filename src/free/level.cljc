@@ -6,28 +6,7 @@
 ;; for Modelling Perception and Learning", _Journal of Mathematical 
 ;; Psychology_ (online 2015), http://dx.doi.org/10.1016/j.jmp.2015.11.003
 
-;; Tips:
-;;
-;; m*, m+, m- are either scalar or matrix *, +, and -, depending
-;; on the value of use-core-matrix, which determines which namespace 
-;; is loaded.  e* is *, or elementwise matrix multiplication.
-;; tr is matrix transpose, or the identity function for scalars.
-;; inv is reciprocal, for scalars, or matrix inverse, for matrices.
-;;
-;; The derivative of function f is called f' .
-;; A value of foo at the next level down is called -foo
-;; A value of foo at the next level up is called +foo
-;; Also see the docstrings for Level and functions defined below.
-;;
-;; The functions next-foo calculate the next value of foo
-;; Each next-foo function accepts three Level structures as values:
-;; The next Level down, the current Level, and the next Level up.  However,
-;; some of these Levels might not be used for a given calculation, in which
-;; case the parameter for that level will be _ , indicating that it will be 
-;; ignored.
-;;
-;; This version doesn't use function g, but assumes that g is a product
-;; of theta with another function h, as in many Bogacz's examples.
+;; SEE doc/level.md for documentation on general features of the code below.
 
 
 ;; TODO NOTE: On p7c2, end of section 3, Bogacz says:
