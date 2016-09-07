@@ -53,7 +53,7 @@
          current estimated mean of the assumed distrubtion.  
          i.e. g(phi) = theta * h(phi), where '*' here is scalar or matrix 
          multiplication as appropriate.
-  h, h': See theta; h' is the derivative of h.
+  h, h': See theta; h' is the derivative of h.  These never change.
 
   All of these notations are defined in Bogacz's \"Tutorial\" paper.
   phi and eps can be scalars, in which case theta and sigma are as well.  
@@ -106,16 +106,12 @@
 (defn next-levels
   "Given a functions for updating h, h', a bottom level, and a top level, along
   with a sequence of levels at one timestep, returns a vector of levels at the 
-  next timestep.  Here is a way of defining a function that accepts a levels 
-  sequence and returns a levels sequence for the next timestep:
-  (def my-next-levels (partial next-levels 
-                               my-sensory-input-fn  ; inputs from outside
-                               (constantly my-prior-means))) ; unchanging priors"
+  next timestep."
   [next-bottom next-top levels]
-  (concat [(next-bottom (first levels))]
-          (map next-level
-               (partition 3 1 levels))
-          [(next-top (last levels))]))
+  (concat [(next-bottom (first levels))] ; Bottom level is special case.
+          (map next-level                ; Each middle level depends on levels
+               (partition 3 1 levels))   ;  immediately below and above it.
+          [(next-top (last levels))]))   ; Top level is special case.
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; phi update
