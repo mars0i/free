@@ -21,3 +21,21 @@ for that level will be `_` , indicating that it will be ignored.
 This version of level.cljc doesn't use a function g, but assumes that g is
 a product of theta with another function `h`, as in many Bogacz's
 examples.
+
+
+Usage examples:
+````
+(def my-next-levels 
+     (partial next-levels 
+              my-sensory-input-fn           ; inputs from outside
+              (constantly my-prior-means))) ; unchanging priors
+
+(def my-initial-state [bottom middle-1 middle-2 top]) ; four levels
+
+(def states (iterate my-next-levels my-intial-state))
+
+(take 5 states)
+
+(nth states 50)
+````
+
