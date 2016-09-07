@@ -41,6 +41,7 @@
   (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv id]])
   (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv id]]))
 
+
 (defrecord Level [phi eps sigma theta h h']) ; to add?: e for Hebbian sigma calculation
 (us/add-to-docstr! ->Level
   "\n  A Level records values at one level of a prediction-error/free-energy
@@ -62,8 +63,8 @@
   phi.  
 
   The state of a network consists of a sequence of three or more levels:
-  A first and last level, and one or more inner levels.  It's only the
-  inner levels that should be updated according to central equations in
+  A first (zeroth) and last level, and one or more inner levels.  It's only
+  the inner levels that should be updated according to central equations in
   Bogacz such as (53) and (54).  The first level captures sensory
   input-- i.e. it records the prediction error eps, which is calculated
   from sensory input phi at that level, along with a function theta h of
@@ -108,10 +109,10 @@
   with a sequence of levels at one timestep, returns a vector of levels at the 
   next timestep."
   [next-bottom next-top levels]
-  (concat [(next-bottom (first levels))] ; Bottom level is special case.
-          (map next-level                ; Each middle level depends on levels
-               (partition 3 1 levels))   ;  immediately below and above it.
-          [(next-top (last levels))]))   ; Top level is special case.
+  (concat [(next-bottom (take 2 levels))] ; Bottom level is special case.
+          (map next-level                 ; Each middle level depends on levels
+               (partition 3 1 levels))    ;  immediately below and above it.
+          [(next-top (take-last 2 levels))])) ; Top level is special case.
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; phi update
@@ -196,21 +197,3 @@
         +phi (:phi +level)]
     (m+ theta
         (theta-inc eps +phi h))))
-
-;;;;;;;;;;;;;;;;;;;;;
-;; These define the function g that Bogacz offers as an example on p. 2.
-;; i.e. for g(phi) = theta * h(phi), where g just squares its argument.
-
-(def example-theta (id dims))
-(defn example-h [phi] (m-square phi))
-(defn example-h' [phi] (m* phi 2))
-
-;; from ex. 3
-;(def v-p 3)
-;(def sigma-p 1)
-;(def sigma-u 1)
-;(def u 2)
-;(def dt 0.01)
-;(def phi v-p)
-;(def error-p 0)
-;(def error-u 0)
