@@ -49,3 +49,10 @@
   "Scalar analogue of matrix inversion, i.e. scalar reciprocal, divide into 1.0."
   [x]
   `(/ 1.0 ~x))
+
+(defmacro id
+  "Returns 1, the identity operator for scalar multiplication, no matter
+  what is passed in."
+  [_]
+  1)
+

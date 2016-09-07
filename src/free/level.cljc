@@ -34,8 +34,8 @@
 (def ^:const use-core-matrix false)
 
 (if use-core-matrix
-  (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv]])
-  (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv]]))
+  (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv id]])
+  (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv id]]))
 
 (defrecord Level [phi eps sigma theta h h']) ; to add?: e for Hebbian sigma calculation
 (us/add-to-docstr! ->Level
@@ -108,8 +108,6 @@
   Here is a way of defining a function that accepts a levels sequence and 
   returns a levels sequence for the next timestep:
   (def my-next-levels (partial next-levels 
-                               (constantly my-h)    ; same h function every time
-                               (constantly my-h')   ; so same h', too
                                my-sensory-input-fn  ; inputs from outside
                                (constantly my-prior-means))) ; unchanging priors"
   [next-bottom next-top levels]
@@ -206,15 +204,9 @@
 ;; These define the function g that Bogacz offers as an example on p. 2.
 ;; i.e. for g(phi) = theta * h(phi), where g just squares its argument.
 
-(def example-theta 1)
-
-(defn example-h
-  [phi]
-  (m-square phi))
-
-(defn example-h' 
-  [phi]
-  (m* phi 2))
+(def example-theta (id 1))
+(defn example-h [phi] (m-square phi))
+(defn example-h' [phi] (m* phi 2))
 
 ;; from ex. 3
 ;(def v-p 3)
