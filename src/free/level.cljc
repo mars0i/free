@@ -33,6 +33,8 @@
 ;; maybe move elsewhere so can be defined on command line?
 (def ^:const use-core-matrix false)
 
+(def dims 1) ; redefine this to the vector length if you use vectors/matrices
+
 (if use-core-matrix
   (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv id]])
   (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv id]]))
@@ -99,14 +101,11 @@
            (:h  level)
            (:h' level)))
 
-;; TODO producing too few levels
 (defn next-levels
   "Given a functions for updating h, h', a bottom level, and a top level, along
   with a sequence of levels at one timestep, returns a vector of levels at the 
-  next timestep.
-
-  Here is a way of defining a function that accepts a levels sequence and 
-  returns a levels sequence for the next timestep:
+  next timestep.  Here is a way of defining a function that accepts a levels 
+  sequence and returns a levels sequence for the next timestep:
   (def my-next-levels (partial next-levels 
                                my-sensory-input-fn  ; inputs from outside
                                (constantly my-prior-means))) ; unchanging priors"
@@ -204,7 +203,7 @@
 ;; These define the function g that Bogacz offers as an example on p. 2.
 ;; i.e. for g(phi) = theta * h(phi), where g just squares its argument.
 
-(def example-theta (id 1))
+(def example-theta (id dims))
 (defn example-h [phi] (m-square phi))
 (defn example-h' [phi] (m* phi 2))
 
