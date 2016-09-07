@@ -158,6 +158,8 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; sigma update
 
+;; TODO I think I need to add a scaling factor--cf (63)--so that this
+;; happens slowly compared to the update of other parameters.
 (defn sigma-inc
   "Calculates the slope/increment to the next sigma from the current sigma,
   i.e.  the variance or the covariance matrix of the distribution of inputs 
