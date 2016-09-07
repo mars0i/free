@@ -33,7 +33,9 @@
 ;; maybe move elsewhere so can be defined on command line?
 (def ^:const use-core-matrix false)
 
-(def dims 1) ; redefine this to the vector length if you use vectors/matrices
+;; dimensions of vectors, or 1 for scalars
+;; redefine this to the vector length if you use vectors/matrices
+(def dims 1)
 
 (if use-core-matrix
   (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv id]])
