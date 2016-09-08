@@ -24,4 +24,4 @@
 (def m- mx/sub)  ; elementwise subtraction, or elementwise negation
 (def tr mx/transpose)
 (def inv mx/inverse)
-(def id mx/identity-matrix)
+(def make-identity-obj mx/identity-matrix)

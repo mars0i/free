@@ -50,7 +50,8 @@
   [x]
   `(/ 1.0 ~x))
 
-(defmacro id
+;; maybe make it throw an exception if something other than 1 is passed
+(defmacro make-identity-obj
   "Returns 1, the identity operator for scalar multiplication, no matter
   what is passed in."
   [_]
