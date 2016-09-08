@@ -1,15 +1,17 @@
 (ns free.example1
-  (:require [free.level :as lv]
-            [free.dists :as pd])) ; will be clj or cljs depending on dialect
+  (:use ;[free.matrix-arithmetic]
+        [free.scalar-arithmetic]
+        [free.level])
+  (:require [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; These define the function g that Bogacz offers as an example on p. 2.
 ;; i.e. for g(phi) = theta * h(phi), where g just squares its argument.
 
-(def example-theta (id dims))
+(def example-theta (make-identity-obj dims))
 
 ;; these really shouldn't be the same at every level--doesn't make sense
-(defn example-h [phi] (m-square phi))
+(defn example-h  [phi] (m-square phi))
 (defn example-h' [phi] (m* phi 2))
 
 ;; To see that it's necessary to calculate the error in the usual way
