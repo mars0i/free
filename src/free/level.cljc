@@ -38,8 +38,8 @@
 (def dims 1)
 
 (if use-core-matrix
-  (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv id]])
-  (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv id]]))
+  (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
+  (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]))
 
 
 (defrecord Level [phi eps sigma theta h h']) ; to add?: e for Hebbian sigma calculation
@@ -104,15 +104,18 @@
            (:h  level)
            (:h' level)))
 
+;; See notes in levels.md on this function.
 (defn next-levels
-  "Given a functions for updating h, h', a bottom level, and a top level, along
-  with a sequence of levels at one timestep, returns a vector of levels at the 
-  next timestep."
-  [next-bottom next-top levels]
+  "Given a functions for updating h, h', and a bottom-level creation function
+  that accepts two levels (its level and the next up), along with a sequence of 
+  levels at one timestep, returns a vector of levels at the next timestep.  
+  The top level will be used to calculate the next level down, but won't be 
+  remade; it will be used again, as is, as the new top level."
+  [next-bottom levels]
   (concat [(next-bottom (take 2 levels))] ; Bottom level is special case.
           (map next-level                 ; Each middle level depends on levels
-               (partition 3 1 levels))    ;  immediately below and above it.
-          [(next-top (take-last 2 levels))])) ; Top level is special case.
+               (partition 3 1 levels))  ;  immediately below and above it.
+          [(last levels)]))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; phi update

@@ -22,6 +22,36 @@ This version of level.cljc doesn't use a function g, but assumes that g is
 a product of theta with another function `h`, as in many Bogacz's
 examples.
 
+### `next-level`:
+
+There's an asymmetry between the bottom and top levels.  
+
+#### Bottom level: 
+
+It's only the next `phi` that depends on the next level down from the
+perspective of other levels.  since the bottom level has no next level
+down, `phi` must be treated specially.  So the bottom level needs to
+provide `phi, which should usually vary as a function of things outside
+the levels system.  Since it's natural to have `phi` at each level be a
+variable, not the result of a function, we need to provide a special
+function to generate new `phi`s on every timestep.  This is the
+`next-bottom` that must be provided to `next-level`.
+
+#### Top level:
+
+At the top of the stack, `phi` is the only variable from above that's
+needed by any of the `next-` functions; it's used by `next-eps` and
+`next-theta`.  However, at each level, the `phi` from the level above is
+*only* used as an argument to the `h` function.  It's `(h +phi)` that
+plays a role, never `+phi` alone.  This means that we can simply provide
+for the effect of a top level by using a special `h` function that
+provides a mean value as if there were some `phi` in the level above it
+that it was operating on--when in fact the `h` is just generating an
+appropriate value.  So we don't need a special `next-top` function.  The
+magic can be (and must be) embedded in the top level.  
+
+
+
 
 Usage examples:
 ````
