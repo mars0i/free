@@ -31,7 +31,19 @@
 (declare phi-inc   next-phi 
          eps-inc   next-eps 
          sigma-inc next-sigma
-         theta-inc next-theta)
+         theta-inc next-theta
+         next-level next-levels
+         m-square)
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Level
+
+(defrecord Level [phi phi-dt 
+                  eps eps-dt 
+                  sigma sigma-dt 
+                  theta theta-dt 
+                  h h']) ; to add?: e for Hebbian sigma calculation
 
 (def Level-docstring
   "\n  A Level records values at one level of a prediction-error/free-energy
@@ -44,6 +56,7 @@
          current estimated mean of the assumed distrubtion.  
          i.e. g(phi) = theta * h(phi), where '*' here is scalar or matrix 
          multiplication as appropriate.
+  <x>-dt:  Multiplier (e.g. 0.01) that determins how fast <x> is updated.
   h, h': See theta; h' is the derivative of h.  These never change.
   All of these notations are defined in Bogacz's \"Tutorial\" paper.
   phi and eps can be scalars, in which case theta and sigma are as well.  
@@ -51,18 +64,8 @@
   are n x n square matrices.  h and h' are functions that can be applied to 
   phi.  See doc/level.md for more information.")
 
-
-(defrecord Level [phi eps sigma theta h h']) ; to add?: e for Hebbian sigma calculation
-
-(us/add-to-docstr! ->Level Level-docstring)
+(us/add-to-docstr! ->Level    Level-docstring)
 (us/add-to-docstr! map->Level Level-docstring)
-
-;;;;;;;;;;;;;;;;;;;;;
-;; Utility functions
-
-(defn m-square
-  [x]
-  (m* x (tr x)))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Functions to calculate next state of system
@@ -192,3 +195,10 @@
         +phi (:phi +level)]
     (m+ theta
         (theta-inc eps +phi h))))
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Utility functions
+
+(defn m-square
+  [x]
+  (m* x (tr x)))
