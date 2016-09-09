@@ -1,4 +1,4 @@
-General notes on level.cljc
+Notes on level.cljc
 ===
 
 ## Notation
@@ -24,6 +24,26 @@ This version of level.cljc doesn't use a function g, but assumes that g is
 a product of theta with another function `h`, as in many Bogacz's
 examples.
 
+
+## Overview
+
+The state of a network consists of a sequence of three or more levels:
+A first (zeroth) and last level, and one or more inner levels.  It's
+only the inner levels that should be updated according to central
+equations in Bogacz such as (53) and (54).  The first level captures
+sensory input--i.e. it records the prediction error eps, which is
+calculated from sensory input phi at that level, along with a function
+theta h of the next level phi.  i.e. at this level, phi is simply
+provided by the system outside of the levels, and is not calculated
+from lower level prediction errors as in (53). The last level simply
+provides a phi, which is the mean of a prior distribution at that
+level.  This phi typically never changes. (It's genetically or
+developmentally determined.) The other terms at this top level can be
+ignored. Note that Bogacz's examples typically use two inner levels;
+his representation captures what's called the first and last levels
+here using individual parameters such as `u` and `v_p`.
+
+
 ## Level dependencies
 
 * `phi` at level *n* depends on `eps` at level *n* - 1.
@@ -33,6 +53,7 @@ examples.
 * `theta` at level *n* depends on `phi` at level *n* + 1.
 
 * `sigma` at level *n* depends only on level *n*.
+
 
 ## `next-level`
 
@@ -53,30 +74,14 @@ function to generate new `phi`s on every timestep.  This is the
 
 At the top of the stack, `phi` is the only variable from above that's
 needed by any of the `next-` functions; it's used by `next-eps` and
-`next-theta`.  However, at each level, the `phi` from the level above is
-*only* used as an argument to the `h` function.  It's `(h +phi)` that
-plays a role, never `+phi` alone.  This means that we can simply provide
-for the effect of a top level by using a special `h` function that
-provides a mean value as if there were some `phi` in the level above it
-that it was operating on--when in fact the `h` is just generating an
-appropriate value.  So we don't need a special `next-top` function.  The
-magic can be (and must be) embedded in the top level.  
-
-*No that doesn't make sense.  Because `h` only operates on a higher-level `phi`.
-Oh so maybe just have a special h in the top operating level?  But then what `phi`
-do you give to its `h`?  `next-level` will want a level up.  So maybe I do need a
-`next-top`??*
-
-*But look at the answer to exercise 3.  Maybe the idea is that you start
-with a prior at the top level but then it gets revised.  So maybe I
-start with a `phi` at the top level, but update it normally.  And then
-the interesting thing is how to deal with `eps` and `theta` at the top
-level.  Because updating `phi` at that level will need them.*
+`next-theta`.  If `phi` never changes (cf. Bogacz's use of `v_p` in
+his answer to exercise 3), then we can just make the very top level
+be a special one that contains a `phi` (and probably only `phi`) and
+that isn't updated by `next-phi` or by the other `next-` functions.
 
 
+## Usage examples
 
-
-Usage examples:
 ````
 (def my-next-levels 
      (partial next-levels 
@@ -92,3 +97,19 @@ Usage examples:
 (nth states 50)
 ````
 
+## Questions
+
+On p. 7 col 2, end of section 3, Bogacz says:
+"Thus on each trial we need to modify the model parameters a little bit
+(rather than until minimum of free energy is reached as was the case for
+phi)."  i.e., I think, this means that updating sigma and theta
+should be done more gradually, i.e. over more timesteps, i.e. based
+on more sensory input filtering up, than updating phi.  What about
+epsilon?  I think that should go at the speed of phi, right?
+
+cf. end of section 5, where he says that the Hebbian Sigma update 
+methods (which I'm not using, initially) introduced there depend on phi 
+changing more slowly.  But isn't that the opposite of what I just said??
+
+Also, should the higher levels also go more slowly??  i.e. as you go
+higher, you update less often?  Or not?

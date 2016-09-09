@@ -9,21 +9,6 @@
 ;; SEE doc/level.md for documentation on general features of the code below.
 
 
-;; TODO NOTE: On p7c2, end of section 3, Bogacz says:
-;; "Thus on each trial we need to modify the model parameters a little bit
-;; (rather than until minimum of free energy is reached as was the case for
-;; phi)."  i.e., I think, this means that updating sigma and theta
-;; should be done more gradually, i.e. over more timesteps, i.e. based
-;; on more sensory input filtering up, than updating phi.  What about
-;; epsilon?  I think that should go at the speed of phi, right?
-;; 
-;; cf. end of section 5, where he says that the Hebbian Sigma update 
-;; methods (which I'm not using, initially) introduced there depend on phi 
-;; changing more slowly.  But isn't that the opposite of what I just said??
-;; 
-;; Also, should the higher levels also go more slowly??  i.e. as you go
-;; higher, you update less often?  Or not?
-
 
 (ns free.level
   (:require 
@@ -48,9 +33,7 @@
          sigma-inc next-sigma
          theta-inc next-theta)
 
-
-(defrecord Level [phi eps sigma theta h h']) ; to add?: e for Hebbian sigma calculation
-(us/add-to-docstr! ->Level
+(def Level-docstring
   "\n  A Level records values at one level of a prediction-error/free-energy
   minimization model.  
   phi:   Current value of input at this level.
@@ -62,28 +45,17 @@
          i.e. g(phi) = theta * h(phi), where '*' here is scalar or matrix 
          multiplication as appropriate.
   h, h': See theta; h' is the derivative of h.  These never change.
-
   All of these notations are defined in Bogacz's \"Tutorial\" paper.
   phi and eps can be scalars, in which case theta and sigma are as well.  
   Or phi and eps can be vectors of length n, in which case sigma and theta
   are n x n square matrices.  h and h' are functions that can be applied to 
-  phi.  
+  phi.  See doc/level.md for more information.")
 
-  The state of a network consists of a sequence of three or more levels:
-  A first (zeroth) and last level, and one or more inner levels.  It's only
-  the inner levels that should be updated according to central equations in
-  Bogacz such as (53) and (54).  The first level captures sensory
-  input-- i.e. it records the prediction error eps, which is calculated
-  from sensory input phi at that level, along with a function theta h of
-  the next level phi.  i.e. at this level, phi is simply provided by the
-  system outside of the levels, and is not calculated from lower level
-  prediction errors as in (53). The last level simply provides a phi,
-  which is the mean of a prior distribution at that level.  This phi
-  typically never changes. (It's genetically or developmentally
-  determined.) The other terms at this top level can be ignored.
-  Note that Bogacz's examples typically use two inner levels; his
-  representation captures what's called the first and last levels
-  here using individual parameters such as u and v_p.")
+
+(defrecord Level [phi eps sigma theta h h']) ; to add?: e for Hebbian sigma calculation
+
+(us/add-to-docstr! ->Level Level-docstring)
+(us/add-to-docstr! map->Level Level-docstring)
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Utility functions
