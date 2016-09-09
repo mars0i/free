@@ -27,17 +27,24 @@ examples.
 
 ## Overview
 
+Please see the docstring for `->Level` or `map->Level` (at the repl or
+in level.cljc) for information about the fields in the `Level` record
+definition.  Note that each of the data fields also has a corresponding
+`-dt` field that holds the scaling factor that determines how fast the
+field will be updated.  I chose to include these in each Level record to
+allow for the possibility of different speeds at different levesl.
+
 The state of a network consists of a sequence of three or more levels:
 A first (zeroth) and last level, and one or more inner levels.  It's
 only the inner levels that should be updated according to central
 equations in Bogacz such as (53) and (54).  The first level captures
 sensory input--i.e. it records the prediction error eps, which is
 calculated from sensory input phi at that level, along with a function
-theta h of the next level phi.  i.e. at this level, phi is simply
+theta h of the next level phi.  i.e. at this level, `phi` is simply
 provided by the system outside of the levels, and is not calculated
 from lower level prediction errors as in (53). The last level simply
-provides a phi, which is the mean of a prior distribution at that
-level.  This phi typically never changes. (It's genetically or
+provides a `phi`, which is the mean of a prior distribution at that
+level.  This `phi` typically never changes. (It's genetically or
 developmentally determined.) The other terms at this top level can be
 ignored. Note that Bogacz's examples typically use two inner levels;
 his representation captures what's called the first and last levels
