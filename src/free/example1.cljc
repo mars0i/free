@@ -15,6 +15,9 @@
 (def error-p 0)
 (def error-u 0)
 
+;; inspired by params in ex. 5:
+(def next-bottom (make-next-bottom #(pd/sample-normal 1 :mean 5 :sd 1.4142)))
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;; These define the function g that Bogacz offers as an example on p. 2.
 ;; i.e. for g(phi) = theta * h(phi), where g just squares its argument.
@@ -42,9 +45,6 @@
                :h' example-h'}))
 
 (def top (map->Level {:phi v-p})) ; other fields will be nil
-
-;; inspired by params in ex. 5:
-(def next-bottom (make-next-bottom #(pd/sample-normal 1 :mean 5 :sd 1.4142)))
 
 (def initial-levels [initial-bottom initial-middle top])
 
