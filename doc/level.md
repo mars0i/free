@@ -7,8 +7,8 @@ General notes on level.cljc
 value of `use-core-matrix`, which determines which namespace is loaded.
 `e*` is `*`, or elementwise matrix multiplication.  `tr` is matrix transpose,
 or the identity function for scalars.  `inv` is reciprocal, for scalars,
-or matrix inverse, for matrices.  `(id n)` returns an n by n identity matrix,
-or 1 for scalars.
+or matrix inverse, for matrices.  `(make-identity-obj n)` returns an n by n 
+identity matrix, or 1 for scalars.
 
 The derivative of function `f` is called `f'` .  A value of `foo` at the next
 level down is called `-foo`.  A value of `foo` at the next level up is called
