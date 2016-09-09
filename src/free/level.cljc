@@ -51,12 +51,12 @@
   phi:   Current value of input at this level.
   eps:   Epsilon--the error at this level.
   sigma: Covariance matrix or variance of assumed distribution over inputs 
-         at this level.  Variance should usually be >= 1 (p. 5 col 2).
+  at this level.  Variance should usually be >= 1 (p. 5 col 2).
   theta: When theta is multiplied by result of h(phi), the result is the 
-         current estimated mean of the assumed distrubtion.  
-         i.e. g(phi) = theta * h(phi), where '*' here is scalar or matrix 
-         multiplication as appropriate.
-  <x>-dt:  Multiplier (e.g. 0.01) that determins how fast <x> is updated.
+  current estimated mean of the assumed distrubtion.  
+  i.e. g(phi) = theta * h(phi), where '*' here is scalar or matrix 
+  multiplication as appropriate.
+  <x>-dt:  A scalar multiplier (e.g. 0.01) determining how fast <x> is updated.
   h, h': See theta; h' is the derivative of h.  These never change.
   All of these notations are defined in Bogacz's \"Tutorial\" paper.
   phi and eps can be scalars, in which case theta and sigma are as well.  
@@ -73,12 +73,11 @@
 (defn next-level
   "Returns the value of this level for the next timestep."
   [[-level level +level]]
-  (->Level (next-phi  -level  level)
-           (next-eps   level +level)
-           (next-sigma level)
-           (next-theta level +level)
-           (:h  level)
-           (:h' level)))
+  (assoc level 
+         :phi (next-phi  -level  level)
+         :eps (next-eps   level +level)
+         :sigma (next-sigma level)
+         :theta (next-theta level +level)))
 
 ;; See notes in levels.md on this function.
 (defn next-levels
@@ -103,12 +102,11 @@
   phi-generator represents sensory input from outside the system."
   [phi-generator]
   (fn [[level level+]]
-    (->Level (phi-generator)
-             (next-eps   level level+)
-             (next-sigma level)
-             (next-theta level level+)
-             (:h  level)
-             nil)))
+    (assoc level 
+           :phi (phi-generator)
+           :eps (next-eps   level level+)
+           :sigma (next-sigma level)
+           :theta (next-theta level level+))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; phi update
@@ -125,11 +123,11 @@
   "Accepts three subsequent levels, but only uses this one and the one below. 
   Calculates the the next-timestep 'hypothesis' phi."
   [-level level]
-  (let [{:keys [phi eps theta h']} level
+  (let [{:keys [phi phi-dt eps theta h']} level
         -eps (:eps -level)]
     (m+ phi 
-        (phi-inc phi eps -eps theta h'))))
-
+        (e* phi-dt
+            (phi-inc phi eps -eps theta h')))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; epsilon update
@@ -146,16 +144,15 @@
   "Accepts three subsequent levels, but only uses this one and the one above. 
   Calculates the next-timestep 'error' epsilon."
   [level +level]
-  (let [{:keys [eps phi sigma theta h]} level
+  (let [{:keys [phi eps eps-dt sigma theta h]} level
         +phi (:phi +level)]
     (m+ eps
-        (eps-inc eps phi +phi sigma theta h))))
+        (e* eps-dt
+            (eps-inc eps phi +phi sigma theta h)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; sigma update
 
-;; TODO I think I need to add a scaling factor--cf (63)--so that this
-;; happens slowly compared to the update of other parameters.
 (defn sigma-inc
   "Calculates the slope/increment to the next sigma from the current sigma,
   i.e.  the variance or the covariance matrix of the distribution of inputs 
@@ -171,9 +168,10 @@
   above or below.  Calculates the next-timestep sigma, i.e. the variance 
   or the covariance matrix of the distribution of inputs at this level."
   [level]
-  (let [{:keys [eps sigma]} level]
+  (let [{:keys [eps sigma sigma-dt]} level]
     (m+ sigma
-        (sigma-inc eps sigma))))
+        (e* sigma-dt
+            (sigma-inc eps sigma)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -191,10 +189,11 @@
   "Accepts three subsequent levels, but only uses this one and the one above. 
   Calculates the next-timestep theta component of the mean value function."
   [level +level]
-  (let [{:keys [eps theta h]} level
+  (let [{:keys [eps theta theta-dt h]} level
         +phi (:phi +level)]
     (m+ theta
-        (theta-inc eps +phi h))))
+        (e* theta-dt
+            (theta-inc eps +phi h)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Utility functions

@@ -28,13 +28,20 @@
 (defn example-h  [phi] (m-square phi))
 (defn example-h' [phi] (m* phi 2))
 
+(def fast-dt 0.01)
+(def slow-dt 0.001)
+
 (def initial-bottom
   (map->Level {:phi u  ; initial value--will change
                :eps error-u
                :sigma sigma-u
                :theta I
                :h  example-h
-               :h' example-h'}))
+               :h' example-h'
+               :phi-dt   fast-dt
+               :eps-dt   fast-dt
+               :sigma-dt slow-dt
+               :theta-dt slow-dt}))
 
 (def initial-middle
   (map->Level {:phi v-p
@@ -42,7 +49,11 @@
                :sigma sigma-p
                :theta I
                :h  example-h
-               :h' example-h'}))
+               :h' example-h'
+               :phi-dt   fast-dt
+               :eps-dt   fast-dt
+               :sigma-dt slow-dt
+               :theta-dt slow-dt}))
 
 (def top (map->Level {:phi v-p})) ; other fields will be nil
 
