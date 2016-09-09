@@ -26,11 +26,8 @@
 (defn example-h  [phi] (m-square phi))
 (defn example-h' [phi] (m* phi 2))
 
-;; from ex. 5:
-(def next-bottom (make-next-bottom #(pd/sample-normal 1 :mean 5 :sd 1.4142)))
-
 (def initial-bottom
-  (map->Level {:phi u
+  (map->Level {:phi u  ; initial value--will change
                :eps error-u
                :sigma sigma-u
                :theta I
@@ -47,4 +44,9 @@
 
 (def top (map->Level {:phi v-p})) ; other fields will be nil
 
+;; inspired by params in ex. 5:
+(def next-bottom (make-next-bottom #(pd/sample-normal 1 :mean 5 :sd 1.4142)))
+
 (def initial-levels [initial-bottom initial-middle top])
+
+(def stages (iterate (partial next-levels next-bottom) initial-levels))
