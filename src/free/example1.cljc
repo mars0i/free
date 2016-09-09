@@ -13,7 +13,6 @@
 (def sigma-u 1)
 (def u 2)
 (def dt 0.01)
-(def phi v-p)
 (def error-p 0)
 (def error-u 0)
 
@@ -27,16 +26,25 @@
 (defn example-h  [phi] (m-square phi))
 (defn example-h' [phi] (m* phi 2))
 
-;; To see that it's necessary to calculate the error in the usual way
-;; at the bottom level, cf. e.g. eq (14) in Bogacz.
-(defn next-bottom
-  [[level-0 level-1]]
-  (->Level (pd/sample-normal 1 :mean 4 :sd 2) ; phi: inputs from world
-           (next-eps   [level-0 level-1])
-           (next-sigma [level-0])
-           (next-theta [level-0 level-1])
-           example-h
-           example-h'))
+;; from ex. 5:
+(def next-bottom (make-next-bottom #(pd/sample-normal 1 :mean 5 :sd 1.4142)))
 
-;; quasi-level above top level. all it does is provide params of initial priors
-(def top (->Level v-p nil nil nil nil nil))
+(def initial-bottom
+  (map->Level {:phi u
+               :eps error-u
+               :sigma sigma-u
+               :theta I
+               :h  example-h
+               :h' example-h'}))
+
+(def initial-middle
+  (map->Level {:phi v-p
+               :eps error-p
+               :sigma sigma-p
+               :theta I
+               :h  example-h
+               :h' example-h'}))
+
+(def top (map->Level {:phi v-p})) ; other fields will be nil
+
+(def initial-levels [initial-bottom initial-middle top])
