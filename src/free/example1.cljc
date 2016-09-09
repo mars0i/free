@@ -32,13 +32,11 @@
 (defn next-bottom
   [[level-0 level-1]]
   (->Level (pd/sample-normal 1 :mean 4 :sd 2) ; phi: inputs from world
-           (next-eps   [nil level-0 level-1])
-           (next-sigma [nil level-0 nil])  ; (?) we want sigma to be updated from inputs ...
-           (next-theta [nil level-0 level-1])
+           (next-eps   [level-0 level-1])
+           (next-sigma [level-0])
+           (next-theta [level-0 level-1])
            example-h
            example-h'))
 
 ;; quasi-level above top level. all it does is provide params of initial priors
 (def top (->Level v-p nil nil nil nil nil))
-
-

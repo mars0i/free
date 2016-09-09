@@ -97,10 +97,10 @@
 (defn next-level
   "Returns the value of this level for the next timestep."
   [[-level level +level]]
-  (->Level (next-phi   -level level +level)
-           (next-eps   -level level +level)
-           (next-sigma -level level +level)
-           (next-theta -level level +level)
+  (->Level (next-phi  -level  level)
+           (next-eps   level +level)
+           (next-sigma level)
+           (next-theta level +level)
            (:h  level)
            (:h' level)))
 
@@ -131,7 +131,7 @@
 (defn next-phi 
   "Accepts three subsequent levels, but only uses this one and the one below. 
   Calculates the the next-timestep 'hypothesis' phi."
-  [-level level _]
+  [-level level]
   (let [{:keys [phi eps theta h']} level
         -eps (:eps -level)]
     (m+ phi 
@@ -152,7 +152,7 @@
 (defn next-eps
   "Accepts three subsequent levels, but only uses this one and the one above. 
   Calculates the next-timestep 'error' epsilon."
-  [_ level +level]
+  [level +level]
   (let [{:keys [eps phi sigma theta h]} level
         +phi (:phi +level)]
     (m+ eps
@@ -177,7 +177,7 @@
   "Accepts three subsequent levels, but only uses this one, not the ones
   above or below.  Calculates the next-timestep sigma, i.e. the variance 
   or the covariance matrix of the distribution of inputs at this level."
-  [_ level _]
+  [level]
   (let [{:keys [eps sigma]} level]
     (m+ sigma
         (sigma-inc eps sigma))))
@@ -197,7 +197,7 @@
 (defn next-theta
   "Accepts three subsequent levels, but only uses this one and the one above. 
   Calculates the next-timestep theta component of the mean value function."
-  [_ level +level]
+  [level +level]
   (let [{:keys [eps theta h]} level
         +phi (:phi +level)]
     (m+ theta
