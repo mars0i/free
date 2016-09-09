@@ -12,7 +12,6 @@
 (def sigma-p 1)
 (def sigma-u 1)
 (def u 2)
-(def dt 0.01)
 (def error-p 0)
 (def error-u 0)
 
