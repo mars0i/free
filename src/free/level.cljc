@@ -114,8 +114,8 @@
   [next-bottom levels]
   (concat [(next-bottom (take 2 levels))] ; Bottom level is special case.
           (map next-level                 ; Each middle level depends on levels
-               (partition 3 1 levels))  ;  immediately below and above it.
-          [(last levels)]))
+               (partition 3 1 levels))    ;  immediately below and above it.
+          [(last levels)]))               ; make sure top is carried forward
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; phi update
