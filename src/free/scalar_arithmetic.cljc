@@ -37,23 +37,23 @@
   ([x y] `(- ~x ~y))
   ([x y z] `(- ~x ~y ~z)))
 
-
-;; These don't have to be macros for speed??  Could just define as functions??
-
 (defmacro tr
   "Scalar analogue of transposition; returns the argument unchanged."
   [x]
-  `(identity ~x))
+  x) ; just substitute the value into context, evaluated.
 
 (defmacro inv
   "Scalar analogue of matrix inversion, i.e. scalar reciprocal, divide into 1.0."
   [x]
   `(/ 1.0 ~x))
 
-;; maybe make it throw an exception if something other than 1 is passed
 (defmacro make-identity-obj
-  "Returns 1, the identity operator for scalar multiplication, no matter
-  what is passed in."
-  [_]
-  1)
+  "Returns 1, the identity operator for scalar multiplication.  Throws exception
+  if anything other than 1 is passed as dims."
+  [dims]
+  (when (not (== dims 1))  ;; Should get evaluated at compile time:
+    (throw 
+      (Exception. 
+        (str "The value " dims " was passed as dims, but this version of function is defined only for dims = 1"))))
+  1) ; 1 is self-evaluating; no need for `()
 
