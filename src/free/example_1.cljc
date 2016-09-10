@@ -1,12 +1,24 @@
 (ns free.example-1
   (:use [free.scalar-arithmetic]
-        [free.matrix-arithmetic])
+        ;[free.matrix-arithmetic]
+        )
   (:require [clojure.math.numeric-tower :as nt]
             [free.level :as lv]
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
+;; How to plot data:
+;; (def s500 (take 500 stages)) ; number of timesteps Bogacz uses: (/ 5 0.01)
+;; (use '[incanter.charts])
+;; (def xy (xy-plot (range) (map (comp :phi second) s500)))
+;; (add-lines xy    (range) (map (comp :eps second) s500))
+;; (add-lines xy    (range) (map (comp :eps first)  s500))
+;; (use '[incanter.core])
+;; (view xy)
+;; (use '[incanter.pdf])
+;; (save-pdf xy "ex3.pdf")
+
 (def dt 0.01) ; version in Bogacz
-;(def slow-dt 0.001)
+(def slow-dt 0.00001)
 
 ;; all-level parameters
 (def theta (make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
@@ -18,7 +30,7 @@
 (def error-u 0) ; eps
 (def sigma-u 1)
 
-(def next-bottom (make-next-bottom #(pd/sample-normal 1 :mean 2 :sd 1.4142)))
+(def next-bottom (lv/make-next-bottom #(pd/sample-normal 1 :mean 2 :sd (nt/sqrt 2))))
 
 ;; middle level params
 (def init-phi-v-p 3)    ; what phi is initialized to
@@ -37,8 +49,8 @@
                   :h' h'
                   :phi-dt   dt
                   :eps-dt   dt
-                  :sigma-dt dt
-                  :theta-dt dt}))
+                  :sigma-dt slow-dt
+                  :theta-dt 0}))
 
 (def init-mid
   (lv/map->Level {:phi init-phi-v-p
@@ -49,8 +61,8 @@
                   :h' h'
                   :phi-dt   dt
                   :eps-dt   dt
-                  :sigma-dt dt
-                  :theta-dt dt}))
+                  :sigma-dt slow-dt
+                  :theta-dt 0}))
 
 (def top (lv/map->Level {:phi top-v-p})) ; other fields will be nil
 
