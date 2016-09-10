@@ -5,20 +5,13 @@
   (:require [free.level :as lv]
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
+;; Bogacz's exercises 1 and 3:
 ;; p. 3:
 ;; Exercise 1. Assume that our animal observed the light intensity u =
 ;; 2, the level of noise in its receptor is Σ_u = 1, and the mean and
 ;; variance of its prior expectation of size are v_p = 3 and Σ_p = 1. Write
 ;; a computer program that computes the posterior probabilities of sizes
 ;; from 0.01 to 5, and plots them.
-
-;; p. 4:
-;; Exercise 2. Write a computer program finding the most likely size
-;; of the food item φ for the situation described in Exercise 1. Initialize
-;; φ = v_p, and then find its values in the next 5 time units (you can
-;; use Euler’s method, i.e. update φ(t + delta t) = φ(t) + delta t ∂F/∂φ with
-;; delta t = 0.01).
-
 ;; p. 4:
 ;; Exercise 3. Simulate the model from Fig. 3 for the problem
 ;; from Exercise 1. In particular, initialize φ = v_p, ε_p = ε_u = 0, and
@@ -27,12 +20,18 @@
 ;; The data that results is supposed to look like the rhs of fig. 2.
 ;; i.e. phi from the middle level is phi in that plot;
 ;; eps from middle is eps_p and eps from bottom is eps_u.
+;; Here's one way to do this:
+;; 
+;; (def s500 (take 500 stages)) ; number of timesteps Bogacz uses: (/ 5 0.01)
+;; (use '[incanter.charts])
+;; (def xy (xy-plot (range) (map (comp :phi second) s500)))
+;; (add-lines xy    (range) (map (comp :eps second) s500))
+;; (add-lines xy    (range) (map (comp :eps first)  s500))
+;; (view xy)
 
 ;;;;;;;;;;;;;;;;;;
 
-;(def dt 0.01) ; version in Bogacz--too big, it appears
-(def dt 0.001)
-;(def dt 0.0005)
+(def dt 0.01) ; version in Bogacz
 
 (def u 2)
 (def error-u 0)
@@ -78,8 +77,8 @@
                   :h' h'
                   :phi-dt   dt
                   :eps-dt   dt
-                  :sigma-dt 1    ; sigma never changes
-                  :theta-dt 1})) ; theta never changes
+                  :sigma-dt 0    ; sigma never changes
+                  :theta-dt 0})) ; theta never changes
 
 (def init-mid
   (lv/map->Level {:phi v-p
@@ -90,8 +89,8 @@
                   :h' h'
                   :phi-dt   dt
                   :eps-dt   dt
-                  :sigma-dt 1    ; sigma never changes
-                  :theta-dt 1})) ; theta never changes
+                  :sigma-dt 0    ; sigma never changes
+                  :theta-dt 0})) ; theta never changes
 
 (def top (lv/map->Level {:phi top-v-p})) ; other fields will be nil
 
