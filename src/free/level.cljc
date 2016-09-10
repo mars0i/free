@@ -58,6 +58,7 @@
   multiplication as appropriate.
   <x>-dt:  A scalar multiplier (e.g. 0.01) determining how fast <x> is updated.
   h, h': See theta; h' is the derivative of h.  These never change.
+  Note that in Bogacz h had h' are generally the same across levels.
   All of these notations are defined in Bogacz's \"Tutorial\" paper.
   phi and eps can be scalars, in which case theta and sigma are as well.  
   Or phi and eps can be vectors of length n, in which case sigma and theta
@@ -104,7 +105,7 @@
   (fn [[level level+]]
     (assoc level 
            :phi (phi-generator)
-           :eps (next-eps   level level+)
+           :eps (next-eps level level+)
            :sigma (next-sigma level)
            :theta (next-theta level level+))))
 
