@@ -102,12 +102,12 @@
   it's only used by the normal phi calculation process.  The phi produced by
   phi-generator represents sensory input from outside the system."
   [phi-generator]
-  (fn [[level level+]]
+  (fn [[level +level]]
     (assoc level 
            :phi (phi-generator)
-           :eps (next-eps level level+)
+           :eps (next-eps level +level)
            :sigma (next-sigma level)
-           :theta (next-theta level level+))))
+           :theta (next-theta level +level))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; phi update
