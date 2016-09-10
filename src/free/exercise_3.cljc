@@ -29,7 +29,10 @@
 ;; eps from middle is eps_p and eps from bottom is eps_u.
 
 ;;;;;;;;;;;;;;;;;;
-;; from ex. 3 in Bogacz
+
+;(def dt 0.01) ; version in Bogacz--too big, it appears
+(def dt 0.001)
+;(def dt 0.0005)
 
 (def u 2)
 (def error-u 0)
@@ -37,6 +40,7 @@
 
 (def v-p 3)
 (def top-v-p 1.732) ; sqrt of 3 - see note below
+;(def top-v-p 3)
 (def error-p 0)
 (def sigma-p 1)
 
@@ -63,8 +67,6 @@
 ;; mean at the top should be sqrt(v_p).  But note that the middle phi is
 ;; initialized to v_p.  Or I could just make h but not h' in middle leve
 ;; into identity.
-
-(def dt 0.01)
 
 (def init-bot
   (lv/map->Level {:phi u
