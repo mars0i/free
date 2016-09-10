@@ -1,62 +1,59 @@
 (ns free.example1
-  (:use ;[free.matrix-arithmetic]
-        [free.scalar-arithmetic]
-        [free.level])
-  (:require [free.dists :as pd])) ; will be clj or cljs depending on dialect
+  (:use [free.scalar-arithmetic]
+        [free.matrix-arithmetic])
+  (:require [clojure.math.numeric-tower :as nt]
+            [free.level :as lv]
+            [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
-(def I (make-identity-obj dims))
+(def dt 0.01) ; version in Bogacz
+;(def slow-dt 0.001)
 
-;;;;;;;;;;;;;;;;;;
-;; from ex. 3 in Bogacz
-(def v-p 3)
-(def sigma-p 1)
+;; all-level parameters
+(def theta (make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
+(defn h  [phi] (lv/m-square phi))
+(defn h' [phi] (m* phi 2))
+
+;; bottom level params
+(def u 2)       ; phi
+(def error-u 0) ; eps
 (def sigma-u 1)
-(def u 2)
+
+(def next-bottom (make-next-bottom #(pd/sample-normal 1 :mean 2 :sd 1.4142)))
+
+;; middle level params
+(def init-phi-v-p 3)    ; what phi is initialized to
 (def error-p 0)
-(def error-u 0)
+(def sigma-p 1)
 
-;; inspired by params in ex. 5:
-(def next-bottom (make-next-bottom #(pd/sample-normal 1 :mean 5 :sd 1.4142)))
+;; top level param
+(def top-v-p (nt/sqrt 3))
 
-;;;;;;;;;;;;;;;;;;;;;
-;; These define the function g that Bogacz offers as an example on p. 2.
-;; i.e. for g(phi) = theta * h(phi), where g just squares its argument.
+(def init-bot
+  (lv/map->Level {:phi u
+                  :eps error-u
+                  :sigma sigma-u
+                  :theta theta       ; preserves h(phi)
+                  :h  h
+                  :h' h'
+                  :phi-dt   dt
+                  :eps-dt   dt
+                  :sigma-dt dt
+                  :theta-dt dt}))
 
-(def example-theta I)
+(def init-mid
+  (lv/map->Level {:phi init-phi-v-p
+                  :eps error-p
+                  :sigma sigma-p
+                  :theta theta       ; preserves h(phi)
+                  :h  h
+                  :h' h'
+                  :phi-dt   dt
+                  :eps-dt   dt
+                  :sigma-dt dt
+                  :theta-dt dt}))
 
-;; these really shouldn't be the same at every level--doesn't make sense
-(defn example-h  [phi] (m-square phi))
-(defn example-h' [phi] (m* phi 2))
+(def top (lv/map->Level {:phi top-v-p})) ; other fields will be nil
 
-(def fast-dt 0.01)
-(def slow-dt 0.001)
+(def init-levels [init-bot init-mid top])
 
-(def initial-bottom
-  (map->Level {:phi u  ; initial value--will change
-               :eps error-u
-               :sigma sigma-u
-               :theta I
-               :h  example-h
-               :h' example-h'
-               :phi-dt   fast-dt
-               :eps-dt   fast-dt
-               :sigma-dt slow-dt
-               :theta-dt slow-dt}))
-
-(def initial-middle
-  (map->Level {:phi v-p
-               :eps error-p
-               :sigma sigma-p
-               :theta I
-               :h  example-h
-               :h' example-h'
-               :phi-dt   fast-dt
-               :eps-dt   fast-dt
-               :sigma-dt slow-dt
-               :theta-dt slow-dt}))
-
-(def top (map->Level {:phi v-p})) ; other fields will be nil
-
-(def initial-levels [initial-bottom initial-middle top])
-
-(def stages (iterate (partial next-levels next-bottom) initial-levels))
+(def stages (iterate (partial lv/next-levels next-bottom) init-levels))
