@@ -50,6 +50,9 @@ ignored. Note that Bogacz's examples typically use two inner levels;
 his representation captures what's called the first and last levels
 here using individual parameters such as `u` and `v_p`.
 
+See src/free/exercise_3.cljc for a simple illustration of use of this
+system.  A comment there also shows how to plot output using Incanter.
+
 
 ## Level dependencies
 
@@ -62,7 +65,7 @@ here using individual parameters such as `u` and `v_p`.
 * `sigma` at level *n* depends only on level *n*.
 
 
-## `next-level`
+## next-level
 
 There's an asymmetry between the bottom and top levels.  
 
@@ -86,23 +89,6 @@ his answer to exercise 3), then we can just make the very top level
 be a special one that contains a `phi` (and probably only `phi`) and
 that isn't updated by `next-phi` or by the other `next-` functions.
 
-
-## Usage examples
-
-````
-(def my-next-levels 
-     (partial next-levels 
-              my-sensory-input-fn           ; inputs from outside
-              (constantly my-prior-means))) ; unchanging priors
-
-(def my-initial-state [bottom middle-1 middle-2 top]) ; four levels
-
-(def states (iterate my-next-levels my-intial-state))
-
-(take 5 states)
-
-(nth states 50)
-````
 
 ## Questions
 
