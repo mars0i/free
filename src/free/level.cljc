@@ -23,10 +23,6 @@
   (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]))
 
 
-;; dimensions of vectors, or 1 for scalars
-;; redefine this to the vector length if you use vectors/matrices
-(def dims 1)
-
 ;;;;;;;;;;;;;;;;;;;;;
 (declare phi-inc   next-phi 
          eps-inc   next-eps 
