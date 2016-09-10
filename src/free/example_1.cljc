@@ -1,4 +1,4 @@
-(ns free.example1
+(ns free.example-1
   (:use [free.scalar-arithmetic]
         [free.matrix-arithmetic])
   (:require [clojure.math.numeric-tower :as nt]
