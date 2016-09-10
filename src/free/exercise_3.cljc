@@ -28,6 +28,8 @@
 ;; (add-lines xy    (range) (map (comp :eps second) s500))
 ;; (add-lines xy    (range) (map (comp :eps first)  s500))
 ;; (view xy)
+;; (use '[incanter.pdf])
+;; (save-pdf xy "ex3.pdf")
 
 ;;;;;;;;;;;;;;;;;;
 
