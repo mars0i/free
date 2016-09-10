@@ -37,6 +37,7 @@
 (def u 2)
 (def error-u 0)
 (def sigma-u 1)
+(def next-bottom (lv/make-next-bottom (constantly u)))
 
 (def v-p 3)
 (def top-v-p 1.732) ; sqrt of 3 - see note below
@@ -95,7 +96,5 @@
 (def top (lv/map->Level {:phi top-v-p})) ; other fields will be nil
 
 (def init-levels [init-bot init-mid top])
-
-(def next-bottom (lv/make-next-bottom (constantly u)))
 
 (def stages (iterate (partial lv/next-levels next-bottom) init-levels))
