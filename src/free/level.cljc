@@ -35,11 +35,9 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Level
 
-(defrecord Level [phi phi-dt 
-                  eps eps-dt 
-                  sigma sigma-dt 
-                  theta theta-dt 
-                  h h']) ; to add?: e for Hebbian sigma calculation
+(defrecord Level [phi eps sigma theta 
+                  h h'
+                  phi-dt eps-dt sigma-dt theta-dt])
 
 (def Level-docstring
   "\n  A Level records values at one level of a prediction-error/free-energy
