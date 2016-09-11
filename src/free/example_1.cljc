@@ -18,7 +18,7 @@
 ;; (save-pdf xy "ex3.pdf")
 
 (def dt 0.01) ; version in Bogacz
-(def slow-dt 0.00001)
+(def slow-dt 0.001)
 
 ;; all-level parameters
 (def theta (make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
