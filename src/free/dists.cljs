@@ -3,5 +3,6 @@
 ;; TODO
 ;; Maybe use Agentscript's Normal dist?
 ;; or jstat https://github.com/jstat/jstat
-;; or something else?
+;; or this one looks good:
+;; http://www.statisticsblog.com/2015/10/random-samples-in-js-using-r-functions
 
