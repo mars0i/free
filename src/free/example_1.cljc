@@ -17,8 +17,8 @@
 ;; (use '[incanter.pdf])
 ;; (save-pdf xy "ex3.pdf")
 
-(def dt 0.01) ; version in Bogacz
-(def slow-dt 0.001)
+(def dt 0.001)
+(def slow-dt 0.0005)
 
 ;; all-level parameters
 (def theta (make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
@@ -26,19 +26,19 @@
 (defn h' [phi] (m* phi 2))
 
 ;; bottom level params
-(def u 2)       ; phi
-(def error-u 0) ; eps
+(def u 16)       ; phi
+(def next-bottom (lv/make-next-bottom #(pd/sample-normal 1 :mean 16 :sd 1)))
 (def sigma-u 1)
+(def error-u 0) ; eps
 
-(def next-bottom (lv/make-next-bottom #(pd/sample-normal 1 :mean 2 :sd (nt/sqrt 2))))
 
 ;; middle level params
-(def init-phi-v-p 3)    ; what phi is initialized to
-(def error-p 0)
+(def init-phi-v-p 2)    ; what phi is initialized to
 (def sigma-p 1)
+(def error-p 0)
 
 ;; top level param
-(def top-v-p (nt/sqrt 3))
+(def top-v-p (nt/sqrt 2))
 
 (def init-bot
   (lv/map->Level {:phi u
@@ -49,8 +49,8 @@
                   :h' h'
                   :phi-dt   dt
                   :eps-dt   dt
-                  :sigma-dt slow-dt
-                  :theta-dt 0}))
+                  :sigma-dt 0
+                  :theta-dt dt}))
 
 (def init-mid
   (lv/map->Level {:phi init-phi-v-p
@@ -61,8 +61,8 @@
                   :h' h'
                   :phi-dt   dt
                   :eps-dt   dt
-                  :sigma-dt slow-dt
-                  :theta-dt 0}))
+                  :sigma-dt 0
+                  :theta-dt dt}))
 
 (def top (lv/map->Level {:phi top-v-p})) ; other fields will be nil
 
