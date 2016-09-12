@@ -8,8 +8,6 @@
 
 ;; SEE doc/level.md for documentation on general features of the code below.
 
-
-
 (ns free.level
   (:require 
     ;[free.dists :as prob]
@@ -30,7 +28,6 @@
          theta-inc next-theta
          next-level next-levels
          m-square)
-
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Level
@@ -175,7 +172,6 @@
     (m+ sigma
         (e* sigma-dt
             (sigma-inc eps sigma)))))
-
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; theta update
