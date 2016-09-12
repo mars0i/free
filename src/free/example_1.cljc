@@ -9,8 +9,8 @@
 ;; all-level parameters
 
 (def dt 0.01) ; for phi and eps
-(def sigma-dt 0)
-(def theta-dt 0)
+(def sigma-dt 0.0001)
+(def theta-dt 0.001)
 
 ;; We are trying to infer a parameter that's the radius of a circle,
 ;; e.g. because the object is a circle, and the light from it tends
