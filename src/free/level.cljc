@@ -103,6 +103,13 @@
            :sigma (next-sigma level)
            :theta (next-theta level +level))))
 
+(defn make-top-level
+  "Makes a top level with constant value phi for :phi.  Also sets :h to
+  the identity function, which the next level down will use to update eps.
+  Other fields will be nil."
+  [phi]
+  (map->Level {:phi phi :h identity})) ; other fields will be nil
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;; phi update
 
@@ -130,20 +137,21 @@
 (defn eps-inc 
   "Calculates the slope/increment to the next 'error' epsilon from 
   the current epsilon.  See equation (54) in Bogacz's \"Tutorial\"."
-  [eps phi +phi sigma theta h]
+  [eps phi +phi sigma theta +h]
   (m- phi 
-      (m* theta (h +phi))
+      (m* theta (+h +phi))
       (m* sigma eps)))
 
 (defn next-eps
   "Accepts three subsequent levels, but only uses this one and the one above. 
   Calculates the next-timestep 'error' epsilon."
   [level +level]
-  (let [{:keys [phi eps eps-dt sigma theta h]} level
-        +phi (:phi +level)]
+  (let [{:keys [phi eps eps-dt sigma theta]} level
+        +phi (:phi +level)
+        +h (:h +level)]
     (m+ eps
         (e* eps-dt
-            (eps-inc eps phi +phi sigma theta h)))))
+            (eps-inc eps phi +phi sigma theta +h)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; sigma update
@@ -176,19 +184,20 @@
   "Calculates the slope/increment to the next theta component of the mean
   value function from the current theta.  See equation (56) in Bogacz's 
   \"Tutorial\"."
-  [eps +phi h]
+  [eps +phi +h]
   (m* eps 
-      (tr (h +phi))))
+      (tr (+h +phi))))
 
 (defn next-theta
   "Accepts three subsequent levels, but only uses this one and the one above. 
   Calculates the next-timestep theta component of the mean value function."
   [level +level]
-  (let [{:keys [eps theta theta-dt h]} level
-        +phi (:phi +level)]
+  (let [{:keys [eps theta theta-dt]} level
+        +phi (:phi +level)
+        +h (:h +level)]
     (m+ theta
         (e* theta-dt
-            (theta-inc eps +phi h)))))
+            (theta-inc eps +phi +h)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Utility functions
