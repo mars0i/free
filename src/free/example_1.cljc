@@ -12,6 +12,8 @@
 (def sigma-dt 0.0001)
 (def theta-dt 0.001)
 
+;; This example uses a function h(phi)=phi^2 as its generative function.
+;;
 ;; We are trying to infer a parameter that's the radius of a circle,
 ;; e.g. because the object is a circle, and the light from it tends
 ;; to be proportional to its area.  So phi up at the top counts as
