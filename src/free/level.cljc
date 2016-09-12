@@ -112,15 +112,18 @@
 
 (defn phi-inc
   "Calculates slope/increment to the next 'hypothesis' phi from the 
-  current phi.  See equations (44), (53) in Bogacz's \"Tutorial\"."
+  current phi using the error -eps from the level below, scaled by
+  the generator scaling factor theta and the derivative of h(phi), 
+  and subtracting the error at this level.  See equations (44), (53)
+  in Bogacz's \"Tutorial\"."
   [phi eps -eps theta h']
   (m+ (m- eps)
       (e* (h' phi)
           (m* (tr theta) -eps))))
 
 (defn next-phi 
-  "Accepts three subsequent levels, but only uses this one and the one below. 
-  Calculates the the next-timestep 'hypothesis' phi."
+  "Calculates the the next-timestep 'hypothesis' phi from this level 
+  and the one below."
   [-level level]
   (let [{:keys [phi phi-dt eps theta h']} level
         -eps (:eps -level)]
@@ -133,15 +136,18 @@
 
 (defn eps-inc 
   "Calculates the slope/increment to the next 'error' epsilon from 
-  the current epsilon.  See equation (54) in Bogacz's \"Tutorial\"."
+  the current epsilon, using the mean of the generative model at the
+  next level up, but scaling the current error eps by the
+  variance/cov-matrix at this level, and making the whole thing
+  relative to phi at this level. See equation (54) in Bogacz's \"Tutorial\"."
   [eps phi +phi sigma theta +h]
   (m- phi 
       (m* theta (+h +phi))
       (m* sigma eps)))
 
 (defn next-eps
-  "Accepts three subsequent levels, but only uses this one and the one above. 
-  Calculates the next-timestep 'error' epsilon."
+  "Calculates the next-timestep 'error' epsilon from this level and the one
+  above."
   [level +level]
   (let [{:keys [phi eps eps-dt sigma theta]} level
         +phi (:phi +level)
@@ -155,7 +161,7 @@
 
 (defn sigma-inc
   "Calculates the slope/increment to the next sigma from the current sigma,
-  i.e.  the variance or the covariance matrix of the distribution of inputs 
+  i.e. the variance or the covariance matrix of the distribution of inputs 
   at this level.  See equation (55) in Bogacz's \"Tutorial\".  (Note uses 
   matrix inversion for vector/matrix calcualtions, a non-Hebbian calculation,
   rather than the local update methods of section 5.)"
@@ -164,9 +170,8 @@
              (inv sigma))))
 
 (defn next-sigma
-  "Accepts three subsequent levels, but only uses this one, not the ones
-  above or below.  Calculates the next-timestep sigma, i.e. the variance 
-  or the covariance matrix of the distribution of inputs at this level."
+  "Calculates the next-timestep sigma, i.e. the variance or the covariance 
+  matrix of the distribution of inputs at this level."
   [level]
   (let [{:keys [eps sigma sigma-dt]} level]
     (m+ sigma
@@ -178,15 +183,16 @@
 
 (defn theta-inc
   "Calculates the slope/increment to the next theta component of the mean
-  value function from the current theta.  See equation (56) in Bogacz's 
-  \"Tutorial\"."
+  value function from the current theta using the error eps at this level
+  along with the mean of the generative function at the next level up.  
+  See equation (56) in Bogacz's \"Tutorial\"."
   [eps +phi +h]
   (m* eps 
       (tr (+h +phi))))
 
 (defn next-theta
-  "Accepts three subsequent levels, but only uses this one and the one above. 
-  Calculates the next-timestep theta component of the mean value function."
+  "Calculates the next-timestep theta component of the mean value function
+  from this level and the one above."
   [level +level]
   (let [{:keys [eps theta theta-dt]} level
         +phi (:phi +level)
@@ -199,5 +205,6 @@
 ;; Utility functions
 
 (defn m-square
+  "Calculates the matrix or scalar square of a value."
   [x]
   (m* x (tr x)))
