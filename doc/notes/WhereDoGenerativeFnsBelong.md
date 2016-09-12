@@ -1,7 +1,7 @@
 On the role of the generative functions h (or g) in levels.cljc
 ===
 
-### The problem
+### A puzzle
 
 In the answer code for ex 3 in Bogacz, phi in the middle level is
 initalized to v_p.  Then to update phi, Bogacz h', i.e.  2*phi.  This is
@@ -23,7 +23,7 @@ produce a plot that looks like Bogacz's (fig. 2a).  If I use 3 for that
 phi, I get a different plot.
 
 
-### Generalizing it
+### A more general question
 
 Here's a more general question:
 
