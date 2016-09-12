@@ -113,13 +113,13 @@
 (defn phi-inc
   "Calculates slope/increment to the next 'hypothesis' phi from the 
   current phi using the error -eps from the level below, scaled by
-  the generator scaling factor theta and the derivative of h(phi), 
-  and subtracting the error at this level.  See equations (44), (53)
-  in Bogacz's \"Tutorial\"."
+  the generative function scaling factor theta and the derivative h' of 
+  the generative function h at this level, and subtracting the error at 
+  this level.  See equations (44), (53) in Bogacz's \"Tutorial\"."
   [phi eps -eps theta h']
-  (m+ (m- eps)
-      (e* (h' phi)
-          (m* (tr theta) -eps))))
+  (m- (e* (h' phi)
+          (m* (tr theta) -eps))
+      eps))
 
 (defn next-phi 
   "Calculates the the next-timestep 'hypothesis' phi from this level 
