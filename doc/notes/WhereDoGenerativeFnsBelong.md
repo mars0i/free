@@ -1,7 +1,9 @@
-Questions
+On the role of the generative functions h (or g) in levels.cljc
 ===
 
-1. In the answer code for ex 3 in Bogacz, phi in the middle level is
+### The problem
+
+In the answer code for ex 3 in Bogacz, phi in the middle level is
 initalized to v_p.  Then to update phi, Bogacz h', i.e.  2*phi.  This is
 the derivative of h(phi)=phi^2.  But the error update procedure for the
 mid level (_p) uses v_p as is.  i.e. not squared.  So that v_p is a mean
@@ -20,7 +22,10 @@ different v_p defs here.  Using sqrt(3) for the top-level phi does
 produce a plot that looks like Bogacz's (fig. 2a).  If I use 3 for that
 phi, I get a different plot.
 
-2. Here's a more general question:
+
+### Generalizing it
+
+Here's a more general question:
 
 In (53) and (54), Bogacz uses h and h' at the same level.  
 
@@ -46,10 +51,14 @@ The question is, which `h` and `h'` are supposed to correspond?  The
 ones within a level, or the `h` at level *n* and the `h'` at level
 *n*+1?
 
+### An answer
+
 (53) and (54) suggests the first answer, while the answer to Ex. 3
 suggests the second.  Note that `h'` is not even used at the bottom
 level, ever, because that's only used to update `phi`, and at the bottom
 level `phi`, i.e. `u`, comes from outside.
+
+### A better answer (adopted)
 
 Well, here's a different possible answer:
 
@@ -62,3 +71,5 @@ in `eps-inc` should be called `+h`.  *This would then be consistent both
 with exercise 3 and (53) and (54).*
 
 I'd need to make similar changes to `next-theta` and `theta-inc`.
+
+This is what I did (9/2016).
