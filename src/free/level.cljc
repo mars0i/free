@@ -39,17 +39,18 @@
 (def Level-docstring
   "\n  A Level records values at one level of a prediction-error/free-energy
   minimization model.  
-  phi:   Current value of input at this level.
-  eps:   Epsilon--the error at this level.
-  sigma: Covariance matrix or variance of assumed distribution over inputs 
-  at this level.  Variance should usually be >= 1 (p. 5 col 2).
-  theta: When theta is multiplied by result of h(phi), the result is the 
-  current estimated mean of the assumed distrubtion.  
-  i.e. g(phi) = theta * h(phi), where '*' here is scalar or matrix 
-  multiplication as appropriate.
+  phi:    Current value of input at this level, or generative function parameter.
+  eps:    Epsilon--the error at this level.
+  sigma:  Covariance matrix or variance of assumed distribution over inputs 
+          at this level.  Variance should usually be >= 1 (p. 5 col 2).
+  theta:  Scaling factor (scalar or matrix) for generative function.  When 
+          theta is multiplied by result of h(phi), the result is the current 
+          estimated mean of the assumed distrubtion.  
+          i.e. g(phi) = theta * h(phi), where '*' here is scalar or matrix 
+          multiplication as appropriate.
   <x>-dt:  A scalar multiplier (e.g. 0.01) determining how fast <x> is updated.
-  h, h': See theta; h' is the derivative of h.  These never change.
-  Note that in Bogacz h had h' are generally the same across levels.
+  h, h':  See theta; h' is the derivative of h.  These never change.
+
   All of these notations are defined in Bogacz's \"Tutorial\" paper.
   phi and eps can be scalars, in which case theta and sigma are as well.  
   Or phi and eps can be vectors of length n, in which case sigma and theta
