@@ -9,7 +9,7 @@
 
 (def dt 0.01) ; for phi and eps
 (def sigma-dt 0.0001)
-(def theta-dt 0.001)
+(def theta-dt 0.0001)
 
 ;; This example uses a function h(phi)=phi^2 as its generative function.
 ;;
@@ -21,7 +21,7 @@
 ;; square root of the light.
 (defn h  [phi] (lvl/m-square phi))
 (defn h' [phi] (ar/m* phi 2))
-(def theta (make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
+(def theta (ar/make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
 
 ;; bottom level params
 (def u 2)       ; phi
