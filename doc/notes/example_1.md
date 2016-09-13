@@ -38,3 +38,25 @@ Don't do this:
 This makes phi fluctuate in a large loping sine wave-style shape.
 It appears that the sigma-dt has to be a lot smaller than that for phi
 and eps.
+
+## rules of thumb
+
+Or rather, apparent or possible rules of thumb.
+
+The farther the initial hypothesis is from the mean of the inputs, the
+smaller `dt` must be.
+
+`sigma-dt` must be smaller than `dt`.
+
+If the phi curve is too wavy, you can make it more stable by shrinking dt.
+
+If sigma is going down to zero too quickly, you can slow it down by
+making sigma-dt smaller.
+
+The value around which phi (at level 1) more or less settles is between
+the true mean value and the original prior mean.
+
+Note that the "true mean value" is the value such that if run through
+g(), i.e.  h() and theta, will produce the mean of the input
+distribution.  That is, it's the inverse of g applied to the mean of the
+inputs.
