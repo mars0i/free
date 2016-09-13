@@ -7,7 +7,7 @@
 
 ;; all-level parameters
 
-(def dt 0.01) ; for phi and eps
+(def dt 0.001) ; for phi and eps
 (def sigma-dt 0.0001)
 (def theta-dt 0.0001)
 
@@ -24,10 +24,12 @@
 (def theta (ar/make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
 
 ;; bottom level params
-(def u 2)       ; phi
 (def next-bottom (lvl/make-next-bottom #(pd/sample-normal 1 :mean 2 :sd 1)))
 (def sigma-u 1) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; eps
+;; Note that the bottom-level phi needs to be an arbitrary number so that 
+;; eps-inc doesn't NPE on the first tick, but the number doesn't matter, and 
+;; it will immediately replaced when next-bottom is run.
 
 ;; middle level params
 (def v-p 3) ; what phi is initialized to, and prior mean at top
@@ -35,7 +37,7 @@
 (def error-p 0)
 
 (def init-bot
-  (lvl/map->Level {:phi u
+  (lvl/map->Level {:phi 0 ; needs a number for eps-inc on 1st tick; immediately replaced by next-bottom
                   :eps error-u
                   :sigma sigma-u
                   :theta theta
