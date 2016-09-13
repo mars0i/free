@@ -54,9 +54,9 @@ If sigma is going down to zero too quickly, you can slow it down by
 making sigma-dt smaller.
 
 The value around which phi (at level 1) more or less settles is between
-the true mean value and the original prior mean.
+the true mean value and the original prior mean.  (Note that the "true
+mean value" is the value such that if run through g(), i.e.  h() and
+theta, will produce the mean of the input distribution.  That is, it's
+the inverse of g applied to the mean of the inputs.)
 
-Note that the "true mean value" is the value such that if run through
-g(), i.e.  h() and theta, will produce the mean of the input
-distribution.  That is, it's the inverse of g applied to the mean of the
-inputs.
+Question: Why doesn't the adjustment of theta fix this problem?
