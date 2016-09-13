@@ -1,8 +1,7 @@
 (ns free.example-1
-  (:use [free.scalar-arithmetic]
-        ;[free.matrix-arithmetic]
-        )
   (:require [clojure.math.numeric-tower :as nt]
+            [free.scalar-arithmetic :as ar]
+            ;[free.matrix-arithmetic :as ar]
             [free.level :as lvl]
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
@@ -21,7 +20,7 @@
 ;; Thus when we infer the estimate for this phi, it should be the
 ;; square root of the light.
 (defn h  [phi] (lvl/m-square phi))
-(defn h' [phi] (m* phi 2))
+(defn h' [phi] (ar/m* phi 2))
 (def theta (make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
 
 ;; bottom level params
