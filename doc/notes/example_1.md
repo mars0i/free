@@ -105,3 +105,49 @@ you let it run longer, it seems to persist, modulo small fluctuations.
 So *if we keep sigma and theta from evolving*, the system works perfectly.
 At least.  If you allow sigma or theta to evolve, you get some of the
 puzzling effects described above.
+
+### different dt's for different levels
+
+Look at the results for this configuration, which takes makes theta
+constant, sigma constant at the bottom level, and makes sigma change
+faster than phi does at level 1 (as one of Bogacz's remarks might
+suggest).
+
+Level 0:
+
+* phi-dt 0.01
+* eps-dt 0.01
+* sigma-dt 0.0
+* theta-dt 0.0
+
+Level 1:
+
+* phi-dt 0.00001
+* eps-dt 0.01
+* sigma-dt 0.0001
+* theta-dt 0.0
+
+At level 1, sigma goes high (around 2.25), and phi fluctuates around the
+region between 1.4 and 1.5.  This configuration is apparently stable.  I
+took it out to 200,000 iterations.  The error eps is also stable (at
+about -0.67).
+
+Lowering eps at level 1 doesn't change the situation, despite sigma
+dropping below zero, temporarily, early on.
+
+Shrinking both phi-dt and sigma-dt at level 1 doesn't change things.
+
+It also works to set level 1 phi-dt = sigma-dt = 0.0001.
+
+(If you make phi-dt even smaller, 0.000001, it looks like it moves toward
+a similar end result but it takes a large number of iterations.  I
+didn't let this finish--holding onto too big a sequence, maybe.  But
+note this is still with sigma-dt at 0.0001.)
+
+So this pattern is fairly robust over variation in the dt's at level 1
+level.  The significant thing seems to be making level 1 slower than
+level 0.  And letting sigma be constant or changing very slowly at the
+bottom.
+
+(One of the questions I had had was whether upper levels need to be
+slower than lower levels.  This supports the claim that they should be.)
