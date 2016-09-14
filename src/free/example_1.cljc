@@ -9,7 +9,7 @@
 
 (def dt 0.001) ; for phi and eps
 (def sigma-dt 0.0001)
-(def theta-dt 0.0001)
+(def theta-dt 0.001)
 
 ;; This example uses a function h(phi)=phi^2 as its generative function.
 ;;
