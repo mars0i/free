@@ -60,3 +60,20 @@ theta, will produce the mean of the input distribution.  That is, it's
 the inverse of g applied to the mean of the inputs.)
 
 Question: Why doesn't the adjustment of theta fix this problem?
+
+If theta-dt is too large (e.g. 0.1), weird things happen.
+
+If theta-dt is too small, e.g. like this
+
+    (def dt 0.001) ; for phi and eps
+    (def sigma-dt 0.0001)
+    (def theta-dt 0.00001)
+
+or with theta-dt = 0, phi seems to be going to a sensible region, but
+then it fluctates wildly and gooes much higher.  Meanwhile the variance
+is going *up*, not down to zero, and the error remains far from zero.
+
+If theta-dt is betweem 0.0001 in the above scenarios 0.001  to 0.000001,
+under 10K steps, then things look OK *but* the smaller theta-dt is, the
+lower is the value which phi overs around.  Which seems wierd.  Not sure
+if this is relative to the simple dt, or to sigma-dt.
