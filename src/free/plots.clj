@@ -3,12 +3,13 @@
 
 (defn plot-level
   "Plot phi, eps, sigma, and theta for all level records at level level-num
-  in (finite) stages sequence.  Level 0 is the first level.  Returns the plot 
-  object."
-  ([stages level-num n-stages every-n]
-   (plot-level (take-nth every-n (take n-stages stages)) level-num))
-  ([stages level-num n-stages]
-   (plot-level (take n-stages stages) level-num))
+  in sequence stages.  If n is provided, take only n elements from stages.
+  If every is also provided, use only the elements that are every steps apart.
+  Level 0 is the first level.  Returns the plot object."
+  ([stages level-num n every]
+   (plot-level (take-nth every (take n stages)) level-num))
+  ([stages level-num n]
+   (plot-level (take n stages) level-num))
   ([stages level-num]
    (let [level-stages (map #(nth % level-num) stages)]
      (doto 
