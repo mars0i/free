@@ -44,8 +44,8 @@
                   :theta theta
                   :h  nil ; unused at bottom since eps update uses higher h
                   :h' nil ; unused at bottom since phi comes from outside
-                  :phi-dt 0.01
-                  :eps-dt 0.01
+                  :phi-dt 0.001
+                  :eps-dt 0.001
                   :sigma-dt 0.0
                   :theta-dt 0.0}))
 
@@ -56,10 +56,10 @@
                   :theta theta
                   :h  h  ; used to calc error at next level down, i.e. eps
                   :h' h' ; used to update phi at this level
-                  :phi-dt 0.0001
-                  :eps-dt 0.01
-                  :sigma-dt 0.0001
-                  :theta-dt 0.0}))
+                  :phi-dt 0.00001
+                  :eps-dt 0.001
+                  :sigma-dt 0.00001
+                  :theta-dt 0.001}))
 
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :h ; other fields will be nil
 
