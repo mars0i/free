@@ -222,3 +222,34 @@ point a new prior mean.  The point is not to constantly track phi.
 It appears though that if theta is slower than (already slow) phi,
 sigma also needs to be slow, to avoid it hitting zero before theta can
 catch up with phi.
+
+
+It appears that this scheme works with other generative functions,
+too.  e.g. for phi^8 :
+
+    (defn h  [phi] (nt/expt phi 8))
+    (defn h' [phi] (* 8.0 (nt/expt phi 7.0))) 
+    (def v-p 3)
+
+Level 0:
+
+    :phi-dt 0.001
+    :eps-dt 0.001
+    :sigma-dt 0.0
+    :theta-dt 0.0}))
+
+Level 1:
+
+    :phi-dt 0.00001
+    :eps-dt 0.001
+    :sigma-dt 0.00001
+    :theta-dt 0.001
+
+Initially, phi goes low--below 1--but then it comes back up, and:
+
+* phi settles to around 1.085, eventually going up to 1.096.  
+  Note 2^{1/8} = 1.09 (approx).
+* theta settles to around 0.36, and 0.36 * 3 = 1.09 (approx).
+* eps settles to around 0.
+* sigma goes down very slowly
+
