@@ -151,3 +151,74 @@ bottom.
 
 (One of the questions I had had was whether upper levels need to be
 slower than lower levels.  This supports the claim that they should be.)
+
+This seems to work OK with prior means above and below 3.  You will get
+rough convergence of phi to somewhere near phi.  Maybe a little higher
+or lower if you start with a high or low mean.  However, I sometimes
+need to make phi-dt and sigma-dt in level 1 smaller, and then run for
+many more ticks.  (And the prior mean seems to have to be > 0.  Maybe
+because the target function is to square?)
+
+### theta again
+
+Using one of the configurations alluded to above, I tried enabling
+theta again:
+
+(def v-p 1)
+
+Level 0:
+    :phi-dt 0.001
+    :eps-dt 0.001
+    :sigma-dt 0.0
+    :theta-dt 0.0}))
+
+Level    1:
+    :phi-dt 0.00001
+    :eps-dt 0.001
+    :sigma-dt 0.00001
+    :theta-dt 0.001}))
+
+Then:
+
+    (plot-level stages 1 100000 100)
+
+Very interesting.  theta just tracks phi very closely.  i.e. roughly
+theta = phi.  And the curve looks a lot like the one when theta-dt = 0.
+The difference is that:
+
+* With theta update disabled (theta-dt = 0), error eps gets higher and higher.
+
+* With theta updating (theta-dt = 0.001), error eps stays around zero.
+
+Ah, by trying other initial v-p's, i.e. prior means, I see that what
+theta is doing is converging to a value such that (theta * v-p) = the
+value to which phi converges (1.4 or 1.5, approximately).  This behavior
+is consistent, and it's also consistent that error remains near zero.
+This is what theta was supposed to do (but didn't do, often, when I was
+using the same dt's for both levels).
+
+It doesn't matter much what value theta-dt has at level 1.  It will get
+there faster or slower, depending, but fast enough, in any event.  When
+it's slow, error eps might depart from zero while it's catching up.
+
+It's best, however, if eps-dt is pretty high.  0.01 or 0.001, even 0.1,
+are good.  Smaller than 0.001, and theta can become periodic around its
+target value.  Apparently it's very sensitive to fluctuations in eps.
+
+Note that it's probably crucial that theta-dt is 0 at the bottom level.
+Earlier I had trouble with the level 1 theta update, and I suspect it
+was because of enabling either/both sigma and theta update at the
+bottom level.  (And this makes sense.  The point of theta is to set a
+new prior mean, so to speak.  It doesn't make sense to have this
+happening at the bottom level (though it might be appropriate at level
+2 and up, if I had a real level 2).
+
+### slow theta?
+
+Maybe theta-dt should be smaller than phi-dt, though.  The point is to
+adjust it so that when things vary a lot, you can use as your starting
+point a new prior mean.  The point is not to constantly track phi.
+
+It appears though that if theta is slower than (already slow) phi,
+sigma also needs to be slow, to avoid it hitting zero before theta can
+catch up with phi.
