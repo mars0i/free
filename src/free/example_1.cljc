@@ -20,8 +20,15 @@
 ;; this radius, but the data is the light, so that follows the square.
 ;; Thus when we infer the estimate for this phi, it should be the
 ;; square root of the light.
-(defn h  [phi] (* phi phi) ;; or: (lvl/m-square phi)
-(defn h' [phi] (* phi 2)   ;; or: (ar/m* phi 2))
+
+;; Generative function phi^2:
+(defn h  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
+(defn h' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
+
+;; Alternative generative function phi^8:
+;(defn h  [phi] (nt/expt phi 8))
+;(defn h' [phi] (* 8.0 (nt/expt phi 7.0))) 
+
 (def theta (ar/make-identity-obj 1)) ; i.e. initially pass value of h(phi) through unchanged
 
 ;; bottom level params
