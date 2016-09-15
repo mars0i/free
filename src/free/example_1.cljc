@@ -20,9 +20,9 @@
 ;; this radius, but the data is the light, so that follows the square.
 ;; Thus when we infer the estimate for this phi, it should be the
 ;; square root of the light.
-(defn h  [phi] (lvl/m-square phi))
-(defn h' [phi] (ar/m* phi 2))
-(def theta (ar/make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
+(defn h  [phi] (* phi phi) ;; or: (lvl/m-square phi)
+(defn h' [phi] (* phi 2)   ;; or: (ar/m* phi 2))
+(def theta (ar/make-identity-obj 1)) ; i.e. initially pass value of h(phi) through unchanged
 
 ;; bottom level params
 (def next-bottom (lvl/make-next-bottom #(pd/sample-normal 1 :mean 2 :sd 5)))
