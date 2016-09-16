@@ -22,18 +22,18 @@
 ;; square root of the light.
 
 ;; Generative function phi^2:
-(defn h  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
-(defn h' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
+;(defn h  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
+;(defn h' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
 
 ;; Alternative generative function phi^8:
-;(defn h  [phi] (nt/expt phi 8))
-;(defn h' [phi] (* 8.0 (nt/expt phi 7.0))) 
+(defn h  [phi] (nt/expt phi 8))
+(defn h' [phi] (* 8.0 (nt/expt phi 7.0))) 
 
 (def theta (ar/make-identity-obj 1)) ; i.e. initially pass value of h(phi) through unchanged
 
 ;; bottom level params
 (def next-bottom (lvl/make-next-bottom #(pd/sample-normal 1 :mean 2 :sd 5)))
-(def sigma-u 1) ; controls degree of fluctuation in phi at level 1
+(def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; eps
 ;; Note that the bottom-level phi needs to be an arbitrary number so that 
 ;; eps-inc doesn't NPE on the first tick, but the number doesn't matter, and 
@@ -41,7 +41,7 @@
 
 ;; middle level params
 (def v-p 3) ; what phi is initialized to, and prior mean at top
-(def sigma-p 1) ; controls how close to true value at level 1
+(def sigma-p 2) ; controls how close to true value at level 1
 (def error-p 0)
 
 (def init-bot
@@ -65,7 +65,7 @@
                   :h' h' ; used to update phi at this level
                   :phi-dt 0.00001
                   :eps-dt 0.001
-                  :sigma-dt 0.00001
+                  :sigma-dt 0.0001
                   :theta-dt 0.001}))
 
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :h ; other fields will be nil
