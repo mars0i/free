@@ -24,5 +24,5 @@
        (set-stroke-color java.awt.Color/red   :dataset 1) ; eps. 
        (set-stroke-color java.awt.Color/green :dataset 2) ; sigma
        (set-stroke-color java.awt.Color/blue  :dataset 3) ; theta
-       (view)))))
+       (view :width 800 :height 600)))))
 
