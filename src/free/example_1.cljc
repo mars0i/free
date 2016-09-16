@@ -32,15 +32,18 @@
 (def theta (ar/make-identity-obj 1)) ; i.e. initially pass value of h(phi) through unchanged
 
 ;; bottom level params
-(def next-bottom (lvl/make-next-bottom #(pd/sample-normal 1 :mean 2 :sd 5)))
+;(def next-bottom (lvl/make-next-bottom #(pd/sample-normal 1 :mean 2 :sd 5)))
+
+(def tick$ (atom 0))
 
 ;; simple experiment to make data change over time (doesn't work?):
-;(def next-bottom (lvl/make-next-bottom 
-;                   (let [mean$ (atom 2)]
-;                     (fn []
-;                       (when (< (first (pd/sample-uniform 1)) 0.1)
-;                         (swap! mean$ inc))
-;                       (pd/sample-normal 1 :mean @mean$ :sd 5)))))
+(def next-bottom (lvl/make-next-bottom 
+                   (let [mean$ (atom 2)]
+                     (fn []
+                       (when (< (first (pd/sample-uniform 1)) 0.01)
+                         (swap! mean$ inc))
+                       ;(println (swap! tick$ inc) @mean$ )
+                       (pd/sample-normal 1 :mean @mean$ :sd 5)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; eps
