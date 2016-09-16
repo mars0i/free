@@ -33,6 +33,15 @@
 
 ;; bottom level params
 (def next-bottom (lvl/make-next-bottom #(pd/sample-normal 1 :mean 2 :sd 5)))
+
+;; simple experiment to make data change over time (doesn't work?):
+;(def next-bottom (lvl/make-next-bottom 
+;                   (let [mean$ (atom 2)]
+;                     (fn []
+;                       (when (< (first (pd/sample-uniform 1)) 0.1)
+;                         (swap! mean$ inc))
+;                       (pd/sample-normal 1 :mean @mean$ :sd 5)))))
+
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; eps
 ;; Note that the bottom-level phi needs to be an arbitrary number so that 
