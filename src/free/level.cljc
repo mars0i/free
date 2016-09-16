@@ -170,14 +170,21 @@
   (* 0.5 (m- (m-square eps)
              (inv sigma))))
 
+(println "Using scalar-only sigma hack.")
+
 (defn next-sigma
   "Calculates the next-timestep sigma, i.e. the variance or the covariance 
   matrix of the distribution of inputs at this level."
   [level]
-  (let [{:keys [eps sigma sigma-dt]} level]
-    (m+ sigma
-        (e* sigma-dt
-            (sigma-inc eps sigma)))))
+  (let [{:keys [eps sigma sigma-dt]} level
+        new-sigma (m+ sigma
+		    (e* sigma-dt
+		      (sigma-inc eps sigma)))]
+     ;; FIXME SCALAR-ONLY HACK:
+     (if (< new-sigma 1.0) ;; see Bogacz, end of sect 2.4
+       1.0
+       new-sigma)))
+
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; theta update
