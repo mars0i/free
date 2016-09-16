@@ -17,8 +17,14 @@
 (def ^:const use-core-matrix false)
 
 (if use-core-matrix
-  (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
-  (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]))
+  (do
+    (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
+    (println "limit-sigma not properly implemented for vectors: returns argument unchanged.")
+    (defn limit-sigma [sigma] sigma))
+  (do 
+    (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
+    (defn limit-sigma [sigma] ;; see Bogacz end of sect 2.4
+      (if (< sigma 1.0) 1.0 sigma))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -170,20 +176,15 @@
   (* 0.5 (m- (m-square eps)
              (inv sigma))))
 
-(println "Using scalar-only sigma hack.")
-
 (defn next-sigma
   "Calculates the next-timestep sigma, i.e. the variance or the covariance 
   matrix of the distribution of inputs at this level."
   [level]
-  (let [{:keys [eps sigma sigma-dt]} level
-        new-sigma (m+ sigma
-		    (e* sigma-dt
-		      (sigma-inc eps sigma)))]
-     ;; FIXME SCALAR-ONLY HACK:
-     (if (< new-sigma 1.0) ;; see Bogacz, end of sect 2.4
-       1.0
-       new-sigma)))
+  (let [{:keys [eps sigma sigma-dt]} level]
+    (limit-sigma
+      (m+ sigma
+          (e* sigma-dt
+              (sigma-inc eps sigma))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
