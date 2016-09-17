@@ -10,13 +10,17 @@
   (- (System/currentTimeMillis)
      (rand-int Integer/MAX_VALUE)))
 
+(defn flush-rng
+  [rng]
+  (dotimes [_ 1500] (.nextInt rng)))  ; see ;; https://listserv.gmu.edu/cgi-bin/wa?A1=ind1609&L=MASON-INTEREST-L#1
+
 (defn make-rng-mtf
   "Make an instance of a MersenneTwisterFast RNG and flush out its initial
   minimal lack of entropy."
   ([] (make-rng-mtf (make-long-seed)))
   ([long-seed] 
    (let [rng (MersenneTwisterFast. long-seed)]
-     (dotimes [_ 1500] (.nextInt rng))  ; see ;; https://listserv.gmu.edu/cgi-bin/wa?A1=ind1609&L=MASON-INTEREST-L#1
+     (flush-rng rng)
      rng))) 
 
 (def make-rng make-rng-mtf)
@@ -27,6 +31,13 @@
   (let [seed (make-long-seed)]
     (println seed)
     (make-rng seed)))
+
+(defn set-seed
+  [rng seed]
+  (.setSeed rng)
+  (flush-rng rng)
+  rng)
+
 
 (defn rand-idx [rng n] (.nextInt rng n))
 
