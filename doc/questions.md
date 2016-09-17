@@ -15,3 +15,8 @@ changing more slowly.  But isn't that the opposite of what I just said??
 
 Also, should the higher levels also go more slowly??  i.e. as you go
 higher, you update less often?  Or not?
+
+Well, it turns out that in practice, if phi-dt and sigma-dt at level 1
+are significantly slower than phi-dt at level 0, you consistently get
+behavior that's what you'd expect from the model.  Otherwise, it
+depends.
