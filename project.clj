@@ -3,6 +3,8 @@
   :url "https://github.com/mars0i/free"
   :license {:name "Gnu General Public License version 3.0"
             :url "http://www.gnu.org/copyleft/gpl.html"}
+  :source-paths ["src"]
+  :java-source-paths ["src/java"]
   :dependencies [[org.clojure/clojure "1.8.0"]
                  ;[org.clojure/clojure "1.9.0-alpha12"]
                  [org.clojure/math.numeric-tower "0.0.4"]

@@ -21,7 +21,7 @@
 (def init-theta (ar/make-identity-obj 1)) ; i.e. initially pass value of h(phi) through unchanged
 
 ;; bottom level params
-;(def next-bottom (lvl/make-next-bottom #(pd/sample-normal 1 :mean 2 :sd 5)))
+;(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 2 5)))
 
 ;; simple experiment to make data change over time (doesn't work?):
 (def ticks-between 10000)
@@ -32,11 +32,11 @@
                    (let [mean$ (atom 2)]
                      (fn []
                        (when (= (swap! tick$ inc) ticks-between)
-                       ;(when (= 0 (mod (swap! tick$ inc) ticks-between))
-                       ;(when (< (first (pd/sample-uniform 1)) 0.0005)
+                         ;(when (= 0 (mod (swap! tick$ inc) ticks-between))
+                         ;(when (< (first (pd/next-double)) 0.0005)
                          (println "input mean is now"
-                                  (swap! mean$ #(+ % (rand 10)))))
-                       (pd/sample-normal 1 :mean @mean$ :sd 5)))))
+                                  (swap! mean$ #(+ % (* 10 (pd/next-double))))))
+                       (pd/next-gaussian @mean$ 5)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; eps
