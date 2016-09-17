@@ -5,7 +5,8 @@
   "Plot phi, eps, sigma, and theta for all level records at level level-num
   in sequence stages.  If n is provided, take only n elements from stages.
   If every is also provided, use only the elements that are every steps apart.
-  Level 0 is the first level.  Returns the plot object."
+  Level 0 is the first level.  NOTE: Assumes all values are scalars.  Returns 
+  the plot object."
   ([stages level-num n every]
    (plot-level (take-nth every (take n stages)) level-num))
   ([stages level-num n]
