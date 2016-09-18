@@ -29,14 +29,16 @@
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
 (def next-bottom (lvl/make-next-bottom 
-                   (let [mean$ (atom 2)]
+                   (let [mean$ (atom 2)
+                         sd$ (atom 5)]
                      (fn []
                        (when (= (swap! tick$ inc) ticks-between)
                          ;(when (= 0 (mod (swap! tick$ inc) ticks-between))
                          ;(when (< (first (pd/next-double)) 0.0005)
+                         (reset! sd$ 50)
                          (println "input mean is now"
                                   (swap! mean$ #(+ % (* 10 (pd/next-double))))))
-                       (pd/next-gaussian @mean$ 5)))))
+                       (pd/next-gaussian @mean$ @sd$)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; eps
