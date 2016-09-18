@@ -5,11 +5,6 @@
             [free.level :as lvl]
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
-;; see level creation functions for dt's
-;(def dt 0.01) ; for phi and eps
-;(def sigma-dt 0.0)
-;(def theta-dt 0.0)
-
 ;; Generative function phi^2:
 (defn h  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
 (defn h' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
@@ -20,11 +15,12 @@
 
 (def init-theta (ar/make-identity-obj 1)) ; i.e. initially pass value of h(phi) through unchanged
 
-;; bottom level params
+;; simple next-bottom function
 ;(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 2 5)))
 
-;; simple experiment to make data change over time (doesn't work?):
-(def ticks-between 5000)
+;; experimental next-bottom function
+(def ticks-between 2000)
+(def top-tick 50000)
 (def tick$ (atom 0))
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
@@ -32,12 +28,11 @@
                    (let [mean$ (atom 2)
                          sd$ (atom 5)]
                      (fn []
-                       (when (= (swap! tick$ inc) ticks-between)
-                         ;(when (= 0 (mod (swap! tick$ inc) ticks-between))
-                         ;(when (< (first (pd/next-double)) 0.0005)
-                         (reset! sd$ 50)
-                         (println "input mean is now"
-                                  (swap! mean$ #(+ % (* 10 (pd/next-double))))))
+                       (swap! tick$ inc)
+                       (when (and
+                               (< @tick$ top-tick)
+                               (= 0 (mod @tick$ ticks-between)))
+                         (println (swap! mean$ #(+ % (* 10 (pd/next-double))))))
                        (pd/next-gaussian @mean$ @sd$)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
@@ -73,7 +68,7 @@
                   :phi-dt 0.00001
                   :eps-dt 0.001
                   :sigma-dt 0.0001
-                  :theta-dt 0.001}))
+                  :theta-dt 0.0}))
 
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :h ; other fields will be nil
 
