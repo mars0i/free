@@ -213,6 +213,16 @@ new prior mean, so to speak.  It doesn't make sense to have this
 happening at the bottom level (though it might be appropriate at level
 2 and up, if I had a real level 2).
 
+## eps and theta
+
+As a remark above might suggest, there's this tradeoff between eps and
+theta.  When theta can adjust itself, eps quickly goes to zero and
+stays there.  i.e. theta adjusts the generative function in such a way
+that it's just accurate.  Interestingly, the amount of noisiness to
+the data (e.g. the sd) doesn't seem to matter.  When theta is fixed,
+though, epsilon might depart from zero (and have a shape that's
+reminsicent of theta's when it can change).
+
 ### slow theta?
 
 Maybe theta-dt should be smaller than phi-dt, though.  The point is to
