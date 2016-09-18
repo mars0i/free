@@ -1,4 +1,4 @@
-notes on example-1
+notes on example-1 experiments
 ====
 
 Consider this, with the config as of 9/12, 9/13:
@@ -263,3 +263,16 @@ Initially, phi goes low--below 1--but then it comes back up, and:
 * eps settles to around 0.
 * sigma goes down very slowly
 
+
+### increasing sigma
+
+With fixed mean to the random data, normally sigma goes down to zero, or
+to 1 if that's where I stop it.  Which is interesting since there is
+still noisiness.
+
+However, if I keep increasing the mean, and then stop doing so after 50K
+ticks, and don't allow theta to adjust (as in example-2), sigma keeps
+going up.  The slope *is* decreasing, gradually, but I ran this out to
+5,000,000 ticks, and it's still going up.  Even though the mean has
+completely stabilized, and phi has stabilized.  Though it's
+interesting that eps is not at zero, but a bit above it--maybe 1/3.
