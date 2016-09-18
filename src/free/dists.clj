@@ -2,15 +2,19 @@
   (require [utils.random :as ran]))
 
 (def session-id (ran/make-long-seed)) (println "Session id/seed:" session-id)
-(def rng (ran/make-rng session-id))
+(def rng$ (atom (ran/make-rng session-id)))
+
+(defn set-new-rng!
+  ([]     (reset! rng$ (ran/make-rng)))
+  ([seed] (reset! rng$ (ran/make-rng seed))))
 
 (defn next-gaussian
-  ([] (ran/next-gaussian rng))
-  ([mean sd] (ran/next-gaussian rng mean sd)))
+  ([] (ran/next-gaussian @rng$))
+  ([mean sd] (ran/next-gaussian @rng$ mean sd)))
 
 (defn next-double
-  ([] (ran/next-double rng))
-  ([mean sd] (ran/next-double rng mean sd)))
+  ([] (ran/next-double @rng$))
+  ([mean sd] (ran/next-double @rng$ mean sd)))
 
 ;; Incanter versions:
 ;;  (:require [incanter.stats :as istat]))

@@ -32,11 +32,11 @@
     (println seed)
     (make-rng seed)))
 
-(defn set-seed
-  [rng seed]
-  (.setSeed rng)
-  (flush-rng rng)
-  rng)
+;(defn set-seed
+;  [rng seed]
+;  (.setSeed rng)
+;  (flush-rng rng)
+;  rng)
 
 
 (defn rand-idx [rng n] (.nextInt rng n))
