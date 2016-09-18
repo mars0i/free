@@ -24,6 +24,8 @@
 (def tick$ (atom 0))
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
+;; TODO I really ought to get rid of this atom stuff and do it instead
+;; with args passed along.  Maybe.
 (def next-bottom (lvl/make-next-bottom 
                    (let [mean$ (atom 2)
                          sd$ (atom 5)]
@@ -46,32 +48,44 @@
 (def sigma-p 2) ; controls how close to true value at level 1
 (def error-p 0)
 
-(def init-bot
-  (lvl/map->Level {:phi 0 ; needs a number for eps-inc on 1st tick; immediately replaced by next-bottom
-                  :eps error-u
-                  :sigma sigma-u
-                  :theta init-theta
-                  :h  nil ; unused at bottom since eps update uses higher h
-                  :h' nil ; unused at bottom since phi comes from outside
-                  :phi-dt 0.001
-                  :eps-dt 0.001
-                  :sigma-dt 0.0
-                  :theta-dt 0.0}))
+(def bot-map {:phi 0 ; needs a number for eps-inc on 1st tick; immediately replaced by next-bottom
+              :eps error-u
+              :sigma sigma-u
+              :theta init-theta
+              :h  nil ; unused at bottom since eps update uses higher h
+              :h' nil ; unused at bottom since phi comes from outside
+              :phi-dt 0.001
+              :eps-dt 0.001
+              :sigma-dt 0.0
+              :theta-dt 0.0})
 
-(def init-mid
-  (lvl/map->Level {:phi v-p
-                  :eps error-p
-                  :sigma sigma-p
-                  :theta init-theta
-                  :h  h  ; used to calc error at next level down, i.e. eps
-                  :h' h' ; used to update phi at this level
-                  :phi-dt 0.00001
-                  :eps-dt 0.001
-                  :sigma-dt 0.0001
-                  :theta-dt 0.0}))
+(def mid-map {:phi v-p
+              :eps error-p
+              :sigma sigma-p
+              :theta init-theta
+              :h  h  ; used to calc error at next level down, i.e. eps
+              :h' h' ; used to update phi at this level
+              :phi-dt 0.00001
+              :eps-dt 0.001
+              :sigma-dt 0.0001
+              :theta-dt 0.001})
 
+(def init-bot (lvl/map->Level bot-map))
+;; mid-level state with adjustable theta:
+(def init-mid (lvl/map->Level mid-map))
+;; alt mid-level state with fixed theta:
+(def init-mid-fixed-theta (lvl/map->Level (assoc mid-map :theta-dt 0.0)))
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :h ; other fields will be nil
 
-(def init-levels [init-bot init-mid top])
-
-(def stages (iterate (partial lvl/next-levels next-bottom) init-levels))
+(def flux-theta-1  (iterate (partial lvl/next-levels next-bottom)
+                            [init-bot init-mid top]))
+;; FIXME NOT WORKING RIGHT:
+(reset! tick$ 0)
+(def flux-theta-2  (iterate (partial lvl/next-levels next-bottom)
+                            [init-bot init-mid top]))
+(reset! tick$ 0)
+(def flux-theta-3  (iterate (partial lvl/next-levels next-bottom)
+                            [init-bot init-mid top]))
+(reset! tick$ 0)
+(def fixed-theta (iterate (partial lvl/next-levels next-bottom)
+                          [init-bot init-mid-fixed-theta top]))
