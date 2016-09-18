@@ -1,7 +1,7 @@
 (ns free.dists
   (require [utils.random :as ran]))
 
-(def session-id (ran/make-long-seed)) (println "Session id/seed:" session-id)
+(def session-id (ran/make-long-seed)) (println "seed:" session-id)
 (def rng$ (atom (ran/make-rng session-id)))
 
 (defn set-new-rng!
