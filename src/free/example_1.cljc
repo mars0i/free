@@ -24,7 +24,7 @@
 ;(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 2 5)))
 
 ;; simple experiment to make data change over time (doesn't work?):
-(def ticks-between 10000)
+(def ticks-between 5000)
 (def tick$ (atom 0))
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
