@@ -271,8 +271,23 @@ to 1 if that's where I stop it.  Which is interesting since there is
 still noisiness.
 
 However, if I keep increasing the mean, and then stop doing so after 50K
-ticks, and don't allow theta to adjust (as in example-2), sigma keeps
-going up.  The slope *is* decreasing, gradually, but I ran this out to
-5,000,000 ticks, and it's still going up.  Even though the mean has
-completely stabilized, and phi has stabilized.  Though it's
-interesting that eps is not at zero, but a bit above it--maybe 1/3.
+ticks, *and don't allow theta to adjust* (as in example-2), sigma keeps
+going up--even after the input data mean stops going up.  The slope *is*
+decreasing, gradually, but I ran this out to 5,000,000 ticks, and it's
+still going up.  Even though the mean has completely stabilized, and phi
+has stabilized.  Though it's interesting that eps is not at zero, but a
+bit above it--maybe 1/3.  eps fluctuages a tiny bit in a way that's
+visibly somewhat periodic.
+
+Q: Why does sigma keep going up for this model?
+
+A: Because eps remains steady at a value > 0.  `next-sigma`, which
+depends only on `eps` and `sigma` at that same level, subtracts
+`1/sigma` from the square of `eps` (and then divides by 2).  As `sigma` goes up, `1/sigma`
+gets smaller, so it has less and less of an effect, but with `eps`
+roughly constant, there's always going to be something added to the
+old `sigma`.  This value approaches `(eps^2)/2`, but it can't be any
+smaller than that.  So `sigma` will go up forever (as long as `eps`
+remains positive).
+
+Q: Why does eps remain positive at a roughly constant value?
