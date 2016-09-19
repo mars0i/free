@@ -290,39 +290,48 @@ old `sigma`.  This value approaches `(eps^2)/2`, but it can't be any
 smaller than that.  So `sigma` will go up forever (as long as `eps`
 remains positive).
 
-NOTE that this effect seems consistent for models in which there's a
+*Note* that this effect seems consistent for models in which there's a
 large jump up in the mean--even if it's just one jump, and you give
 the system lots of time to recover.  If eps is going to go to zero,
 it's *very* slowly, and changing eps-dt doesn't seem to make a
 difference.
 
-HOWEVER, you don't get the ever-increasing sigma when there's no jump
+*However*, you don't get the ever-increasing sigma when there's no jump
 up or when there's a jump down.  eps goes negative and is stable
 there, apparently.  Which means that eps squared is still positive,
 so it's odd that this case is different from the one with the jump up.
 
-SO it seems it's more complicated than my answer suggests.
+So it seems it's more complicated than my answer suggests.
 
 Oh wait.  I think I was looking at a special case.
-
 Now I understand.
 
 **Here's the rule for whether sigma goes up forever, goes down until
 stopped, or is stable:**
 
-1. If eps is non-zero, its absolute value is all that matters, since
-   it will be squared in sigma-inc.  This will tend to drive sigma in
+1. If `eps` is non-zero, its absolute value is all that matters, since
+   it will be squared in `sigma-inc`.  This will tend to drive `sigma` in
    one direction or another.
 
 2. Whether the result of `sigma-inc` is positive or negative depends on
-   whether 1/sigma is less than or greater than eps squared.  If eps
-   and sigma end up at values where these two computed values are
-   (roughly) equal, then sigma will be (roughly) stable.
+   whether `1/sigma` is less than or greater than `eps` squared.  If `eps`
+   and `sigma` end up at values where those two computed values are
+   (roughly) equal, then `sigma` will be (roughly) stable.
+
+3. If `eps` is zero (which is what should happen if theta's allowed to
+   adjust), then sigma will gradually decrease until it's stopped:
+   `sigma-inc` simply subtracts `1/sigma` from 0 in that case
+   (and multiplies the result by 1/2).  So `sigma-inc` is then always negative,
+   (and increasingly so as it gets smaller).  However, since `sigma` is
+   multiplied by `eps` (at the same level) in `eps-inc`, the value of
+   sigma won't affect `eps`, which will thus remain at zero (unless
+   something happens with the `phi`-derived value coming down from above).
 
 
-**Q: Why does eps remain positive at a roughly constant value?**
+**Q: Why does `eps` remain positive at a roughly constant value?**
 Or negative at a constant value?
 
 A: I think this is just because the mean coming down from the top level
-is always out of wack with the data.  So you always get an error value,
-unless you let theta adjust.
+is always out of wack with the data if `theta` doesn't adjust the value
+coming from the top.  So you always get an error value, unless you let
+`theta` adjust.
