@@ -19,23 +19,28 @@
 ;(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 2 5)))
 
 ;; experimental next-bottom function
-(def ticks-between 2000)
+(def ticks-between 1000)
 (def top-tick 50000)
 (def tick$ (atom 0))
+(def mean$ (atom 50))
+(def sd$ (atom 3))
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
 ;; TODO I really ought to get rid of this atom stuff and do it instead
 ;; with args passed along.  Maybe.
 (def next-bottom (lvl/make-next-bottom 
-                   (let [mean$ (atom 2)
-                         sd$ (atom 5)]
-                     (fn []
-                       (swap! tick$ inc)
-                       (when (and
-                               (< @tick$ top-tick)
-                               (= 0 (mod @tick$ ticks-between)))
-                         (println (swap! mean$ #(+ % (* 10 (pd/next-double))))))
-                       (pd/next-gaussian @mean$ @sd$)))))
+                   (fn []
+                     (swap! tick$ inc)
+                     (when (and
+                             ;(< @tick$ top-tick)
+                             (= 0 (mod @tick$ ticks-between)))
+                       ;(println (swap! mean$ #(+ % (+ -1.5 (* 3 (pd/next-double))))))
+                       ;(println 
+                         (swap! mean$ #(let [new-mean (+ % (if (< (pd/next-double) 0.5) 1 -1))] ; symmetric random walk
+                                                (if (pos? new-mean) new-mean 1))) ; clipped below 1
+                       ;         )
+                       )
+                     (pd/next-gaussian @mean$ @sd$))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; eps
@@ -54,8 +59,8 @@
               :theta init-theta
               :h  nil ; unused at bottom since eps update uses higher h
               :h' nil ; unused at bottom since phi comes from outside
-              :phi-dt 0.001
-              :eps-dt 0.001
+              :phi-dt 0.01
+              :eps-dt 0.01
               :sigma-dt 0.0
               :theta-dt 0.0})
 
@@ -68,7 +73,7 @@
               :phi-dt 0.00001
               :eps-dt 0.001
               :sigma-dt 0.0001
-              :theta-dt 0.0})
+              :theta-dt 0.0001})
 
 (def init-bot (lvl/map->Level bot-map))
 ;; mid-level state with adjustable theta:
@@ -77,15 +82,16 @@
 (def init-mid-fixed-theta (lvl/map->Level (assoc mid-map :theta-dt 0.0)))
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :h ; other fields will be nil
 
-(def stages (iterate (partial lvl/next-levels next-bottom) [init-bot init-mid top]))
+;(def stages (iterate (partial lvl/next-levels next-bottom) [init-bot init-mid top]))
+(defn make-stages [] (iterate (partial lvl/next-levels next-bottom)
+                              [init-bot init-mid top]))
 
-;; FIXME NOT WORKING RIGHT:
-;(reset! tick$ 0)
-;(def flux-theta-2  (iterate (partial lvl/next-levels next-bottom)
-;                            [init-bot init-mid top]))
-;(reset! tick$ 0)
-;(def flux-theta-3  (iterate (partial lvl/next-levels next-bottom)
-;                            [init-bot init-mid top]))
-;(reset! tick$ 0)
-;(def fixed-theta (iterate (partial lvl/next-levels next-bottom)
-;                          [init-bot init-mid-fixed-theta top]))
+;; e.g.
+;;(plot-level (make-stages)) 1 1000000 1000) ; uses regular sequence ops
+;; with transducer:
+;;(plot-level (sequence (comp (take 1000000) (take-nth 1000)) (make-stages)) 1)
+;;(plot-level (into []  (comp (take 1000000) (take-nth 1000)) (make-stages)) 1)
+;; or even more efficient:
+;; (plot-level (sequence (comp (take 1000000000) (take-nth 10000) (map #(nth % 1))) (make-stages)))
+;; (plot-level (into []  (comp (take 1000000000) (take-nth 10000) (map #(nth % 1))) (make-stages)))
+;; Note however that at present plot-level has to realize the entire sequence passed in.
