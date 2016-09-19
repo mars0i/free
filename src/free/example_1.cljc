@@ -24,15 +24,15 @@
 (def tick$ (atom 0))
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
+;; TODO I really ought to get rid of this atom stuff and do it instead
+;; with args passed along.  Maybe.
 (def next-bottom (lvl/make-next-bottom 
                    (let [mean$ (atom 2)
                          sd$ (atom 5)]
                      (fn []
                        (swap! tick$ inc)
-                       (when (and
-                               (< @tick$ top-tick)
-                               (= 0 (mod @tick$ ticks-between)))
-                         (println (swap! mean$ #(+ % (* 10 (pd/next-double))))))
+                       (when (== @tick$ top-tick)
+                         (println (swap! mean$ #(+ % 50))))
                        (pd/next-gaussian @mean$ @sd$)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
@@ -74,4 +74,4 @@
 
 (def init-levels [init-bot init-mid top])
 
-(def stages (iterate (partial lvl/next-levels next-bottom) init-levels))
+;(def stages (iterate (partial lvl/next-levels next-bottom) init-levels))

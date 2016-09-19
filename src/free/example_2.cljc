@@ -68,7 +68,7 @@
               :phi-dt 0.00001
               :eps-dt 0.001
               :sigma-dt 0.0001
-              :theta-dt 0.001})
+              :theta-dt 0.0})
 
 (def init-bot (lvl/map->Level bot-map))
 ;; mid-level state with adjustable theta:
@@ -77,15 +77,15 @@
 (def init-mid-fixed-theta (lvl/map->Level (assoc mid-map :theta-dt 0.0)))
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :h ; other fields will be nil
 
-(def flux-theta-1  (iterate (partial lvl/next-levels next-bottom)
-                            [init-bot init-mid top]))
+(def stages (iterate (partial lvl/next-levels next-bottom) [init-bot init-mid top]))
+
 ;; FIXME NOT WORKING RIGHT:
-(reset! tick$ 0)
-(def flux-theta-2  (iterate (partial lvl/next-levels next-bottom)
-                            [init-bot init-mid top]))
-(reset! tick$ 0)
-(def flux-theta-3  (iterate (partial lvl/next-levels next-bottom)
-                            [init-bot init-mid top]))
-(reset! tick$ 0)
-(def fixed-theta (iterate (partial lvl/next-levels next-bottom)
-                          [init-bot init-mid-fixed-theta top]))
+;(reset! tick$ 0)
+;(def flux-theta-2  (iterate (partial lvl/next-levels next-bottom)
+;                            [init-bot init-mid top]))
+;(reset! tick$ 0)
+;(def flux-theta-3  (iterate (partial lvl/next-levels next-bottom)
+;                            [init-bot init-mid top]))
+;(reset! tick$ 0)
+;(def fixed-theta (iterate (partial lvl/next-levels next-bottom)
+;                          [init-bot init-mid-fixed-theta top]))
