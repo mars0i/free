@@ -68,7 +68,7 @@
                   :phi-dt 0.00001
                   :eps-dt 0.001
                   :sigma-dt 0.0001
-                  :theta-dt 0.0}))
+                  :theta-dt 0.01}))
 
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :h ; other fields will be nil
 
