@@ -1,4 +1,4 @@
-notes on example-1 experiments
+Notes on qualitative effects of parameter changes on results
 ====
 
 Consider this, with the config as of 9/12, 9/13:
@@ -213,7 +213,7 @@ new prior mean, so to speak.  It doesn't make sense to have this
 happening at the bottom level (though it might be appropriate at level
 2 and up, if I had a real level 2).
 
-## eps and theta
+### eps and theta
 
 As a remark above might suggest, there's this tradeoff between eps and
 theta.  When theta can adjust itself, eps quickly goes to zero and
@@ -279,7 +279,7 @@ has stabilized.  Though it's interesting that eps is not at zero, but a
 bit above it--maybe 1/3.  eps fluctuages a tiny bit in a way that's
 visibly somewhat periodic.
 
-Q: Why does sigma keep going up for this model?
+**Q: Why does sigma keep going up for this model?**
 
 A: Because eps remains steady at a value > 0.  `next-sigma`, which
 depends only on `eps` and `sigma` at that same level, subtracts
@@ -290,4 +290,39 @@ old `sigma`.  This value approaches `(eps^2)/2`, but it can't be any
 smaller than that.  So `sigma` will go up forever (as long as `eps`
 remains positive).
 
-Q: Why does eps remain positive at a roughly constant value?
+NOTE that this effect seems consistent for models in which there's a
+large jump up in the mean--even if it's just one jump, and you give
+the system lots of time to recover.  If eps is going to go to zero,
+it's *very* slowly, and changing eps-dt doesn't seem to make a
+difference.
+
+HOWEVER, you don't get the ever-increasing sigma when there's no jump
+up or when there's a jump down.  eps goes negative and is stable
+there, apparently.  Which means that eps squared is still positive,
+so it's odd that this case is different from the one with the jump up.
+
+SO it seems it's more complicated than my answer suggests.
+
+Oh wait.  I think I was looking at a special case.
+
+Now I understand.
+
+**Here's the rule for whether sigma goes up forever, goes down until
+stopped, or is stable:**
+
+1. If eps is non-zero, its absolute value is all that matters, since
+   it will be squared in sigma-inc.  This will tend to drive sigma in
+   one direction or another.
+
+2. Whether the result of `sigma-inc` is positive or negative depends on
+   whether 1/sigma is less than or greater than eps squared.  If eps
+   and sigma end up at values where these two computed values are
+   (roughly) equal, then sigma will be (roughly) stable.
+
+
+**Q: Why does eps remain positive at a roughly constant value?**
+Or negative at a constant value?
+
+A: I think this is just because the mean coming down from the top level
+is always out of wack with the data.  So you always get an error value,
+unless you let theta adjust.
