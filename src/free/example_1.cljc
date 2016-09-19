@@ -75,3 +75,17 @@
 (def init-levels [init-bot init-mid top])
 
 ;(def stages (iterate (partial lvl/next-levels next-bottom) init-levels))
+(defn make-stages []
+  (iterate (partial lvl/next-levels next-bottom) init-levels))
+
+;; e.g.
+;;(plot-level (make-stages)) 1 1000000 1000) ; uses regular sequence ops
+;; with transducer:
+;;(plot-level (sequence (comp (take 1000000) (take-nth 1000)) (make-stages)) 1)
+;;(plot-level (into []  (comp (take 1000000) (take-nth 1000)) (make-stages)) 1)
+;; or even more efficient:
+;; (plot-level (sequence (comp (take 1000000000)
+;;                             (take-nth 10000)
+;;                             (map #(nth % 1)))
+;;                       (make-stages)))
+
