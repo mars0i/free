@@ -27,12 +27,12 @@
 ;; TODO I really ought to get rid of this atom stuff and do it instead
 ;; with args passed along.  Maybe.
 (def next-bottom (lvl/make-next-bottom 
-                   (let [mean$ (atom 2)
+                   (let [mean$ (atom 52)
                          sd$ (atom 5)]
                      (fn []
                        (swap! tick$ inc)
                        (when (== @tick$ top-tick)
-                         (println (swap! mean$ #(+ % 50))))
+                         (println (swap! mean$ #(- % 40))))
                        (pd/next-gaussian @mean$ @sd$)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
