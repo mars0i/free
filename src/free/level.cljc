@@ -123,20 +123,21 @@
   the generative function scaling factor theta and the derivative h' of 
   the generative function h at this level, and subtracting the error at 
   this level.  See equations (44), (53) in Bogacz's \"Tutorial\"."
-  [phi eps -eps theta h']
+  [phi eps -eps -theta h']
   (m- (e* (h' phi)
-          (m* (tr theta) -eps))
+          (m* (tr -theta) -eps))
       eps))
 
 (defn next-phi 
   "Calculates the the next-timestep 'hypothesis' phi from this level 
   and the one below."
   [-level level]
-  (let [{:keys [phi phi-dt eps theta h']} level
-        -eps (:eps -level)]
+  (let [{:keys [phi phi-dt eps h']} level
+        -eps (:eps -level)
+        -theta (:theta -level)]
     (m+ phi 
         (e* phi-dt
-            (phi-inc phi eps -eps theta h')))))
+            (phi-inc phi eps -eps -theta h')))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; epsilon update
