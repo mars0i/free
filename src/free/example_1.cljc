@@ -16,24 +16,24 @@
 (def init-gen-wt (ar/make-identity-obj 1)) ; i.e. initially pass value of gen(phi) througgen unchanged
 
 ;; simple next-bottom function
-;(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 2 5)))
+(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 9 21)))
 
 ;; experimental next-bottom function
-(def ticks-between 2000)
-(def top-tick 20000)
-(def tick$ (atom 0))
+;(def ticks-between 2000)
+;(def top-tick 20000)
+;(def tick$ (atom 0))
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
 ;; TODO I really ought to get rid of this atom stuff and do it instead
-;; witgen args passed along.  Maybe.
-(def next-bottom (lvl/make-next-bottom 
-                   (let [mean$ (atom 52)
-                         sd$ (atom 5)]
-                     (fn []
-                       (swap! tick$ inc)
-                       (when (== @tick$ top-tick)
-                         (println (swap! mean$ #(- % 40))))
-                       (pd/next-gaussian @mean$ @sd$)))))
+;; with args passed along.  Maybe.
+;(def next-bottom (lvl/make-next-bottom 
+;                   (let [mean$ (atom 52)
+;                         sd$ (atom 5)]
+;                     (fn []
+;                       (swap! tick$ inc)
+;                       (when (== @tick$ top-tick)
+;                         (println (swap! mean$ #(- % 40))))
+;                       (pd/next-gaussian @mean$ @sd$)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; err
@@ -42,7 +42,7 @@
 ;; it will immediately replaced when next-bottom is run.
 
 ;; middle level params
-(def v-p 3) ; what phi is initialized to, and prior mean at top
+(def v-p 5) ; what phi is initialized to, and prior mean at top
 (def sigma-p 2) ; controls how close to true value at level 1
 (def error-p 0)
 
@@ -53,7 +53,7 @@
                   :gen-wt init-gen-wt
                   :gen  nil ; unused at bottom since err update uses higher gen
                   :gen' nil ; unused at bottom since phi comes from outside
-                  :phi-dt 0.001
+                  :phi-dt 0.01
                   :err-dt 0.001
                   :sigma-dt 0.0
                   :gen-wt-dt 0.0}))
@@ -67,7 +67,7 @@
                   :gen' gen' ; used to update phi at this level
                   :phi-dt 0.00001
                   :err-dt 0.001
-                  :sigma-dt 0.0001
+                  :sigma-dt 0.001
                   :gen-wt-dt 0.01}))
 
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :gen ; other fields will be nil
