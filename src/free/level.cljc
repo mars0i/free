@@ -174,7 +174,7 @@
   rather than the local update methods of section 5.)"
   [eps sigma]
   (e* 0.5 (m- (m-square eps)
-             (inv sigma))))
+              (inv sigma))))
 
 (defn next-sigma
   "Calculates the next-timestep sigma, i.e. the variance or the covariance 
