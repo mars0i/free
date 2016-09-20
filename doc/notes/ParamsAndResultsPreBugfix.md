@@ -1,6 +1,8 @@
 Notes on qualitative effects of parameter changes on results
 ====
 
+## From before I fixed phi-inc by changing theta to -theta 9/19/2016.
+
 Consider this, with the config as of 9/12, 9/13:
 
     (def dt 0.01) ; for phi and eps
