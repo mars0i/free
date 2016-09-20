@@ -6,14 +6,14 @@
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
 ;; Generative function phi^2:
-(defn h  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
-(defn h' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
+(defn gen  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
+(defn gen' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
 
 ;; Alternative generative function phi^8:
-;(defn h  [phi] (nt/expt phi 8))
-;(defn h' [phi] (* 8.0 (nt/expt phi 7.0))) 
+;(defn gen  [phi] (nt/expt phi 8))
+;(defn gen' [phi] (* 8.0 (nt/expt phi 7.0))) 
 
-(def init-theta (ar/make-identity-obj 1)) ; i.e. initially pass value of h(phi) through unchanged
+(def init-gen-wt (ar/make-identity-obj 1)) ; i.e. initially pass value of gen(phi) through unchanged
 
 ;; simple next-bottom function
 ;(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 2 5)))
@@ -45,9 +45,9 @@
                      (pd/next-gaussian @mean$ @sd$))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
-(def error-u 0) ; eps
+(def error-u 0) ; err
 ;; Note that the bottom-level phi needs to be an arbitrary number so that 
-;; eps-inc doesn't NPE on the first tick, but the number doesn't matter, and 
+;; err-inc doesn't NPE on the first tick, but the number doesn't matter, and 
 ;; it will immediately replaced when next-bottom is run.
 
 ;; middle level params
@@ -55,34 +55,34 @@
 (def sigma-p 2) ; controls how close to true value at level 1
 (def error-p 0)
 
-(def bot-map {:phi 0 ; needs a number for eps-inc on 1st tick; immediately replaced by next-bottom
-              :eps error-u
+(def bot-map {:phi 0 ; needs a number for err-inc on 1st tick; immediately replaced by next-bottom
+              :err error-u
               :sigma sigma-u
-              :theta init-theta
-              :h  nil ; unused at bottom since eps update uses higher h
-              :h' nil ; unused at bottom since phi comes from outside
+              :gen-wt init-gen-wt
+              :gen  nil ; unused at bottom since err update uses higher gen
+              :gen' nil ; unused at bottom since phi comes from outside
               :phi-dt 0.01
-              :eps-dt 0.01
+              :err-dt 0.01
               :sigma-dt 0.0
-              :theta-dt 0.0})
+              :gen-wt-dt 0.0})
 
 (def mid-map {:phi v-p
-              :eps error-p
+              :err error-p
               :sigma sigma-p
-              :theta init-theta
-              :h  h  ; used to calc error at next level down, i.e. eps
-              :h' h' ; used to update phi at this level
+              :gen-wt init-gen-wt
+              :gen  gen  ; used to calc error at next level down, i.e. err
+              :gen' gen' ; used to update phi at this level
               :phi-dt 0.00001
-              :eps-dt 0.001
+              :err-dt 0.001
               :sigma-dt 0.0001
-              :theta-dt 0.01})
+              :gen-wt-dt 0.01})
 
 (def init-bot (lvl/map->Level bot-map))
-;; mid-level state with adjustable theta:
+;; mid-level state with adjustable gen-wt:
 (def init-mid (lvl/map->Level mid-map))
-;; alt mid-level state with fixed theta:
-(def init-mid-fixed-theta (lvl/map->Level (assoc mid-map :theta-dt 0.0)))
-(def top (lvl/make-top-level v-p)) ; will have phi, and identity as :h ; other fields will be nil
+;; alt mid-level state with fixed gen-wt:
+(def init-mid-fixed-gen-wt (lvl/map->Level (assoc mid-map :gen-wt-dt 0.0)))
+(def top (lvl/make-top-level v-p)) ; will have phi, and identity as :gen ; other fields will be nil
 
 ;(def stages (iterate (partial lvl/next-levels next-bottom) [init-bot init-mid top]))
 (defn make-stages [] (iterate (partial lvl/next-levels next-bottom)

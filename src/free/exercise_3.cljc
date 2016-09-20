@@ -20,14 +20,14 @@
 
 ;; The data that results is supposed to look like the rhs of fig. 2.
 ;; i.e. phi from the middle level is phi in that plot;
-;; eps from middle is eps_p and eps from bottom is eps_u.
+;; err from middle is err_p and err from bottom is err_u.
 ;; Here's one way to do this:
 ;; 
-;; (def s500 (take 500 stages)) ; number of timesteps Bogacz uses: (/ 5 0.01)
+;; (def s500 (take 500 stages)) ; number of timesterr Bogacz uses: (/ 5 0.01)
 ;; (use '[incanter.charts])
 ;; (def xy (xy-plot (range) (map (comp :phi second) s500)))
-;; (add-lines xy    (range) (map (comp :eps second) s500))
-;; (add-lines xy    (range) (map (comp :eps first)  s500))
+;; (add-lines xy    (range) (map (comp :err second) s500))
+;; (add-lines xy    (range) (map (comp :err first)  s500))
 ;; (use '[incanter.core])
 ;; (view xy)
 ;; (use '[incanter.pdf])
@@ -38,13 +38,13 @@
 (def dt 0.01) ; version in Bogacz
 
 ;; all-level parameters
-(def theta (make-identity-obj 1)) ; i.e. pass value of h(phi) through unchanged
-(defn h  [phi] (lvl/m-square phi))
-(defn h' [phi] (m* phi 2))
+(def gen-wt (make-identity-obj 1)) ; i.e. pass value of gen(phi) through unchanged
+(defn gen  [phi] (lvl/m-square phi))
+(defn gen' [phi] (m* phi 2))
 
 ;; bottom level params
 (def u 2)       ; phi
-(def error-u 0) ; eps
+(def error-u 0) ; err
 (def sigma-u 1)
 (def next-bottom (lvl/make-next-bottom (constantly u)))
 
@@ -55,27 +55,27 @@
 
 (def init-bot
   (lvl/map->Level {:phi u
-                  :eps error-u
+                  :err error-u
                   :sigma sigma-u
-                  :theta theta   ; preserves h(phi)
-                  :h  nil ; unused at bottom since eps update uses higher h
-                  :h' nil ; unused at bottom since phi comes from outside
+                  :gen-wt gen-wt   ; preserves gen(phi)
+                  :gen  nil ; unused at bottom since err update uses higher gen
+                  :gen' nil ; unused at bottom since phi comes from outside
                   :phi-dt dt
-                  :eps-dt dt
+                  :err-dt dt
                   :sigma-dt 0    ; sigma never changes
-                  :theta-dt 0})) ; theta never changes
+                  :gen-wt-dt 0})) ; gen-wt never changes
 
 (def init-mid
   (lvl/map->Level {:phi v-p
-                  :eps error-p
+                  :err error-p
                   :sigma sigma-p
-                  :theta theta       ; preserves h(phi)
-                  :h  h
-                  :h' h'
+                  :gen-wt gen-wt       ; preserves gen(phi)
+                  :gen  gen
+                  :gen' gen'
                   :phi-dt dt
-                  :eps-dt dt
+                  :err-dt dt
                   :sigma-dt 0    ; sigma never changes
-                  :theta-dt 0})) ; theta never changes
+                  :gen-wt-dt 0})) ; gen-wt never changes
 
 (def top (lvl/make-top-level v-p))
 

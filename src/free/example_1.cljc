@@ -6,14 +6,14 @@
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
 ;; Generative function phi^2:
-(defn h  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
-(defn h' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
+(defn gen  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
+(defn gen' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
 
 ;; Alternative generative function phi^8:
-;(defn h  [phi] (nt/expt phi 8))
-;(defn h' [phi] (* 8.0 (nt/expt phi 7.0))) 
+;(defn gen  [phi] (nt/expt phi 8))
+;(defn gen' [phi] (* 8.0 (nt/expt phi 7.0))) 
 
-(def init-theta (ar/make-identity-obj 1)) ; i.e. initially pass value of h(phi) through unchanged
+(def init-gen-wt (ar/make-identity-obj 1)) ; i.e. initially pass value of gen(phi) througgen unchanged
 
 ;; simple next-bottom function
 ;(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 2 5)))
@@ -25,7 +25,7 @@
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
 ;; TODO I really ought to get rid of this atom stuff and do it instead
-;; with args passed along.  Maybe.
+;; witgen args passed along.  Maybe.
 (def next-bottom (lvl/make-next-bottom 
                    (let [mean$ (atom 52)
                          sd$ (atom 5)]
@@ -36,9 +36,9 @@
                        (pd/next-gaussian @mean$ @sd$)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
-(def error-u 0) ; eps
+(def error-u 0) ; err
 ;; Note that the bottom-level phi needs to be an arbitrary number so that 
-;; eps-inc doesn't NPE on the first tick, but the number doesn't matter, and 
+;; err-inc doesn't NPE on the first tick, but the number doesn't matter, and 
 ;; it will immediately replaced when next-bottom is run.
 
 ;; middle level params
@@ -47,30 +47,30 @@
 (def error-p 0)
 
 (def init-bot
-  (lvl/map->Level {:phi 0 ; needs a number for eps-inc on 1st tick; immediately replaced by next-bottom
-                  :eps error-u
+  (lvl/map->Level {:phi 0 ; needs a number for err-inc on 1st tick; immediately replaced by next-bottom
+                  :err error-u
                   :sigma sigma-u
-                  :theta init-theta
-                  :h  nil ; unused at bottom since eps update uses higher h
-                  :h' nil ; unused at bottom since phi comes from outside
+                  :gen-wt init-gen-wt
+                  :gen  nil ; unused at bottom since err update uses higher gen
+                  :gen' nil ; unused at bottom since phi comes from outside
                   :phi-dt 0.001
-                  :eps-dt 0.001
+                  :err-dt 0.001
                   :sigma-dt 0.0
-                  :theta-dt 0.0}))
+                  :gen-wt-dt 0.0}))
 
 (def init-mid
   (lvl/map->Level {:phi v-p
-                  :eps error-p
+                  :err error-p
                   :sigma sigma-p
-                  :theta init-theta
-                  :h  h  ; used to calc error at next level down, i.e. eps
-                  :h' h' ; used to update phi at this level
+                  :gen-wt init-gen-wt
+                  :gen  gen  ; used to calc error at next level down, i.e. err
+                  :gen' gen' ; used to update phi at this level
                   :phi-dt 0.00001
-                  :eps-dt 0.001
+                  :err-dt 0.001
                   :sigma-dt 0.0001
-                  :theta-dt 0.01}))
+                  :gen-wt-dt 0.01}))
 
-(def top (lvl/make-top-level v-p)) ; will have phi, and identity as :h ; other fields will be nil
+(def top (lvl/make-top-level v-p)) ; will have phi, and identity as :gen ; other fields will be nil
 
 (def init-levels [init-bot init-mid top])
 
@@ -80,12 +80,12 @@
 
 ;; e.g.
 ;;(plot-level (make-stages)) 1 1000000 1000) ; uses regular sequence ops
-;; with transducer:
-;;(plot-level (sequence (comp (take 1000000) (take-nth 1000)) (make-stages)) 1)
-;;(plot-level (into []  (comp (take 1000000) (take-nth 1000)) (make-stages)) 1)
+;; witgen transducer:
+;;(plot-level (sequence (comp (take 1000000) (take-ntgen 1000)) (make-stages)) 1)
+;;(plot-level (into []  (comp (take 1000000) (take-ntgen 1000)) (make-stages)) 1)
 ;; or even more efficient:
 ;; (plot-level (sequence (comp (take 1000000000)
-;;                             (take-nth 10000)
-;;                             (map #(nth % 1)))
+;;                             (take-ntgen 10000)
+;;                             (map #(ntgen % 1)))
 ;;                       (make-stages)))
 
