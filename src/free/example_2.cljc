@@ -35,11 +35,13 @@
                              ;(< @tick$ top-tick)
                              (= 0 (mod @tick$ ticks-between)))
                        ;(println (swap! mean$ #(+ % (+ -1.5 (* 3 (pd/next-double))))))
-                       ;(println 
-                         (swap! mean$ #(let [new-mean (+ % (if (< (pd/next-double) 0.5) 1 -1))] ; symmetric random walk
-                                                (if (pos? new-mean) new-mean 1))) ; clipped below 1
-                       ;         )
-                       )
+                       (println 
+                         (swap! mean$ 
+                                #(let [new-mean (+ % ; symmetric random walk
+                                                   (if (< (pd/next-double) 0.5)
+                                                     1
+                                                     -1))]
+                                   (if (pos? new-mean) new-mean 1))))) ; clipped below 1
                      (pd/next-gaussian @mean$ @sd$))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
@@ -73,7 +75,7 @@
               :phi-dt 0.00001
               :eps-dt 0.001
               :sigma-dt 0.0001
-              :theta-dt 0.0001})
+              :theta-dt 0.01})
 
 (def init-bot (lvl/map->Level bot-map))
 ;; mid-level state with adjustable theta:
