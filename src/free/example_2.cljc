@@ -72,8 +72,8 @@
               :gen-wt init-gen-wt
               :gen  gen  ; used to calc error at next level down, i.e. err
               :gen' gen' ; used to update phi at this level
-              :phi-dt 0.00001
-              :err-dt 0.001
+              :phi-dt 0.0001
+              :err-dt 0.01
               :sigma-dt 0.0001
               :gen-wt-dt 0.01})
 
