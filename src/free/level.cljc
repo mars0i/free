@@ -15,11 +15,14 @@
 
 ;; maybe move elsewhere so can be defined on command line?
 (def ^:const use-core-matrix false)
+;(resolve 'use-core-matrix)
+;; consider the code linked here from this page:
+;; http://blog.jayfields.com/2012/05/clojure-conditionally-importing.html
 
 (if use-core-matrix
   (do
     (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
-    (println "limit-sigma not properly implemented for vectors: returns argument unchanged.")
+    (println "limit-sigma returns argument unchanged.")
     (defn limit-sigma [sigma] sigma))
   (do 
     (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
