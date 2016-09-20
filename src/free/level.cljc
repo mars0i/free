@@ -173,7 +173,7 @@
   matrix inversion for vector/matrix calcualtions, a non-Hebbian calculation,
   rather than the local update methods of section 5.)"
   [eps sigma]
-  (* 0.5 (m- (m-square eps)
+  (e* 0.5 (m- (m-square eps)
              (inv sigma))))
 
 (defn next-sigma
