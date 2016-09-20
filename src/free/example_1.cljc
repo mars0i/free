@@ -20,7 +20,7 @@
 
 ;; experimental next-bottom function
 (def ticks-between 2000)
-(def top-tick 50000)
+(def top-tick 20000)
 (def tick$ (atom 0))
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
