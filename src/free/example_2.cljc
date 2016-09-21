@@ -1,7 +1,7 @@
 (ns free.example-2
   (:require [clojure.math.numeric-tower :as nt]
+            [free.config :as conf]
             [free.scalar-arithmetic :as ar]
-            ;[free.matrix-arithmetic :as ar]
             [free.level :as lvl]
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
