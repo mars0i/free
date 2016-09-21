@@ -10,25 +10,31 @@
 
 (ns free.level
   (:require 
-    ;[free.dists :as prob]
+    [free.config :as conf]
     [utils.string :as us]))
 
 ;; maybe move elsewhere so can be defined on command line?
-(def ^:const use-core-matrix false)
+;(def ^:const use-core-matrix false)
 ;(resolve 'use-core-matrix)
 ;; consider the code linked here from this page:
 ;; http://blog.jayfields.com/2012/05/clojure-conditionally-importing.html
 
-(if use-core-matrix
+;(println "use-core-matrix is" free.config/use-core-matrix)
+
+(if @conf/use-core-matrix$
   (do
+    (println "Using matrix arithmetic in free.level.")
     (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
     (println "limit-sigma returns argument unchanged.")
     (defn limit-sigma [sigma] sigma))
   (do 
+    (println "Using scalar arithmetic in free.level.")
     (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
     (defn limit-sigma [sigma] ;; see Bogacz end of sect 2.4
       (if (< sigma 1.0) 1.0 sigma))))
 
+
+;(println (macroexpand m*))
 
 ;;;;;;;;;;;;;;;;;;;;;
 (declare phi-inc   next-phi 
