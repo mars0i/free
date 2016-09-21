@@ -4,13 +4,13 @@
 
 ;; Note set-current-implementation has a global effect--not just in this namespace.
 ;; These work with Clojurescript as well as Clojure:
-(mx/set-current-implementation :ndarray)
-;(set-current-implementation :aljabr)
+;(mx/set-current-implementation :ndarray)
+;(mx/set-current-implementation :aljabr)
 ;; Clojure only:
-;(set-current-implementation :vectorz)
+(mx/set-current-implementation :vectorz)
 ;; These are Clojure only, but unlikely to be optimal for this application at this time:
-;(set-current-implementation :clatrix)
-;(set-current-implementation :nd4clj)
+;(mx/set-current-implementation :clatrix)
+;(mx/set-current-implementation :nd4clj)
 
 (println "Loading core.matrix operators.  Matrix implementation:" (mx/current-implementation))
 
