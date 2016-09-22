@@ -3,14 +3,14 @@
 ;; There's also an e* in core.matrix (which is *almost* identical to mul)
 
 ;; Note set-current-implementation has a global effect--not just in this namespace.
-;; These work with Clojurescript as well as Clojure:
-(mx/set-current-implementation :ndarray)
-;(set-current-implementation :aljabr)
+;; These are supposed to work with Clojurescript as well as Clojure:
+;(mx/set-current-implementation :ndarray)
+;(mx/set-current-implementation :aljabr) ; might not work
 ;; Clojure only:
-;(set-current-implementation :vectorz)
+(mx/set-current-implementation :vectorz)
 ;; These are Clojure only, but unlikely to be optimal for this application at this time:
-;(set-current-implementation :clatrix)
-;(set-current-implementation :nd4clj)
+;(mx/set-current-implementation :clatrix)
+;(mx/set-current-implementation :nd4clj) ; might not work
 
 (println "Loading core.matrix operators.  Matrix implementation:" (mx/current-implementation))
 
@@ -25,3 +25,18 @@
 (def tr mx/transpose)
 (def inv mx/inverse)
 (def make-identity-obj mx/identity-matrix)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; These have no (and need no) equivalents in scalar-arithmetic:
+
+(defn col-mat
+  "Turns a sequence of numbers xs into a column vector."
+  [xs]
+  (mx/matrix (map vector xs)))
+
+(defn row-mat
+  "Turns a sequence of numbers xs into a row vector."
+  [xs]
+  (mx/matrix (vector xs)))
+  
+  

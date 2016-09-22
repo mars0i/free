@@ -10,25 +10,31 @@
 
 (ns free.level
   (:require 
-    ;[free.dists :as prob]
+    [free.config :as conf]
     [utils.string :as us]))
 
 ;; maybe move elsewhere so can be defined on command line?
-(def ^:const use-core-matrix false)
+;(def ^:const use-core-matrix false)
 ;(resolve 'use-core-matrix)
 ;; consider the code linked here from this page:
 ;; http://blog.jayfields.com/2012/05/clojure-conditionally-importing.html
 
-(if use-core-matrix
+;(println "use-core-matrix is" free.config/use-core-matrix)
+
+(if @conf/use-core-matrix$
   (do
+    (println "Using matrix arithmetic in free.level.")
     (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
     (println "limit-sigma returns argument unchanged.")
     (defn limit-sigma [sigma] sigma))
   (do 
+    (println "Using scalar arithmetic in free.level.")
     (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
     (defn limit-sigma [sigma] ;; see Bogacz end of sect 2.4
       (if (< sigma 1.0) 1.0 sigma))))
 
+
+;(println (macroexpand m*))
 
 ;;;;;;;;;;;;;;;;;;;;;
 (declare phi-inc   next-phi 
@@ -146,15 +152,17 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; epsilon update
 
+(require '[clojure.core.matrix :as mx])
+
 (defn err-inc 
   "Calculates the slope/increment to the next 'error' epsilon from 
   the current epsilon, using the mean of the generative model at the
   next level up, but scaling the current error err by the
   variance/cov-matrix at this level, and making the whole thing
   relative to phi at this level. See equation (54) in Bogacz's \"Tutorial\"."
-  [err phi +phi sigma gen-wt +h]
+  [err phi +phi sigma gen-wt +gen]
   (m- phi 
-      (m* gen-wt (+h +phi))
+      (m* gen-wt (+gen +phi))
       (m* sigma err)))
 
 (defn next-err
@@ -163,10 +171,10 @@
   [level +level]
   (let [{:keys [phi err err-dt sigma gen-wt]} level
         +phi (:phi +level)
-        +h (:gen +level)]
+        +gen (:gen +level)]
     (m+ err
         (e* err-dt
-            (err-inc err phi +phi sigma gen-wt +h)))))
+            (err-inc err phi +phi sigma gen-wt +gen)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; sigma update
@@ -200,9 +208,9 @@
   value function from the current gen-wt using the error err at this level
   along with the mean of the generative function at the next level up.  
   See equation (56) in Bogacz's \"Tutorial\"."
-  [err +phi +h]
+  [err +phi +gen]
   (m* err 
-      (tr (+h +phi))))
+      (tr (+gen +phi))))
 
 (defn next-gen-wt
   "Calculates the next-timestep gen-wt component of the mean value function
@@ -210,10 +218,10 @@
   [level +level]
   (let [{:keys [err gen-wt gen-wt-dt]} level
         +phi (:phi +level)
-        +h (:gen +level)]
+        +gen (:gen +level)]
     (m+ gen-wt
         (e* gen-wt-dt
-            (gen-wt-inc err +phi +h)))))
+            (gen-wt-inc err +phi +gen)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Utility functions
