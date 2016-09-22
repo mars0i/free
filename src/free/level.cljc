@@ -158,9 +158,9 @@
   next level up, but scaling the current error err by the
   variance/cov-matrix at this level, and making the whole thing
   relative to phi at this level. See equation (54) in Bogacz's \"Tutorial\"."
-  [err phi +phi sigma gen-wt +h]
+  [err phi +phi sigma gen-wt +gen]
   (m- phi 
-      (m* gen-wt (+h +phi))
+      (m* gen-wt (+gen +phi))
       (m* sigma err)))
 
 (defn next-err
@@ -169,10 +169,10 @@
   [level +level]
   (let [{:keys [phi err err-dt sigma gen-wt]} level
         +phi (:phi +level)
-        +h (:gen +level)]
+        +gen (:gen +level)]
     (m+ err
         (e* err-dt
-            (err-inc err phi +phi sigma gen-wt +h)))))
+            (err-inc err phi +phi sigma gen-wt +gen)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; sigma update
@@ -206,9 +206,9 @@
   value function from the current gen-wt using the error err at this level
   along with the mean of the generative function at the next level up.  
   See equation (56) in Bogacz's \"Tutorial\"."
-  [err +phi +h]
+  [err +phi +gen]
   (m* err 
-      (tr (+h +phi))))
+      (tr (+gen +phi))))
 
 (defn next-gen-wt
   "Calculates the next-timestep gen-wt component of the mean value function
@@ -216,10 +216,10 @@
   [level +level]
   (let [{:keys [err gen-wt gen-wt-dt]} level
         +phi (:phi +level)
-        +h (:gen +level)]
+        +gen (:gen +level)]
     (m+ gen-wt
         (e* gen-wt-dt
-            (gen-wt-inc err +phi +h)))))
+            (gen-wt-inc err +phi +gen)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Utility functions
