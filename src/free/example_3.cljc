@@ -36,10 +36,10 @@
               :gen-wt init-gen-wt
               :gen  nil
               :gen' nil
-              :phi-dt    (ar/col-mat [0.01 0.01])
-              :err-dt    (ar/col-mat [0.01 0.01])
-              :sigma-dt  (ar/col-mat [0.0 0.0])
-              :gen-wt-dt (ar/col-mat [0.0 0.0])})
+              :phi-dt    0.01
+              :err-dt    0.01
+              :sigma-dt  0.0
+              :gen-wt-dt 0.0})
 
 (def mid-map {:phi v-p
               :err   (ar/col-mat [0.0 0.0])
@@ -48,10 +48,10 @@
               :gen-wt init-gen-wt
               :gen  gen
               :gen' gen'
-              :phi-dt    (ar/col-mat [0.0001 0.0001])
-              :err-dt    (ar/col-mat [0.01   0.01])
-              :sigma-dt  (ar/col-mat [0.0001 0.0001])
-              :gen-wt-dt (ar/col-mat [0.01   0.01])})
+              :phi-dt    0.0001
+              :err-dt    0.01
+              :sigma-dt  0.0001
+              :gen-wt-dt 0.01})
 
 (def init-bot (lvl/map->Level bot-map))
 (def init-mid (lvl/map->Level mid-map))
