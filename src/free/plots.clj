@@ -36,6 +36,18 @@
 (def gen-wt-base-color (java.awt.Color. 0   255 0))
 ;; can use java.awt.Color.brighter() and .darker() to get 5-10 variations
 
+(def brighter-adjuster (memfn brighter)) ; wraps java.awt.Color method in a function
+(def darker-adjuster   (memfn darker))   ; ditto
+
+(defn plot-param
+  [base-color adjuster plot-fn param-stages]
+  (let [idxs-seq (mx/index-seq (first param-stages))
+        colors (take (count idxs-seq) (iterate adjuster base-color))]
+    (domap [idxs idxs-seq
+            color colors]
+      (plot-fn (range) (map #(apply mget % idxs) param-stages))
+      (set-stroke-color color :dataset WHAT GOES HERE?))))
+
 (defn plot-level*
   ([stages level-num n every]
    (plot-level (take-nth every (take n stages)) level-num))
@@ -44,4 +56,8 @@
   ([stages level-num]
    (plot-level (map #(nth % level-num) stages)))
   ([stages]
+    SOMETHING WITH PLOT-PARAM HERE
+
+
+))
 
