@@ -10,6 +10,9 @@
 (reset! conf/use-core-matrix$ true)
 (require '[free.level :as lvl])
 
+;; Since these next three functions run on every tick, maybe slightly
+;; faster not to use ar/col-mat:
+
 (defn gen [phi] (let [x1 (mx/mget phi 0 0)
                       x2 (mx/mget phi 1 0)]
                   (mx/matrix [[(* x1 x1 x2)]
@@ -21,8 +24,8 @@
                                [(* x1 2.0 x2)]])))
 
 (def next-bottom (lvl/make-next-bottom 
-                   #(ar/col-mat [(pd/next-gaussian 2 5)
-                                 (pd/next-gaussian -1 3)])))
+                   #(mx/matrix [[(pd/next-gaussian  2 5)]
+                                [(pd/next-gaussian -1 3)]])))
 
 (def init-gen-wt (ar/make-identity-obj 2)) ; i.e. initially pass value of gen(phi) through unchanged
 
