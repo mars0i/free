@@ -25,3 +25,18 @@
 (def tr mx/transpose)
 (def inv mx/inverse)
 (def make-identity-obj mx/identity-matrix)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; These have no (and need no) equivalents in scalar-arithmetic:
+
+(defn col-mat
+  "Turns a sequence of numbers xs into a column vector."
+  [xs]
+  (mx/matrix (map vector xs)))
+
+(defn row-mat
+  "Turns a sequence of numbers xs into a row vector."
+  [xs]
+  (mx/matrix (vector xs)))
+  
+  
