@@ -29,3 +29,19 @@
        (set-stroke-color java.awt.Color/blue  :dataset 3) ; gen-wt
        (view :width 800 :height 600))))
 
+
+(def phi-base-color    (java.awt.Color. 0   0   0))
+(def err-base-color    (java.awt.Color. 255 0   0))
+(def sigma-base-color  (java.awt.Color. 0   0   255))
+(def gen-wt-base-color (java.awt.Color. 0   255 0))
+;; can use java.awt.Color.brighter() and .darker() to get 5-10 variations
+
+(defn plot-level*
+  ([stages level-num n every]
+   (plot-level (take-nth every (take n stages)) level-num))
+  ([stages level-num n]
+   (plot-level (take n stages) level-num))
+  ([stages level-num]
+   (plot-level (map #(nth % level-num) stages)))
+  ([stages]
+
