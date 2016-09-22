@@ -152,6 +152,8 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; epsilon update
 
+(require '[clojure.core.matrix :as mx])
+
 (defn err-inc 
   "Calculates the slope/increment to the next 'error' epsilon from 
   the current epsilon, using the mean of the generative model at the
@@ -159,6 +161,14 @@
   variance/cov-matrix at this level, and making the whole thing
   relative to phi at this level. See equation (54) in Bogacz's \"Tutorial\"."
   [err phi +phi sigma gen-wt +gen]
+
+  (println "phi: ")
+  (mx/pm phi)
+  (println "gen-wt: ")
+  (mx/pm gen-wt)
+  (println "gen(phi): ")
+  (mx/pm (+gen +phi))
+
   (m- phi 
       (m* gen-wt (+gen +phi))
       (m* sigma err)))
