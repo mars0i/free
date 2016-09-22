@@ -1,4 +1,5 @@
 (ns free.plots
+  (require [free.general :as g])
   (use [incanter charts core]))
 
 (defn plot-level
@@ -34,21 +35,27 @@
 (def err-base-color    (java.awt.Color. 255 0   0))
 (def sigma-base-color  (java.awt.Color. 0   0   255))
 (def gen-wt-base-color (java.awt.Color. 0   255 0))
-;; can use java.awt.Color.brighter() and .darker() to get 5-10 variations
+;; Can use java.awt.Color.brighter() and .darker() to get 5-10 variations:
+(def brighter (memfn brighter)) ; wraps java.awt.Color method in a function
+(def darker   (memfn darker))   ; ditto
 
-(def brighter-adjuster (memfn brighter)) ; wraps java.awt.Color method in a function
-(def darker-adjuster   (memfn darker))   ; ditto
 
-(defn plot-param
-  [base-color adjuster plot-fn param-stages]
+(defn plot-param-stages
+  "Plot the stages for a single parameter--phi, err, etc."
+  [base-color adjuster first-dataset-num plot-fn param-stages]
   (let [idxs-seq (mx/index-seq (first param-stages))
-        colors (take (count idxs-seq) (iterate adjuster base-color))]
-    (domap [idxs idxs-seq
-            color colors]
+        num-idxs (count idxs-seq)
+        next-dataset-num (+ first-dataset-num num-idxs)]
+    (g/domap [idxs idxs-seq
+              color colors (take num-idxs (iterate adjuster base-color)) ; seq of similar but diff colors
+              dataset-num (range first-dataset-num next-dataset-num)]
       (plot-fn (range) (map #(apply mget % idxs) param-stages))
-      (set-stroke-color color :dataset WHAT GOES HERE?))))
+      (set-stroke-color color :dataset dataset-num))
+    next-dataset-num))
+
 
 (defn plot-level*
+  "plot-level for vectors and matrices."
   ([stages level-num n every]
    (plot-level (take-nth every (take n stages)) level-num))
   ([stages level-num n]
@@ -56,8 +63,8 @@
   ([stages level-num]
    (plot-level (map #(nth % level-num) stages)))
   ([stages]
-    SOMETHING WITH PLOT-PARAM HERE
-
-
-))
+   (let [next-dataset-num (plot-param-stages phi-base-colorbrighter 0 scatter-plot (map :phi stages))
+         next-dataset-num (plot-param-stages err-base-color darker next-dataset-num add-lines (map :err stages))
+         next-dataset-num (plot-param-stages sigma-base-color darker next-dataset-num add-lines (map :sigma stages))]
+     next-dataset-num (plot-param-stages gen-wt-base-color darker next-dataset-num add-lines (map :gen-wt stages)))))
 
