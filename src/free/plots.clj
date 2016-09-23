@@ -54,8 +54,9 @@
                                        (iterate color-inc base-color) ; seq of similar but diff colors
                                        (range first-line-num last-line-num))]
       (plot-fn chart (range) (map #(apply mx/mget % idxs) param-stages))
-      (ch/set-stroke-color chart color :dataset line-num)
-      (ch/set-point-size chart 2 :dataset line-num)) ; used only for points; ignored for lines
+      (when color
+        (ch/set-stroke-color chart color :dataset line-num))
+      (ch/set-point-size chart 1 :dataset line-num)) ; used only for points; ignored for lines
     last-line-num))
 
 
@@ -71,10 +72,12 @@
    ;; Uses undocumented "*" function versions of Incanter chart macros:
    (let [stages-level (map #(nth % level-num) stages)
          chart (ch/scatter-plot)
-         first-plot-fn (if (= 0 level-num) ch/add-points* ch/add-lines*)
-         line-num (plot-param-stages chart phi-base-color    brighter 0        first-plot-fn (map :phi stages-level))
-         line-num (plot-param-stages chart err-base-color    darker   line-num ch/add-lines* (map :err stages-level))
-         line-num (plot-param-stages chart sigma-base-color  darker   line-num ch/add-lines* (map :sigma stages-level))]
-     (plot-param-stages              chart gen-wt-base-color darker   line-num ch/add-lines* (map :gen-wt stages-level))
+         first-plot-fn  (if (== 0 level-num) ch/add-points* ch/add-lines*) ; level-0 phi is sensory data, need points since less regular
+         phi-color      (if (== 0 level-num) nil phi-base-color) ; let Incanter set different color for each dataset
+         ;; Using identity to not adjust colors within category, but might later:
+         line-num (plot-param-stages chart phi-color         identity 1        first-plot-fn (map :phi stages-level)) ; plot line numbering is 1-based
+         line-num (plot-param-stages chart err-base-color    identity line-num ch/add-lines* (map :err stages-level))
+         line-num (plot-param-stages chart sigma-base-color  identity line-num ch/add-lines* (map :sigma stages-level))]
+     (plot-param-stages              chart gen-wt-base-color identity line-num ch/add-lines* (map :gen-wt stages-level))
      (co/view chart :width 800 :height 600)
      chart)))
