@@ -34,8 +34,8 @@
 
 (def bot-map {:phi   (ar/col-mat [0.0 0.0]) ; immediately replaced by next-bottom
               :err   (ar/col-mat [0.0 0.0])
-              :sigma (mx/matrix [[2.0  0.25]
-                                 [0.25 2.0]])
+              :sigma (mx/matrix [[2.0  0.25]  ; it's a covariance matrix, so
+                                 [0.25 2.0]]) ; should be symmetric
               :gen-wt init-gen-wt
               :gen  nil
               :gen' nil
