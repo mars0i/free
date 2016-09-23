@@ -24,12 +24,12 @@
 (if @conf/use-core-matrix$
   (do
     (println "Using matrix arithmetic in free.level.")
-    (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
+    (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]])
     (println "limit-sigma returns argument unchanged.")
     (defn limit-sigma [sigma] sigma))
   (do 
     (println "Using scalar arithmetic in free.level.")
-    (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]])
+    (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]])
     (defn limit-sigma [sigma] ;; see Bogacz end of sect 2.4
       (if (< sigma 1.0) 1.0 sigma))))
 
@@ -230,3 +230,17 @@
   "Calculates the matrix or scalar square of a value."
   [x]
   (m* x (tr x)))
+
+(defn print-level
+  [level]
+  (doseq [[k v] level] ; level is a record/map, i.e. collection of map-entries
+    (when (and v (not (instance? clojure.lang.IFn v))) ; nils, fns: uninformative
+      (println k)
+      (pm v))))
+
+(defn print-stage
+  [stage]
+  (doseq [level stage] ; stage is a sequence of levels
+    (print-level level)
+    (println)))
+
