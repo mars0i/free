@@ -26,7 +26,7 @@
     (println "Using matrix arithmetic in free.level.")
     (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]])
     (println "limit-sigma returns argument unchanged.")
-    (defn limit-sigma [sigma] sigma))
+    (defn limit-sigma [sigma] sigma)) ; should use 'positive-definite?'?, which is not yet implemented
   (do 
     (println "Using scalar arithmetic in free.level.")
     (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]])
