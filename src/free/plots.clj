@@ -1,6 +1,7 @@
 (ns free.plots
-  (require [free.general :as g])
-  (use [incanter charts core]))
+  (require [clojure.core.matrix :as mx]
+           [incanter.charts :as ch]
+           [incanter.core :as co]))
 
 (defn plot-level
   "Plot phi, err, sigma, and gen-wt for all level records at level level-num
@@ -18,17 +19,17 @@
   ([stages]
      (doto 
        ;; Need scatter plot for phi for the sake of level 0, where inputs are noisy
-       (scatter-plot (range) (map :phi stages) :series-label "phi" :legend true)
+       (ch/scatter-plot (range) (map :phi stages) :series-label "phi" :legend true)
        ;; For other vars, better to use lines (as in xy-plot):
-       (add-lines (range) (map :err   stages) :series-label "err")
-       (add-lines (range) (map :sigma stages) :series-label "sigma")
-       (add-lines (range) (map :gen-wt stages) :series-label "gen-wt")
-       (set-point-size 1) ; applies to points, not lines. apparently only applies to the first series.
-       (set-stroke-color java.awt.Color/black :dataset 0) ; phi. For xy-plot and add-lines use :dataset instead of :series.This is a bug in Incanter. See issue #233 in Incanter repo.
-       (set-stroke-color java.awt.Color/red   :dataset 1) ; err. 
-       (set-stroke-color java.awt.Color/green :dataset 2) ; sigma
-       (set-stroke-color java.awt.Color/blue  :dataset 3) ; gen-wt
-       (view :width 800 :height 600))))
+       (ch/add-lines (range) (map :err   stages) :series-label "err")
+       (ch/add-lines (range) (map :sigma stages) :series-label "sigma")
+       (ch/add-lines (range) (map :gen-wt stages) :series-label "gen-wt")
+       (ch/set-point-size 1) ; applies to points, not lines. apparently only applies to the first series.
+       (ch/set-stroke-color java.awt.Color/black :dataset 0) ; phi. For xy-plot and add-lines use :dataset instead of :series.This is a bug in Incanter. See issue #233 in Incanter repo.
+       (ch/set-stroke-color java.awt.Color/red   :dataset 1) ; err. 
+       (ch/set-stroke-color java.awt.Color/green :dataset 2) ; sigma
+       (ch/set-stroke-color java.awt.Color/blue  :dataset 3) ; gen-wt
+       (co/view :width 800 :height 600))))
 
 
 (def phi-base-color    (java.awt.Color. 0   0   0))
@@ -36,23 +37,29 @@
 (def sigma-base-color  (java.awt.Color. 0   0   255))
 (def gen-wt-base-color (java.awt.Color. 0   255 0))
 ;; Can use java.awt.Color.brighter() and .darker() to get 5-10 variations:
-(def brighter (memfn brighter)) ; wraps java.awt.Color method in a function
-(def darker   (memfn darker))   ; ditto
+
+;; wrap Java methods in functions so they can be passed:
+(defn brighter [color] (.brighter color))
+(defn darker   [color] (.darker color))
 
 
 (defn plot-param-stages
   "Plot the stages for a single parameter--phi, err, etc."
-  [base-color adjuster first-dataset-num plot-fn param-stages]
+  [chart base-color color-inc first-line-num plot-fn param-stages]
   (let [idxs-seq (mx/index-seq (first param-stages))
         num-idxs (count idxs-seq)
-        next-dataset-num (+ first-dataset-num num-idxs)]
-    (g/domap [idxs idxs-seq
-              color colors (take num-idxs (iterate adjuster base-color)) ; seq of similar but diff colors
-              dataset-num (range first-dataset-num next-dataset-num)]
-      (plot-fn (range) (map #(apply mget % idxs) param-stages))
-      (set-stroke-color color :dataset dataset-num))
-    next-dataset-num))
+        last-line-num (+ first-line-num num-idxs)]
+    (doseq [[idxs color line-num] (map vector 
+                                       idxs-seq 
+                                       (iterate color-inc base-color) ; seq of similar but diff colors
+                                       (range first-line-num last-line-num))]
+      (plot-fn chart (range) (map #(apply mx/mget % idxs) param-stages))
+      (ch/set-stroke-color chart color :dataset line-num)
+      (ch/set-point-size chart 2 :dataset line-num)) ; used only for points; ignored for lines
+    last-line-num))
 
+
+;; TODO add series-labels and fix colors
 
 (defn plot-level*
   "plot-level for vectors and matrices."
@@ -61,10 +68,13 @@
   ([stages level-num n]
    (plot-level (take n stages) level-num))
   ([stages level-num]
-   (plot-level (map #(nth % level-num) stages)))
-  ([stages]
-   (let [next-dataset-num (plot-param-stages phi-base-colorbrighter 0 scatter-plot (map :phi stages))
-         next-dataset-num (plot-param-stages err-base-color darker next-dataset-num add-lines (map :err stages))
-         next-dataset-num (plot-param-stages sigma-base-color darker next-dataset-num add-lines (map :sigma stages))]
-     next-dataset-num (plot-param-stages gen-wt-base-color darker next-dataset-num add-lines (map :gen-wt stages)))))
-
+   ;; Uses undocumented "*" function versions of Incanter chart macros:
+   (let [stages-level (map #(nth % level-num) stages)
+         chart (ch/scatter-plot)
+         first-plot-fn (if (= 0 level-num) ch/add-points* ch/add-lines*)
+         line-num (plot-param-stages chart phi-base-color    brighter 0        first-plot-fn (map :phi stages-level))
+         line-num (plot-param-stages chart err-base-color    darker   line-num ch/add-lines* (map :err stages-level))
+         line-num (plot-param-stages chart sigma-base-color  darker   line-num ch/add-lines* (map :sigma stages-level))]
+     (plot-param-stages              chart gen-wt-base-color darker   line-num ch/add-lines* (map :gen-wt stages-level))
+     (co/view chart :width 800 :height 600)
+     chart)))
