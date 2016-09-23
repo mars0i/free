@@ -34,8 +34,8 @@
 
 (def phi-base-color    (java.awt.Color. 0   0   0))
 (def err-base-color    (java.awt.Color. 255 0   0))
-(def sigma-base-color  (java.awt.Color. 0   0   255))
-(def gen-wt-base-color (java.awt.Color. 0   255 0))
+(def sigma-base-color  (java.awt.Color. 0   255 0))
+(def gen-wt-base-color (java.awt.Color. 0   0   255))
 ;; Can use java.awt.Color.brighter() and .darker() to get 5-10 variations:
 
 ;; wrap Java methods in functions so they can be passed:
@@ -46,7 +46,7 @@
 (defn plot-param-stages
   "Plot the stages for a single parameter--phi, err, etc."
   [chart base-color color-inc first-line-num plot-fn param-stages]
-  (let [idxs-seq (mx/index-seq (first param-stages))
+  (let [idxs-seq (mx/index-seq (first param-stages)) ; TODO for sigma only use two, since it's symmetric?
         num-idxs (count idxs-seq)
         last-line-num (+ first-line-num num-idxs)]
     (doseq [[idxs color line-num] (map vector 
