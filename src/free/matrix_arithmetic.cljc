@@ -25,6 +25,7 @@
 (def tr mx/transpose)
 (def inv mx/inverse)
 (def make-identity-obj mx/identity-matrix)
+(def pm mx/pm)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; These have no (and need no) equivalents in scalar-arithmetic:
