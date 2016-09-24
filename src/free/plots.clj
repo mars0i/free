@@ -64,9 +64,6 @@
       (ch/set-point-size chart 1 :dataset line-num)) ; used only for points; ignored for lines
     last-line-num))
 
-
-;; TODO add series-labels and fix colors
-
 (defn plot-level*
   "plot-level for vectors and matrices."
   ([stages level-num n every]
