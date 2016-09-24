@@ -15,4 +15,5 @@
                  ;[org.clojars.ds923y/nd4clj "0.1.0-SNAPSHOT"] ; not ready for use
                  [criterium "0.4.4"] ; to use, e.g.: (use '[criterium.core :as c])
                  ;[org.jfree.chart "1.0.19"]
+                 ;[uncomplicate/fluokitten "0.5.0"]
                  [incanter "1.5.7"]])
