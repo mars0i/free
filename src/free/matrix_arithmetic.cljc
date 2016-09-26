@@ -4,10 +4,10 @@
 
 ;; Note set-current-implementation has a global effect--not just in this namespace.
 ;; These are supposed to work with Clojurescript as well as Clojure:
-;(mx/set-current-implementation :ndarray)
+(mx/set-current-implementation :ndarray)
 ;(mx/set-current-implementation :aljabr) ; might not work
 ;; Clojure only:
-(mx/set-current-implementation :vectorz)
+;(mx/set-current-implementation :vectorz)
 ;; These are Clojure only, but unlikely to be optimal for this application at this time:
 ;(mx/set-current-implementation :clatrix)
 ;(mx/set-current-implementation :nd4clj) ; might not work
