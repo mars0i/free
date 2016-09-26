@@ -1,7 +1,6 @@
 ;; Exercise 3 in Bogacz
 
 (ns free.exercise-3
-  (:use [free.scalar-arithmetic])
   (:require [clojure.math.numeric-tower :as nt]
             [free.level :as lvl]
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
@@ -38,9 +37,9 @@
 (def dt 0.01) ; version in Bogacz
 
 ;; all-level parameters
-(def gen-wt (make-identity-obj 1)) ; i.e. pass value of gen(phi) through unchanged
-(defn gen  [phi] (lvl/m-square phi))
-(defn gen' [phi] (m* phi 2))
+(def gen-wt 1) ; i.e. pass value of gen(phi) through unchanged
+(defn gen  [phi] (* phi phi))
+(defn gen' [phi] (* phi 2))
 
 ;; bottom level params
 (def u 2)       ; phi
