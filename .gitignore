@@ -13,3 +13,5 @@ pom.xml.asc
 doc/BogaczTutorialOnFreeEnergyPerception.pdf
 .*.swp
 figwheel_server.log
+
+resources/public/js
