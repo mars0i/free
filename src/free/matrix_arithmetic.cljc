@@ -1,5 +1,6 @@
 (ns free.matrix-arithmetic
   (:require [clojure.core.matrix :as mx :exclude [e*]]))
+  ;(:require [clojure.core.matrix :as mx :rename {e* emul}]))
 ;; There's also an e* in core.matrix (which is *almost* identical to mul)
 
 ;; Note set-current-implementation has a global effect--not just in this namespace.
