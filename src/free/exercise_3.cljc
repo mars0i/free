@@ -1,8 +1,7 @@
 ;; Exercise 3 in Bogacz
 
 (ns free.exercise-3
-  (:require [clojure.math.numeric-tower :as nt]
-            [free.level :as lvl]
+  (:require [free.level :as lvl]
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
 
 ;; Bogacz's exercises 1 and 3:

@@ -1,9 +1,10 @@
 (ns free.example-1
-  (:require [clojure.math.numeric-tower :as nt]
-            [free.scalar-arithmetic :as ar]
+  (:require [free.scalar-arithmetic :as ar]
             ;[free.matrix-arithmetic :as ar]
             [free.level :as lvl]
             [free.dists :as pd])) ; will be clj or cljs depending on dialect
+
+#?(:clj (require '[clojure.math.numeric-tower :as nt]))
 
 ;; Generative function phi^2:
 (defn gen  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
