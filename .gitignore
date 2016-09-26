@@ -12,3 +12,4 @@ pom.xml.asc
 .nrepl-port
 doc/BogaczTutorialOnFreeEnergyPerception.pdf
 .*.swp
+figwheel_server.log
