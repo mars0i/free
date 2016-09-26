@@ -1,10 +1,7 @@
 (ns free.matrix-arithmetic
   (:require [clojure.core.matrix :as mx]))
-  ;(:use [clojure.core.matrix :exclude [e*]]))
-  ;(:require [clojure.core.matrix :as mx :exclude [e*]]))
-  ;(:require [clojure.core.matrix :as mx :refer :all :exclude [e*]]))
-  ;(:require [clojure.core.matrix :as mx :rename {e* emul}]))
-;; There's also an e* in core.matrix (which is *almost* identical to mul)
+  ;(:require [clojure.core.matrix :as mx])
+  ;(:refer clojure.core.matrix :exclude [pm e*]))
 
 ;; Note set-current-implementation has a global effect--not just in this namespace.
 ;; These are supposed to work with Clojurescript as well as Clojure:
@@ -30,6 +27,9 @@
 (def inv mx/inverse)
 (def make-identity-obj mx/identity-matrix)
 (def pm mx/pm)
+
+;; btw There's also an e* in core.matrix (which is *almost* identical to mul)
+;; but by qualifying core.matrix with mx, it doesn't matter.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; These have no (and need no) equivalents in scalar-arithmetic:
