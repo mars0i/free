@@ -34,15 +34,15 @@
                 ;; the presence of a :figwheel configuration here
                 ;; will cause figwheel to inject the figwheel client
                 ;; into your build
-                :figwheel {:on-jsload "cljmodel.core/on-js-reload"
+                :figwheel {:on-jsload "free.core/on-js-reload"
                            ;; :open-urls will pop open your application
                            ;; in the default browser once Figwheel has
                            ;; started and complied your application.
                            ;; Comment this out once it no longer serves you.
                            :open-urls ["http://localhost:3449/index.html"]}
-                :compiler {:main cljmodel.core
+                :compiler {:main free.core
                            :asset-path "js/compiled/out"
-                           :output-to "resources/public/js/compiled/cljmodel.js"
+                           :output-to "resources/public/js/compiled/free.js"
                            :output-dir "resources/public/js/compiled/out"
                            :pretty-print false
                            :optimizations :none
@@ -56,15 +56,15 @@
                {:id "dist"
                 :source-paths ["src"]
                 :compiler {:asset-path "js/compiled/dist"
-                           :output-to "resources/public/js/compiled/cljmodel.js"
+                           :output-to "resources/public/js/compiled/free.js"
                            :output-dir "resources/public/js/compiled/dist"
-                           :main cljmodel.core
+                           :main free.core
                            :optimizations :simple ; :none
                            :pretty-print true}}
                {:id "min"
                 :source-paths ["src"]
-                :compiler {:output-to "resources/public/js/compiled/cljmodel.js"
-                           :main cljmodel.core
+                :compiler {:output-to "resources/public/js/compiled/free.js"
+                           :main free.core
                            :optimizations :advanced
                            :pretty-print false}}]}
 
