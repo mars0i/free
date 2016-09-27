@@ -1,0 +1,124 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>MersenneTwister19937</title>
+<script type="text/javascript" src="MersenneTwister19937.js"></script>
+<script type="text/javascript">
+<!--
+function uniform_left_sp(n, p){ // fills spaces on the left of n as n's length equals p for display.
+	var s = n.toString();
+	for (var i = p - s.length; i > 0; --i)
+		s = "&nbsp;" + s;
+	return s;
+}
+function uniform_right_0(n, p){ // fills zeros on the right of n as n's length equals p for display.
+	var s = n.toString();
+	if (s.indexOf('.', 0) < 0)
+		s += ".0";
+	for (var i = p - s.length; i > 0; --i)
+		s += "0";
+	return s;
+}
+// -->
+</script>
+</head>
+<body>
+<p style="font-family: monospace;">
+<b>1000 outputs of genrand_int32()</b><br>
+<script type="text/javascript">
+<!--
+init_by_array(Array(0x123, 0x234, 0x345, 0x456), 4); // initializing the state of Mersenne Twister.
+document.open();
+for (var i = 0; i < 1000; ++i) {
+	document.write(uniform_left_sp(genrand_int32(), 10)); // generating a random number, for 32-bits unsigned integers.
+	if (i % 5 == 4)
+		document.write("<br>");
+	else
+		document.write(" ");
+}
+document.close();
+// -->
+</script>
+</p>
+<p style="font-family: monospace;">
+<b>1000 outputs of genrand_real2()</b><br>
+<script type="text/javascript">
+<!--
+document.open();
+for (var i = 0; i < 1000; ++i) {
+	document.write(uniform_right_0(Math.round(genrand_real2() * Math.pow(10, 8)) / Math.pow(10, 8), 10)); // generating a random number, for single precision floating point numbers, [0,1) half-open interval.
+	if (i % 5 == 4)
+		document.write("<br>");
+	else
+		document.write(" ");
+}
+document.close();
+// -->
+</script>
+</p>
+<p style="font-family: monospace;">
+<b>1000 outputs of genrand_int31()</b><br>
+<script type="text/javascript">
+<!--
+document.open();
+for (var i = 0; i < 1000; ++i) {
+	document.write(uniform_left_sp(genrand_int31(), 10)); // generating a random number, for non-negative integers expressible using unsigned 31 bits.
+	if (i % 5 == 4)
+		document.write("<br>");
+	else
+		document.write(" ");
+}
+document.close();
+// -->
+</script>
+</p>
+<p style="font-family: monospace;">
+<b>1000 outputs of genrand_real1()</b><br>
+<script type="text/javascript">
+<!--
+document.open();
+for (var i = 0; i < 1000; ++i) {
+	document.write(uniform_right_0(Math.round(genrand_real1() * Math.pow(10, 8)) / Math.pow(10, 8), 10)); // generating a random number, for single precision floating point numbers, [0,1] closed interval.
+	if (i % 5 == 4)
+		document.write("<br>");
+	else
+		document.write(" ");
+}
+document.close();
+// -->
+</script>
+</p>
+<p style="font-family: monospace;">
+<b>1000 outputs of genrand_real3()</b><br>
+<script type="text/javascript">
+<!--
+document.open();
+for (var i = 0; i < 1000; ++i) {
+	document.write(uniform_right_0(Math.round(genrand_real3() * Math.pow(10, 8)) / Math.pow(10, 8), 10)); // generating a random number, for single precision floating point numbers, (0,1) open interval.
+	if (i % 5 == 4)
+		document.write("<br>");
+	else
+		document.write(" ");
+}
+document.close();
+// -->
+</script>
+</p>
+<p style="font-family: monospace;">
+<b>1000 outputs of genrand_res53()</b><br>
+<script type="text/javascript">
+<!--
+document.open();
+for (var i = 0; i < 1000; ++i) {
+	document.write(uniform_right_0(Math.round(genrand_res53() * Math.pow(10, 13)) / Math.pow(10, 13), 15)); // generating a random number, for double precision floating point numbers, [0,1) half-open interval.
+	if (i % 5 == 4)
+		document.write("<br>");
+	else
+		document.write(" ");
+}
+document.close();
+// -->
+</script>
+</p>
+</body>
+</html>
