@@ -69,7 +69,7 @@
                   :phi-dt 0.00001
                   :err-dt 0.001
                   :sigma-dt 0.001
-                  :gen-wt-dt 0.01}))
+                  :gen-wt-dt 0.000001}))
 
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :gen ; other fields will be nil
 

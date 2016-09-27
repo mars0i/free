@@ -19,10 +19,10 @@
 ;(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 2 5)))
 
 ;; experimental next-bottom function
-(def ticks-between 1000)
+(def ticks-between 50000)
 (def top-tick 50000)
 (def tick$ (atom 0))
-(def mean$ (atom 50))
+(def mean$ (atom 6))
 (def sd$ (atom 3))
 ;; Note that since the generative function is exponential, it's
 ;; potentially problematic to make the mean negative.
@@ -75,7 +75,7 @@
               :phi-dt 0.0001
               :err-dt 0.01
               :sigma-dt 0.0001
-              :gen-wt-dt 0.01})
+              :gen-wt-dt 0.000001})
 
 (def init-bot (lvl/map->Level bot-map))
 ;; mid-level state with adjustable gen-wt:
