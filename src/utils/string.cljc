@@ -4,7 +4,8 @@
 
 ;; Miscellaneous utility functions having to do with strings and printing
 (ns utils.string
-  (:require [clojure.pprint])) ; for *print-right-margin*
+  (:require [#?(:clj clojure.pprint   ; for *print-right-margin*
+                :cljs cljs.pprint)])) 
 
 (defn name*
   [x]

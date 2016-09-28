@@ -1,4 +1,4 @@
-(ns free.dists
+(ns free.random
   (require [utils.random :as r])) ; clj or cljs, depending
 
 (def session-id (r/make-long-seed)) (println "seed:" session-id)

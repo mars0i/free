@@ -1,7 +1,6 @@
 (ns free.random
   (:require [cljs.chance :as ran]))
 
-
 (defn make-long-seed
   [] 
   (- (System/currentTimeMillis)
@@ -29,12 +28,6 @@
     (println seed)
     (make-rng seed)))
 
-;(defn set-seed
-;  [rng seed]
-;  (.setSeed rng)
-;  (flush-rng rng)
-;  rng)
-
 (defn rand-idx [rng n] (.integer rng n))
 
 (defn next-long [rng] (.integer rng))
@@ -51,75 +44,3 @@
   ([rng] (.normal rng))
   ([rng mean sd]
    (+ mean (* sd (next-gaussian rng)))))
-
-(defn truncate
-  "Given an a function and arguments that generate random samples, returns a 
-  random number generated with that function, but constrained to to lie within 
-  [left,right].  Might not be particularly efficient--better for initialization
-  than runtime?  Example: (truncate -1 1 next-gaussian rng 0 0.5)"
-  [left right rand-fn & addl-args]
-  (loop [candidate (apply rand-fn addl-args)]
-    (if (and (>= candidate left) (<= candidate right))
-      candidate
-      (recur (apply rand-fn addl-args)))))
-
-;; lazy
-;; This version repeatedly calls nth coll with a new random index each time.
-;(defn sample-with-repl-1
-;  [rng num-samples coll]
-;  (let [size (count coll)]
-;    (repeatedly num-samples 
-;                #(nth coll (rand-idx rng size)))))
-
-;; lazy
-;; This version is inspired by Incanter, which does it like this:
-;;        (map #(nth x %) (sample-uniform size :min 0 :max max-idx :integers true))
-;; You get a series of random ints between 0 and the coll size,
-;; and then map nth coll through them.
-;(defn sample-with-repl-2
-;  [rng num-samples coll]
-;  (let [size (count coll)]
-;    (map #(nth coll %) 
-;         (repeatedly num-samples #(rand-idx rng size)))))
-
-;; lazy
-;(def sample-with-repl sample-with-repl-3) ; see samplingtests2.xlsx
-(defn sample-with-repl
-  "Return num-samples from coll, sampled with replacement."
-  [rng num-samples coll]
-  (let [size (count coll)]
-    (for [_ (range num-samples)]
-      (nth coll (rand-idx rng size)))))
-
-;; not lazy
-;(defn sample-with-repl-4
-;  [rng num-samples coll]
-;  (let [size (count coll)]
-;    (loop [remaining num-samples result []] 
-;      (if (> remaining 0)
-;        (recur (dec remaining) (conj result 
-;                                     (nth coll (rand-idx rng size))))
-;        result))))
-
-
-
-;; lazy if more than one sample
-;; (deal with license issues)
-(defn sample-without-repl
-  "Derived from Incanter's algorithm from sample-uniform for sampling without replacement."
-  [rng num-samples coll]
-  (let [size (count coll)
-        max-idx size]
-    (cond
-      (= num-samples 1) (list (nth coll (rand-idx rng size)))  ; if only one element needed, don't bother with the "with replacement" algorithm
-      ;; Rather than creating subseqs of the original coll, we create a seq of indices below,
-      ;; and then [in effect] map (partial nth coll) through the indices to get the samples that correspond to them.
-      (< num-samples size) (map #(nth coll %) 
-                                (loop [samp-indices [] indices-set #{}]    ; loop to create the set of indices
-                                  (if (= (count samp-indices) num-samples) ; until we've collected the right number of indices
-                                    samp-indices
-                                    (let [i (rand-idx rng size)]             ; get a random index
-                                      (if (contains? indices-set i)      ; if we've already seen that index,
-                                        (recur samp-indices indices-set) ;  then try again
-                                        (recur (conj samp-indices i) (conj indices-set i))))))) ; otherwise add it to our indices
-      :else (throw (Exception. "num-samples can't be larger than (count coll).")))))
