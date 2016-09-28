@@ -1,5 +1,6 @@
-(ns free.random
+(ns utils.random
   (:import [ec.util MersenneTwisterFast]))
+  ;; https://cs.gmu.edu/~sean/research/mersenne/ec/util/MersenneTwisterFast.html
 
 (defn make-long-seed
   [] 
@@ -7,26 +8,18 @@
      (rand-int Integer/MAX_VALUE)))
 
 (defn flush-rng
+  "Flush out initial order from a Mersenne Twister."
   [rng]
   (dotimes [_ 1500] (.nextInt rng)))  ; see ;; https://listserv.gmu.edu/cgi-bin/wa?A1=ind1609&L=MASON-INTEREST-L#1
 
-(defn make-rng-mtf
+(defn make-rng
   "Make an instance of a MersenneTwisterFast RNG and flush out its initial
   minimal lack of entropy."
-  ([] (make-rng-mtf (make-long-seed)))
+  ([] (make-rng (make-long-seed)))
   ([long-seed] 
    (let [rng (MersenneTwisterFast. long-seed)]
      (flush-rng rng)
      rng))) 
-
-(def make-rng make-rng-mtf)
-
-(defn make-rng-print-seed
-  "Make a seed, print it to stdout, then pass it to make-rng."
-  []
-  (let [seed (make-long-seed)]
-    (println seed)
-    (make-rng seed)))
 
 (defn rand-idx [rng n] (.nextInt rng n))
 
@@ -44,4 +37,3 @@
   ([rng] (.nextGaussian rng))
   ([rng mean sd]
    (+ mean (* sd (next-gaussian rng)))))
-

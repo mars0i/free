@@ -2,7 +2,7 @@
   (:require [free.scalar-arithmetic :as ar]
             ;[free.matrix-arithmetic :as ar]
             [free.level :as lvl]
-            [free.dists :as pd])) ; will be clj or cljs depending on dialect
+            [free.random :as ran])) ; will be clj or cljs depending on dialect
 
 #?(:clj (require '[clojure.math.numeric-tower :as nt]))
 
@@ -17,7 +17,7 @@
 (def init-gen-wt (ar/make-identity-obj 1)) ; i.e. initially pass value of gen(phi) througgen unchanged
 
 ;; simple next-bottom function
-(def next-bottom (lvl/make-next-bottom #(pd/next-gaussian 9 21)))
+(def next-bottom (lvl/make-next-bottom #(ran/next-gaussian 9 21)))
 
 ;; experimental next-bottom function
 ;(def ticks-between 2000)
@@ -34,7 +34,7 @@
 ;                       (swap! tick$ inc)
 ;                       (when (== @tick$ top-tick)
 ;                         (println (swap! mean$ #(- % 40))))
-;                       (pd/next-gaussian @mean$ @sd$)))))
+;                       (ran/next-gaussian @mean$ @sd$)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; err

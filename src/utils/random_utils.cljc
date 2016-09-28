@@ -5,6 +5,13 @@
 (ns utils.random-utils
   (:require [free.random])) ; different dependng on clj vs cljs
 
+(defn make-rng-print-seed
+  "Make a seed, print it to stdout, then pass it to make-rng."
+  []
+  (let [seed (make-long-seed)]
+    (println seed)
+    (make-rng seed)))
+
 (defn truncate
   "Given an a function and arguments that generate random samples, returns a 
   random number generated with that function, but constrained to to lie within 

@@ -1,5 +1,5 @@
-(ns free.random
-  (:require [cljs.chance :as ran]))
+(ns utils.random
+  (:require [cljs.chance :as ran])) ; http://chancejs.com
 
 (defn make-long-seed
   [] 
@@ -7,26 +7,18 @@
      (rand-int Integer/MAX_VALUE)))
 
 (defn flush-rng
+  "Flush out initial order from a Mersenne Twister."
   [rng]
   (dotimes [_ 1500] (.integer rng)))  ; see ;; https://listserv.gmu.edu/cgi-bin/wa?A1=ind1609&L=MASON-INTEREST-L#1
 
-(defn make-rng-mtf
+(defn make-rng
   "Make an instance of a chance.js MersenneTwister RNG and flush out its initial
   minimal lack of entropy."
-  ([] (make-rng-mtf (make-long-seed)))
+  ([] (make-rng (make-long-seed)))
   ([long-seed] 
    (let [rng (Chance. long-seed)]
      (flush-rng rng)
      rng))) 
-
-(def make-rng make-rng-mtf)
-
-(defn make-rng-print-seed
-  "Make a seed, print it to stdout, then pass it to make-rng."
-  []
-  (let [seed (make-long-seed)]
-    (println seed)
-    (make-rng seed)))
 
 (defn rand-idx [rng n] (.integer rng n))
 
@@ -43,4 +35,5 @@
   otherwise uses the supplied mean and standard deviation."
   ([rng] (.normal rng))
   ([rng mean sd]
-   (+ mean (* sd (next-gaussian rng)))))
+   (.normal rng 
+            (clj->js {:mean mean :dev sd}))))

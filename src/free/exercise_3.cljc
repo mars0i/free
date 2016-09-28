@@ -1,8 +1,7 @@
 ;; Exercise 3 in Bogacz
 
 (ns free.exercise-3
-  (:require [free.level :as lvl]
-            [free.dists :as pd])) ; will be clj or cljs depending on dialect
+  (:require [free.level :as lvl]))
 
 ;; Bogacz's exercises 1 and 3:
 ;; p. 3:

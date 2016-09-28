@@ -4,7 +4,7 @@
   (:require [free.config :as conf]
             [free.matrix-arithmetic :as ar]
             [clojure.core.matrix :as mx]
-            [free.dists :as pd])) ; clj or cljs depending on dialect
+            [free.random :as ran])) ; clj or cljs depending on dialect
 
 ;; Use matrix version of free.level:
 (reset! conf/use-core-matrix$ true)
@@ -24,8 +24,8 @@
                                [(* x1 2.0 x2)]])))
 
 (def next-bottom (lvl/make-next-bottom 
-                   #(mx/matrix [[(pd/next-gaussian  2 5)]
-                                [(pd/next-gaussian -1 3)]])))
+                   #(mx/matrix [[(ran/next-gaussian  2 5)]
+                                [(ran/next-gaussian -1 3)]])))
 
 (def init-gen-wt (ar/make-identity-obj 2)) ; i.e. initially pass value of gen(phi) through unchanged
 
