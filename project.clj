@@ -7,7 +7,8 @@
   :java-source-paths ["src/java"]
   :dependencies [[org.clojure/clojure "1.8.0"]
                  ;[org.clojure/clojure "1.9.0-alpha12"]
-                 [org.clojure/clojurescript "1.9.229"]
+                 [org.clojure/clojurescript "1.9.229"] ; very nitpicky spec tests
+                 ;[org.clojure/clojurescript "1.9.225"]
                  [org.clojure/core.async "0.2.385" :exclusions [org.clojure/tools.reader]]
                  [org.clojure/math.numeric-tower "0.0.4"]
                  [net.mikera/core.matrix "0.54.0"]
