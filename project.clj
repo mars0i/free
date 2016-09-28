@@ -18,7 +18,8 @@
                  [criterium "0.4.4"] ; to use, e.g.: (use '[criterium.core :as c])
                  ;[org.jfree.chart "1.0.19"]
                  ;[uncomplicate/fluokitten "0.5.0"]
-                 [incanter "1.5.7"]]
+                 [incanter "1.5.7"]
+                 [cljsjs/chance "0.7.3-0"]]
 
   :plugins [[lein-figwheel "0.5.4-7"]
             [lein-cljsbuild "1.1.3" :exclusions [[org.clojure/clojure]]]]

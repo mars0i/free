@@ -26,10 +26,14 @@ http://chancejs.com
 
 None of the above RNGs provide distributions other than uniform.
 
+Nope, wrong: Turns out that chance.js is in cljsjs, uses seedable
+Mersenne Twisters, *and* it has a Gaussian random numbers function.
+
 This provides lots of distributions:
 http://www.statisticsblog.com/2015/10/random-samples-in-js-using-r-functions
 It uses a lib called 'crypto'.  Don't know where this is from.
 Is it in the browsers?  I don't think this is seedable.
 
 
+Also cf
 https://github.com/jstat/jstat
