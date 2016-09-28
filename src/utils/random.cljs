@@ -1,5 +1,5 @@
 (ns utils.random
-  (:require [cljs.chance :as ran])) ; http://chancejs.com
+  (:require [cljsjs.chance :as ran])) ; http://chancejs.com
 
 (defn make-long-seed
   [] 

@@ -1,4 +1,5 @@
-(ns free.scalar-arithmetic)
+(ns free.scalar-arithmetic
+  #?(:cljs (:require cljs.pprint)))
 
 ;; This file contains distasteful kludge since using another name for basic 
 ;; scalar operators slows them down.
@@ -57,5 +58,5 @@
         (str "The value " dims " was passed as dims, but this version of function is defined only for dims = 1"))))
   1) ; 1 is self-evaluating; no need for `()
 
-
-(def pm clojure.pprint/pprint)
+#?(:clj   (def pm clojure.pprint/pprint)
+    :cljs (def pm cljs.pprint/pprint))

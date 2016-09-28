@@ -1,5 +1,5 @@
 (ns free.random
-  (require [utils.random :as ran])) ; clj or cljs, depending
+  (:require [utils.random :as ran])) ; clj or cljs, depending
 
 (def session-id (ran/make-long-seed)) (println "seed:" session-id)
 (def rng$ (atom (ran/make-rng session-id)))

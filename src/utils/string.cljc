@@ -4,8 +4,8 @@
 
 ;; Miscellaneous utility functions having to do with strings and printing
 (ns utils.string
-  (:require [#?(:clj clojure.pprint   ; for *print-right-margin*
-                :cljs cljs.pprint)])) 
+  #?(:clj 
+      (:require [clojure.pprint])))   ; for *print-right-margin*
 
 (defn name*
   [x]
@@ -45,12 +45,13 @@
   [sym addlstr] 
   `(alter-meta! #'~sym update-in [:doc] str ~addlstr))
 
-(defn set-pprint-width 
-  "Sets width for pretty-printing with pprint and pp."
-  [cols] 
-  (alter-var-root 
-    #'clojure.pprint/*print-right-margin* 
-    (constantly cols)))
+#?(:clj 
+    (defn set-pprint-width 
+      "Sets width for pretty-printing with pprint and pp."
+      [cols] 
+      (alter-var-root 
+        #'clojure.pprint/*print-right-margin* 
+        (constantly cols))))
 
 (defn println-stderr
   "Like println, but prints to stderr."
