@@ -1,20 +1,20 @@
 (ns free.dists
-  (require [utils.random :as ran]))
+  (require [utils.random :as r])) ; clj or cljs, depending
 
-(def session-id (ran/make-long-seed)) (println "seed:" session-id)
-(def rng$ (atom (ran/make-rng session-id)))
+(def session-id (r/make-long-seed)) (println "seed:" session-id)
+(def rng$ (atom (r/make-rng session-id)))
 
 (defn set-new-rng!
-  ([]     (reset! rng$ (ran/make-rng)))
-  ([seed] (reset! rng$ (ran/make-rng seed))))
+  ([]     (reset! rng$ (r/make-rng)))
+  ([seed] (reset! rng$ (r/make-rng seed))))
 
 (defn next-gaussian
-  ([] (ran/next-gaussian @rng$))
+  ([] (r/next-gaussian @rng$))
   ([mean sd] (ran/next-gaussian @rng$ mean sd)))
 
 (defn next-double
-  ([] (ran/next-double @rng$))
-  ([mean sd] (ran/next-double @rng$ mean sd)))
+  ([] (r/next-double @rng$))
+  ([mean sd] (r/next-double @rng$ mean sd)))
 
 ;; Incanter versions:
 ;;  (:require [incanter.stats :as istat]))
