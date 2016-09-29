@@ -32,8 +32,6 @@
   :cljsbuild {:builds
               [{:id "dev"
                 :source-paths ["src"]
-
-                ;; COMMENT THIS OUT TO STOP FIGWHEEL FROM COMPILING EVERYTHING IMMEDIATELY??
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
                 :figwheel {:on-jsload "free.core/on-js-reload"
                            ;; :open-urls will pop open your application
@@ -41,7 +39,6 @@
                            ;; started and complied your application.
                            ;; Comment this out once it no longer serves you.
                            :open-urls ["http://localhost:3449/index.html"]}
-
                 :compiler {:main free.core
                            :asset-path "js/compiled/out"
                            :output-to "resources/public/js/compiled/free.js"
@@ -120,7 +117,7 @@
                    ;; for CIDER
                    ;; :plugins [[cider/cider-nrepl "0.12.0"]]
                    :repl-options {; for nREPL dev you really need to limit output
-                                  :init (set! *print-length* 70)
+                                  :init (set! *print-length* 50)
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
 
 )
