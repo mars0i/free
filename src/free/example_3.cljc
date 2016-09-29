@@ -1,14 +1,16 @@
 ;; simple vector/matrix example
 
 (ns free.example-3
-  (:require [free.config :as conf]
+  (:require [free.config :as conf])) ; We'll need this next, but not later
+
+;; Use matrix version of free.level--i.e. after setting the
+;; use-core-matrix$ atom.  Other namespaces have to be loaded here, too:
+(reset! conf/use-core-matrix$ true)
+(ns free.example-3
+  (:require [free.level :as lvl]
             [free.matrix-arithmetic :as ar]
             [clojure.core.matrix :as mx]
             [free.random :as ran])) ; clj or cljs depending on dialect
-
-;; Use matrix version of free.level:
-(reset! conf/use-core-matrix$ true)
-(ns free.example-3 (:require [free.level :as lvl]))
 
 ;; Since these next three functions run on every tick, maybe slightly
 ;; faster not to use ar/col-mat:

@@ -9,9 +9,8 @@
 ;; SEE doc/level.md for documentation on general features of the code below.
 
 (ns free.level
-  (:require 
-    [free.config :as conf]
-    [utils.string :as us]))
+  (:require [free.config :as conf]))
+    
 
 ;; maybe move elsewhere so can be defined on command line?
 ;(def ^:const use-core-matrix false)
@@ -24,12 +23,16 @@
 (if @conf/use-core-matrix$
   (do
     (println "Using matrix arithmetic in free.level.")
-    (require '[free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]])
+    (ns free.level
+      (:require [free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]]
+                [utils.string :as us]))
     (println "limit-sigma returns argument unchanged.")
     (defn limit-sigma [sigma] sigma)) ; should use 'positive-definite?'?, which is not yet implemented
   (do 
     (println "Using scalar arithmetic in free.level.")
-    (require '[free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]])
+    (ns free.level
+      (:require [free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]]
+                [utils.string :as us]))
     (defn limit-sigma [sigma] ;; see Bogacz end of sect 2.4
       (if (< sigma 1.0) 1.0 sigma))))
 
@@ -151,8 +154,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; epsilon update
-
-(require '[clojure.core.matrix :as mx])
 
 (defn err-inc 
   "Calculates the slope/increment to the next 'error' epsilon from 
