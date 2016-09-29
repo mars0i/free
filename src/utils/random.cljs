@@ -23,7 +23,7 @@
 (defn rand-idx
   [rng n]
   (.integer rng
-            (clj-js {:min 0 :max (dec n)}))) ; min and max are allowable values
+            (clj->js {:min 0 :max (dec n)}))) ; min and max are allowable values
 
 (defn next-long
   [rng]
