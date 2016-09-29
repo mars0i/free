@@ -8,7 +8,7 @@
 
 ;; Use matrix version of free.level:
 (reset! conf/use-core-matrix$ true)
-(require '[free.level :as lvl])
+(ns free.example-3 (:require [free.level :as lvl]))
 
 ;; Since these next three functions run on every tick, maybe slightly
 ;; faster not to use ar/col-mat:
