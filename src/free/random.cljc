@@ -13,8 +13,8 @@
   ([mean sd] (ran/next-gaussian @rng$ mean sd)))
 
 (defn next-double
-  ([] (ran/next-double @rng$))
-  ([mean sd] (ran/next-double @rng$ mean sd)))
+  []
+  (ran/next-double @rng$))
 
 ;; Incanter versions:
 ;;  (:require [incanter.stats :as istat]))

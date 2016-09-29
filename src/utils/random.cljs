@@ -2,9 +2,9 @@
   (:require [cljsjs.chance :as ran])) ; http://chancejs.com
 
 (defn make-long-seed
-  [] 
-  (- (System/currentTimeMillis)
-     (rand-int Integer/MAX_VALUE)))
+  []
+  (- (.getTime (js/Date.))
+     (rand-int js/Number.MAX_SAFE_INTEGER)))
 
 (defn flush-rng
   "Flush out initial order from a Mersenne Twister."
@@ -16,7 +16,7 @@
   minimal lack of entropy."
   ([] (make-rng (make-long-seed)))
   ([long-seed] 
-   (let [rng (Chance. long-seed)]
+   (let [rng (js/Chance. long-seed)]
      (flush-rng rng)
      rng))) 
 

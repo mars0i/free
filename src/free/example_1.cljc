@@ -14,7 +14,7 @@
 ;(defn gen  [phi] (nt/expt phi 8))
 ;(defn gen' [phi] (* 8.0 (nt/expt phi 7.0))) 
 
-(def init-gen-wt (ar/make-identity-obj 1)) ; i.e. initially pass value of gen(phi) througgen unchanged
+(def init-gen-wt 1) ; i.e. initially pass value of gen(phi) througgen unchanged
 
 ;; simple next-bottom function
 (def next-bottom (lvl/make-next-bottom #(ran/next-gaussian 9 21)))
@@ -86,7 +86,7 @@
 ;;(plot-level (into []  (comp (take 1000000) (take-ntgen 1000)) (make-stages)) 1)
 ;; or even more efficient:
 ;; (plot-level (sequence (comp (take 1000000000)
-;;                             (take-ntgen 10000)
-;;                             (map #(ntgen % 1)))
+;;                             (take-nth 10000)
+;;                             (map #(nth % 1)))
 ;;                       (make-stages)))
 
