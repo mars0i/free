@@ -41,7 +41,7 @@
 (defmacro tr
   "Scalar analogue of transposition; returns the argument unchanged."
   [x]
-  x) ; just substitute the value into context, evaluated.
+  x) ; just substitute the value into context, to be evaluated.
 
 (defmacro inv
   "Scalar analogue of matrix inversion, i.e. scalar reciprocal, divide into 1.0."
