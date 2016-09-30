@@ -53,11 +53,12 @@
         #'clojure.pprint/*print-right-margin* 
         (constantly cols))))
 
-(defn println-stderr
-  "Like println, but prints to stderr."
-  [& more]
-  (binding [*out* *err*]
-    (apply println more)))
+#?(:clj 
+    (defn println-stderr
+      "Like println, but prints to stderr."
+      [& more]
+      (binding [*out* *err*]
+        (apply println more))))
 
 (defn println-and-ret
   "Print a single argument with println, then return that argument.

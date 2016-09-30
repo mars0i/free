@@ -6,6 +6,7 @@
 ;; Use matrix version of free.level--i.e. after setting the
 ;; use-core-matrix$ atom.  Other namespaces have to be loaded here, too:
 (reset! conf/use-core-matrix$ true)
+(println conf/use-core-matrix$)
 (ns free.example-3
   (:require [free.level :as lvl]
             [free.matrix-arithmetic :as ar]

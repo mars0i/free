@@ -1,11 +1,12 @@
 #?(:clj  (ns free.matrix-arithmetic
 	   (:require [clojure.core.matrix :as mx]))
    :cljs (ns free.matrix-arithmetic
-	    (:require [clojure.core.matrix :as mx]
-                      [thinktopic.aljabr.core :as imp])))
+	    (:require [clojure.core.matrix :as mx])))
+                      ;[thinktopic.aljabr.core :as imp])))
 
 #?(:clj  (mx/set-current-implementation :vectorz)
-   :cljs (mx/set-current-implementation :aljabr)) ; won't load it, but set default for e.g. mx/matrix
+   :cljs (mx/set-current-implementation :persistent-vector)) ; won't load it, but set default for e.g. mx/matrix
+   ;:cljs (mx/set-current-implementation :aljabr)) ; won't load it, but set default for e.g. mx/matrix
 
 ;; List of all namespaces of implementations in KNOWN-IMPLEMENTATIONS in
 ;; https://github.com/mikera/core.matrix/blob/develop/src/main/clojure/clojure/core/matrix/implementations.cljc

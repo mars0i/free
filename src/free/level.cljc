@@ -18,7 +18,7 @@
 ;; consider the code linked here from this page:
 ;; http://blog.jayfields.com/2012/05/clojure-conditionally-importing.html
 
-;(println "use-core-matrix is" free.config/use-core-matrix)
+(println "use-core-matrix$ is" conf/use-core-matrix$)
 
 (if @conf/use-core-matrix$
   (do
