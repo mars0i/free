@@ -65,4 +65,7 @@ implementation (see above).
 A list of all namespaces of implementations in KNOWN-IMPLEMENTATIONS is in
 https://github.com/mikera/core.matrix/blob/develop/src/main/clojure/clojure/core/matrix/implementations.cljc
 
+There's some kind of order of loading issue or something.  I had to load
+`free.example-3` two or three times before the defs in it had non-nil
+values.
 
