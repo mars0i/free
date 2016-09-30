@@ -55,7 +55,6 @@ It seems as if this is a working procedure:
 	(again)
 
 
-
 ### loading a core.matrix implementation
 
 You can't use `set-current-implementation` because it causes a
@@ -69,3 +68,29 @@ There's some kind of order of loading issue or something.  I had to load
 `free.example-3` two or three times before the defs in it had non-nil
 values.
 
+### scalar vs matrix arithmetic substitution
+
+In Clojure, I can do this: I have an atom `use-core-matrix$` in
+`free.config` whose value specifies whether I want scalar or matrix
+arithmetic.  (This is initialized to false.)  Then in level.cljc, I load
+either `free.scalar-arithmetic` or `free.matrix-arithmetic` depending on
+the value of the variable.  If I want an example source file to load the
+matrix operators, I set `use-core-matrix$` to `true`, *and then* require
+`free.level`, and it will load the right version of arithmetic
+operators.
+
+This is a little bit trickier in Clojurescript because you can't have
+standalone `require`s.  
+
+However, it turns out it doesn't work anyway, I think because when
+`free.level` requires `free.config`, the initialization code runs again
+if I use `:reload-all`, so it gets initialized to `false` and has that
+value at the time that `free.level` starts up, and if I don't use
+`:reload-all`, then it was already initialied to `false` the previous
+time it was loaded, so the same thing happens.
+
+I'm thinking that maybe I should put the scalar and matrix operators in
+different directories, and then have different profiles in core.matrix
+that will load one or the other directory.  And don't have an atom
+controlling this difference at all.  Note this would then have to be
+done the same way in Clojure.
