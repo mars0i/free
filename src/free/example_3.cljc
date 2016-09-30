@@ -10,7 +10,10 @@
   (:require [free.level :as lvl]
             [free.matrix-arithmetic :as ar]
             [clojure.core.matrix :as mx]
+	    ;[thinktopic.aljabr.core :as imp] ;; IS THIS NEEDED IN THIS FILE??  IF SO WRAP IN #?()
             [free.random :as ran])) ; clj or cljs depending on dialect
+
+;(mx/set-current-implementation :aljabr) ;; IS THIS NEEDED IN THIS FILE??  IF SO WRAP in #?()
 
 ;; Since these next three functions run on every tick, maybe slightly
 ;; faster not to use ar/col-mat:
