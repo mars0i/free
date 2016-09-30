@@ -42,3 +42,27 @@ It appears that if you have a clean setup, i.e. after doing `lein
 clean`, I get all sorts of wierd spurious compiler warnings about
 arity and undefined vars, e.g. for things in core.matrix.  But then if
 you exit out and do `lein figwheel` again, everything's fine.
+
+
+### compiling
+
+It seems as if this is a working procedure:
+
+	lein clean
+	lein figwheel
+	(exist out of the repl)
+	lein figwheel
+	(again)
+
+
+
+### loading a core.matrix implementation
+
+You can't use `set-current-implementation` because it causes a
+standalone `require` statement to run in order to load the
+implementation (see above).
+
+A list of all namespaces of implementations in KNOWN-IMPLEMENTATIONS is in
+https://github.com/mikera/core.matrix/blob/develop/src/main/clojure/clojure/core/matrix/implementations.cljc
+
+
