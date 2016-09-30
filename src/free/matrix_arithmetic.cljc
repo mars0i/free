@@ -1,19 +1,28 @@
-(ns free.matrix-arithmetic
-  (:require [clojure.core.matrix :as mx]))
-  ;(:require [clojure.core.matrix :as mx])
-  ;(:refer clojure.core.matrix :exclude [pm e*]))
+#?(:clj  (ns free.matrix-arithmetic
+	   (:require [clojure.core.matrix :as mx]))
+   :cljs (ns free.matrix-arithmetic
+	    (:require [clojure.core.matrix :as mx]
+                      [thinktopic.aljabr.core :as imp])))
 
-;; Note set-current-implementation has a global effect--not just in this namespace.
-;; These are supposed to work with Clojurescript as well as Clojure:
-(mx/set-current-implementation :ndarray)
-;(mx/set-current-implementation :aljabr) ; might not work
-;; Clojure only:
-;(mx/set-current-implementation :vectorz)
-;; These are Clojure only, but unlikely to be optimal for this application at this time:
-;(mx/set-current-implementation :clatrix)
-;(mx/set-current-implementation :nd4clj) ; might not work
+#?(:clj  (mx/set-current-implementation :vectorz)
+   :cljs (mx/set-current-implementation :aljabr)) ; won't load it, but set default for e.g. mx/matrix
+
+;; List of all namespaces of implementations in KNOWN-IMPLEMENTATIONS in
+;; https://github.com/mikera/core.matrix/blob/develop/src/main/clojure/clojure/core/matrix/implementations.cljc
+
+;; Clojurescript options:
+;; [clojure.core.matrix.impl.ndarray-object :as imp] ;; (why did I think this worked in Clojurescript?)
+;; [thinktopic.aljabr.core :as imp]
+
+;; Clojure options:
+;; (mx/set-current-implementation :ndarray)
+;; (mx/set-current-implementation :aljabr)
+;; (mx/set-current-implementation :vectorz)
+;; (mx/set-current-implementation :clatrix)
+;; (mx/set-current-implementation :nd4clj)
 
 (println "Loading core.matrix operators.  Matrix implementation:" (mx/current-implementation))
+
 
 ;; Note that these are functions, but in free.scalar-arithmetic, I define 
 ;; them as macros for the sake of performance.  So don't e.g. map the functions 
@@ -43,5 +52,3 @@
   "Turns a sequence of numbers xs into a row vector."
   [xs]
   (mx/matrix (vector xs)))
-  
-  
