@@ -118,7 +118,9 @@
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
 
 
-  :profiles {:dev {:dependencies [[binaryage/devtools "0.7.2"]
+  :profiles {:dev-scalar {:source-paths ["src/cljs/general/free" "src/cljs/scalar/free" "src/cljs/utils" "dev"]}
+             :dev-matrix {:source-paths ["src/cljs/general/free" "src/cljs/matrix/free" "src/cljs/utils" "dev"]}
+             :dev {:dependencies [[binaryage/devtools "0.7.2"]
                                   [figwheel-sidecar "0.5.4-7"]
                                   [com.cemerick/piggieback "0.2.1"]]
                    ;; need to add dev source path here to get user.clj loaded
