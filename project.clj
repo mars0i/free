@@ -31,7 +31,7 @@
 
   :cljsbuild {:builds
               [{:id "dev-scalar"
-                :source-paths ["src/free" "src/free/scalar" "src/utils"]
+                :source-paths ["src/cljs/general/free" "src/cljs/scalar/free" "src/cljs/utils"]
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
                 :figwheel {:on-jsload "free.core/on-js-reload"
                            ;; :open-urls will pop open your application
@@ -50,7 +50,7 @@
                            ;; https://github.com/binaryage/cljs-devtools
                            :preloads [devtools.preload]}}
                {:id "dev-matrix"
-                :source-paths ["src/free" "src/free/matrix" "src/utils"]
+                :source-paths ["src/cljs/general/free" "src/cljs/matrix/free" "src/cljs/utils"]
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
                 :figwheel {:on-jsload "free.core/on-js-reload"
                            ;; :open-urls will pop open your application
