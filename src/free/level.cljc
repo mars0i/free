@@ -33,8 +33,8 @@
     (ns free.level
       (:require [free.scalar.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]
                 [utils.string :as us])
-      (:require-macros [free.scalar.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]
-                       [utils.string :as us]))
+      ;(:require-macros [free.scalar.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]] [utils.string :as us])
+      )
     (defn limit-sigma [sigma] ;; see Bogacz end of sect 2.4
       (if (< sigma 1.0) 1.0 sigma))))
 
