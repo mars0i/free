@@ -1,6 +1,5 @@
-(ns free.example-2
-  (:require [free.scalar-arithmetic :as ar]
-            [free.level :as lvl]
+(ns free.scalar.example-2
+  (:require [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
 
 #?(:clj (require '[clojure.math.numeric-tower :as nt]))
@@ -13,7 +12,7 @@
 ;(defn gen  [phi] (nt/expt phi 8))
 ;(defn gen' [phi] (* 8.0 (nt/expt phi 7.0))) 
 
-(def init-gen-wt (ar/make-identity-obj 1)) ; i.e. initially pass value of gen(phi) through unchanged
+(def init-gen-wt 1) ; i.e. initially pass value of gen(phi) through unchanged
 
 ;; simple next-bottom function
 ;(def next-bottom (lvl/make-next-bottom #(ran/next-gaussian 2 5)))

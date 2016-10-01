@@ -24,15 +24,17 @@
   (do
     (println "Using matrix arithmetic in free.level.")
     (ns free.level
-      (:require [free.matrix-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]]
+      (:require [free.matrix.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]
                 [utils.string :as us]))
     (println "limit-sigma returns argument unchanged.")
     (defn limit-sigma [sigma] sigma)) ; should use 'positive-definite?'?, which is not yet implemented
   (do 
     (println "Using scalar arithmetic in free.level.")
     (ns free.level
-      (:require [free.scalar-arithmetic :refer [e* m* m+ m- tr inv make-identity-obj pm]]
-                [utils.string :as us]))
+      (:require [free.scalar.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]
+                [utils.string :as us])
+      (:require-macros [free.scalar.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]
+                       [utils.string :as us]))
     (defn limit-sigma [sigma] ;; see Bogacz end of sect 2.4
       (if (< sigma 1.0) 1.0 sigma))))
 
@@ -232,16 +234,16 @@
   [x]
   (m* x (tr x)))
 
-(defn print-level
-  [level]
-  (doseq [[k v] level] ; level is a record/map, i.e. collection of map-entries
-    (when (and v (not (instance? clojure.lang.IFn v))) ; nils, fns: uninformative
-      (println k)
-      (pm v))))
+;(defn print-level
+;  [level]
+;  (doseq [[k v] level] ; level is a record/map, i.e. collection of map-entries
+;    (when (and v (not (instance? clojure.lang.IFn v))) ; nils, fns: uninformative
+;      (println k)
+;      (pm v))))
 
-(defn print-stage
-  [stage]
-  (doseq [level stage] ; stage is a sequence of levels
-    (print-level level)
-    (println)))
+;(defn print-stage
+;  [stage]
+;  (doseq [level stage] ; stage is a sequence of levels
+;    (print-level level)
+;    (println)))
 

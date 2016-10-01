@@ -1,6 +1,6 @@
-#?(:clj  (ns free.matrix-arithmetic
+#?(:clj  (ns free.matrix.arithmetic
 	   (:require [clojure.core.matrix :as mx]))
-   :cljs (ns free.matrix-arithmetic
+   :cljs (ns free.matrix.arithmetic
 	    (:require [clojure.core.matrix :as mx])))
                       ;[thinktopic.aljabr.core :as imp])))
 

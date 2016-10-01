@@ -1,6 +1,6 @@
 ;; simple vector/matrix example
 
-(ns free.example-3
+(ns free.matrix/example-3
   (:require [free.config :as conf])) ; We'll need this next, but not later
 
 ;; Use matrix version of free.level--i.e. after setting the
@@ -9,7 +9,7 @@
 (println conf/use-core-matrix$)
 (ns free.example-3
   (:require [free.level :as lvl]
-            [free.matrix-arithmetic :as ar]
+            [free.matrix.arithmetic :as ar]
             [clojure.core.matrix :as mx]
 	    ;[thinktopic.aljabr.core :as imp] ;; IS THIS NEEDED IN THIS FILE??  IF SO WRAP IN #?()
             [free.random :as ran])) ; clj or cljs depending on dialect

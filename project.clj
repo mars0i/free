@@ -23,15 +23,15 @@
                  [cljsjs/chance "0.7.3-0"]]
 
   :plugins [[lein-figwheel "0.5.4-7"]
-            [lein-cljsbuild "1.1.3" :exclusions [[org.clojure/clojure]]]]
+            [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]
 
   :source-paths ["src"]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
   :cljsbuild {:builds
-              [{:id "dev"
-                :source-paths ["src"]
+              [{:id "dev-scalar"
+                :source-paths ["src/free" "src/free/scalar" "src/utils"]
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
                 :figwheel {:on-jsload "free.core/on-js-reload"
                            ;; :open-urls will pop open your application
@@ -49,17 +49,26 @@
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
                            :preloads [devtools.preload]}}
-               ;; This next build is an compressed minified build for
-               ;; production. You can build this with:
-               ;; lein cljsbuild once min
-               {:id "dist"
-                :source-paths ["src"]
-                :compiler {:asset-path "js/compiled/dist"
+               {:id "dev-matrix"
+                :source-paths ["src/free" "src/free/matrix" "src/utils"]
+                ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
+                :figwheel {:on-jsload "free.core/on-js-reload"
+                           ;; :open-urls will pop open your application
+                           ;; in the default browser once Figwheel has
+                           ;; started and complied your application.
+                           ;; Comment this out once it no longer serves you.
+                           :open-urls ["http://localhost:3449/index.html"]}
+                :compiler {:main free.core
+                           :asset-path "js/compiled/out"
                            :output-to "resources/public/js/compiled/free.js"
-                           :output-dir "resources/public/js/compiled/dist"
-                           :main free.core
-                           :optimizations :simple ; :none
-                           :pretty-print true}}
+                           :output-dir "resources/public/js/compiled/out"
+                           :pretty-print false
+                           :optimizations :none
+                           :source-map-timestamp true
+                           ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
+                           ;; https://github.com/binaryage/cljs-devtools
+                           :preloads [devtools.preload]}}
+               ;; This next build is an compressed minified build for production. You can build this with: lein cljsbuild once min
                {:id "min"
                 :source-paths ["src"]
                 :compiler {:output-to "resources/public/js/compiled/free.js"

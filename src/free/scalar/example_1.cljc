@@ -1,7 +1,5 @@
-(ns free.example-1
-  (:require [free.scalar-arithmetic :as ar]
-            ;[free.matrix-arithmetic :as ar]
-            [free.level :as lvl]
+(ns free.scalar.example-1
+  (:require [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
 
 #?(:clj (require '[clojure.math.numeric-tower :as nt]))
