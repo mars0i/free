@@ -41,6 +41,51 @@
 (def make-identity-obj mx/identity-matrix)
 (def pm mx/pm)
 
+(defmacro m* 
+  "Scalar analogue of matrix multiplication and inner product, i.e. scalar
+  multiplication."
+  ([x] x) ; is this right?
+  ([x y] `(mx/mmul ~x ~y))
+  ([x y z] `(mx/mmul ~x ~y ~z)))
+
+(defmacro e* 
+  "Scalar analogue of elementwise (Hadamard) multiplication, i.e. scalar 
+  multiplication."
+  ([x] x)
+  ([x y] `(mx/mul ~x ~y))
+  ([x y z] `(mx/mul ~x ~y ~z)))
+
+(defmacro m+ 
+  "Scalar analogue of elementwise addition, i.e. scalar addition."
+  ([x] x)
+  ([x y] `(mx/add ~x ~y))
+  ([x y z] `(mx/add ~x ~y ~z)))
+
+(defmacro m- 
+  "Scalar analogue of elementwise subtraction, i.e. scalar subtraction."
+  ([x] `(mx/sub ~x))
+  ([x y] `(mx/sub ~x ~y))
+  ([x y z] `(mx/sub ~x ~y ~z)))
+
+(defmacro tr
+  "Scalar analogue of transposition; returns the argument unchanged."
+  [x]
+  `(mx/transpose x))
+
+(defmacro inv
+  "Scalar analogue of matrix inversion, i.e. scalar reciprocal, divide into 1.0."
+  [x]
+  `(mx/inverse ~x))
+
+(defmacro make-identity-obj
+  "Returns 1, the identity operator for scalar multiplication.  Throws exception
+  if anything other than 1 is passed as dims."
+  [dims]
+  (mx/identity-matrix dims))
+
+;#?(:clj   (def pm clojure.pprint/pprint)
+;    :cljs (def pm cljs.pprint/pprint))
+
 ;; btw There's also an e* in core.matrix (which is *almost* identical to mul)
 ;; but by qualifying core.matrix with mx, it doesn't matter.
 
