@@ -1,6 +1,6 @@
 ;; Exercise 3 in Bogacz
 
-(ns free.scalar.exercise-3
+(ns free.exercise-3
   (:require [free.level :as lvl]))
 
 ;; Bogacz's exercises 1 and 3:

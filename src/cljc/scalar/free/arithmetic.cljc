@@ -1,4 +1,6 @@
-(ns free.scalar.arithmetic
+;; fast scalar arithmetic; there's another version of this namespace for matrix arithmetic
+
+(ns free.arithmetic
   #?(:cljs (:require cljs.pprint)))
 
 ;; This file contains distasteful kludge since using another name for basic 

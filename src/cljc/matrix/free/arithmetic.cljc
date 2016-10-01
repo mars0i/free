@@ -1,6 +1,9 @@
-#?(:clj  (ns free.matrix.arithmetic
+;; matrix arithmetic
+;; there's another free.arithmetic with scalar operations
+
+#?(:clj  (ns free.arithmetic
 	   (:require [clojure.core.matrix :as mx]))
-   :cljs (ns free.matrix.arithmetic
+   :cljs (ns free.arithmetic
 	    (:require [clojure.core.matrix :as mx])))
                       ;[thinktopic.aljabr.core :as imp])))
 

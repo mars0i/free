@@ -8,33 +8,24 @@
 
 ;; SEE doc/level.md for documentation on general features of the code below.
 
-(ns free.level
-  (:require [free.config :as conf]))
-    
-
-;; maybe move elsewhere so can be defined on command line?
-;(def ^:const use-core-matrix false)
-;(resolve 'use-core-matrix)
-;; consider the code linked here from this page:
-;; http://blog.jayfields.com/2012/05/clojure-conditionally-importing.html
+#?(:clj  (ns free.level
+           (:require [free.config :as conf]
+                     [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]] ; could be scalar or matrix
+                     [utils.string :as us]))
+   :cljs (ns free.level
+           (:require [free.config :as conf]
+	             [utils.string :as us])
+           (:require-macros [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]))) ; could be scalar or matrix
 
 (println "use-core-matrix$ is" conf/use-core-matrix$)
 
 (if @conf/use-core-matrix$
   (do
     (println "Using matrix arithmetic in free.level.")
-    (ns free.level
-      (:require [free.matrix.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]
-                [utils.string :as us]))
     (println "limit-sigma returns argument unchanged.")
     (defn limit-sigma [sigma] sigma)) ; should use 'positive-definite?'?, which is not yet implemented
   (do 
     (println "Using scalar arithmetic in free.level.")
-    (ns free.level
-      (:require [free.scalar.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]
-                [utils.string :as us])
-      ;(:require-macros [free.scalar.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]] [utils.string :as us])
-      )
     (defn limit-sigma [sigma] ;; see Bogacz end of sect 2.4
       (if (< sigma 1.0) 1.0 sigma))))
 

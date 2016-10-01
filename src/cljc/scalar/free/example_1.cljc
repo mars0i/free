@@ -1,4 +1,4 @@
-(ns free.scalar.example-1
+(ns free.example-1
   (:require [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
 
