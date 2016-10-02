@@ -3,9 +3,10 @@
 ;;; specified in the file LICENSE.
 
 ;; Miscellaneous utility functions having to do with strings and printing
-(ns utils.string
-  #?(:clj 
-      (:require [clojure.pprint])))   ; for *print-right-margin*
+;#?(:clj  
+    (ns utils.string
+           (:require [clojure.pprint]))   ; for *print-right-margin*
+;   :cljs (ns utils.string))
 
 (defn name*
   [x]

@@ -10,27 +10,12 @@
 
 #?(:clj  (ns free.level
            (:require [free.config :as conf]
-                     [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]] ; could be scalar or matrix
+                     [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]] ; could be scalar or matrix
                      [utils.string :as us]))
    :cljs (ns free.level
            (:require [free.config :as conf]
 	             [utils.string :as us])
-           (:require-macros [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj]]))) ; could be scalar or matrix
-
-(println "use-core-matrix$ is" conf/use-core-matrix$)
-
-(if @conf/use-core-matrix$
-  (do
-    (println "Using matrix arithmetic in free.level.")
-    (println "limit-sigma returns argument unchanged.")
-    (defn limit-sigma [sigma] sigma)) ; should use 'positive-definite?'?, which is not yet implemented
-  (do 
-    (println "Using scalar arithmetic in free.level.")
-    (defn limit-sigma [sigma] ;; see Bogacz end of sect 2.4
-      (if (< sigma 1.0) 1.0 sigma))))
-
-
-;(println (macroexpand m*))
+           (:require-macros [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]]))) ; could be scalar or matrix
 
 ;;;;;;;;;;;;;;;;;;;;;
 (declare phi-inc   next-phi 

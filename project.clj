@@ -29,9 +29,17 @@
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
+  :profiles {:dev-scalar {:source-paths ["src/clj/general"  "src/clj/scalar"
+                                         "src/cljc/general" "src/cljc/scalar"]}
+             :dev-matrix {:source-paths ["src/clj/general"  "src/clj/matrix"
+                                         "src/cljc/general" "src/cljc/matrix"]}
+            }
+
   :cljsbuild {:builds
               [{:id "dev-scalar"
-                :source-paths ["src/cljs/general" "src/cljs/scalar" "src/cljs/utils" "dev"]
+                :source-paths ["src/cljc/general" "src/cljc/scalar"
+                               "src/cljs/general" "src/cljs/scalar"
+                               "dev"]
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
                 :figwheel {:on-jsload "free.core/on-js-reload"
                            ;; :open-urls will pop open your application
@@ -50,7 +58,9 @@
                            ;; https://github.com/binaryage/cljs-devtools
                            :preloads [devtools.preload]}}
                {:id "dev-matrix"
-                :source-paths ["src/cljs/general" "src/cljs/matrix" "src/cljs/utils" "dev"]
+                :source-paths ["src/cljc/general" "src/cljc/matrix"
+                               "src/cljs/general" "src/cljs/matrix"
+                               "dev"]
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
                 :figwheel {:on-jsload "free.core/on-js-reload"
                            ;; :open-urls will pop open your application
@@ -117,10 +127,6 @@
   ;; Please see:
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
 
-
-  :profiles {:dev-scalar {:source-paths ["src/cljs/general" "src/cljs/scalar" "src/cljs/utils"]}
-             :dev-matrix {:source-paths ["src/cljs/general" "src/cljs/matrix" "src/cljs/utils"]}
-            }
 ;             :dev {:dependencies [[binaryage/devtools "0.7.2"]
 ;                                  [figwheel-sidecar "0.5.4-7"]
 ;                                  [com.cemerick/piggieback "0.2.1"]]

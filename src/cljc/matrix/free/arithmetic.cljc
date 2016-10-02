@@ -32,32 +32,29 @@
 ;; them as macros for the sake of performance.  So don't e.g. map the functions 
 ;; below over a sequence, if you want to preserve substitutability with their 
 ;; scalar analogues.
-(def m* mx/mmul) ; matrix multiplication and inner product
-(def e* mx/mul)  ; elementwise (Hadamard) and scalar multiplication
-(def m+ mx/add)  ; elementwise addition
-(def m- mx/sub)  ; elementwise subtraction, or elementwise negation
-(def tr mx/transpose)
-(def inv mx/inverse)
-(def make-identity-obj mx/identity-matrix)
-(def pm mx/pm)
+;(def m* mx/mmul) ; matrix multiplication and inner product
+;(def e* mx/mul)  ; elementwise (Hadamard) and scalar multiplication
+;(def m+ mx/add)  ; elementwise addition
+;(def m- mx/sub)  ; elementwise subtraction, or elementwise negation
+;(def tr mx/transpose)
+;(def inv mx/inverse)
+;(def make-identity-obj mx/identity-matrix)
+;(def pm mx/pm)
 
 (defmacro m* 
   "Scalar analogue of matrix multiplication and inner product, i.e. scalar
   multiplication."
-  ([x] x) ; is this right?
   ([x y] `(mx/mmul ~x ~y))
   ([x y z] `(mx/mmul ~x ~y ~z)))
 
 (defmacro e* 
   "Scalar analogue of elementwise (Hadamard) multiplication, i.e. scalar 
   multiplication."
-  ([x] x)
   ([x y] `(mx/mul ~x ~y))
   ([x y z] `(mx/mul ~x ~y ~z)))
 
 (defmacro m+ 
   "Scalar analogue of elementwise addition, i.e. scalar addition."
-  ([x] x)
   ([x y] `(mx/add ~x ~y))
   ([x y z] `(mx/add ~x ~y ~z)))
 
@@ -70,7 +67,7 @@
 (defmacro tr
   "Scalar analogue of transposition; returns the argument unchanged."
   [x]
-  `(mx/transpose x))
+  `(mx/transpose ~x))
 
 (defmacro inv
   "Scalar analogue of matrix inversion, i.e. scalar reciprocal, divide into 1.0."
@@ -82,6 +79,12 @@
   if anything other than 1 is passed as dims."
   [dims]
   (mx/identity-matrix dims))
+
+;; Should use 'positive-definite?'?, which is not yet implemented in core.matrix
+;; or maybe test for determinant being > 0 or some larger number
+(defn limit-sigma
+  [sigma]
+  sigma)
 
 ;#?(:clj   (def pm clojure.pprint/pprint)
 ;    :cljs (def pm cljs.pprint/pprint))

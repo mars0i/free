@@ -38,9 +38,9 @@
 (defn plot-level
   "plot-level for vectors and matrices."
   ([stages level-num n every]
-   (plot-level* (take-nth every (take n stages)) level-num))
+   (plot-level (take-nth every (take n stages)) level-num))
   ([stages level-num n]
-   (plot-level* (take n stages) level-num))
+   (plot-level (take n stages) level-num))
   ([stages level-num]
    ;; Uses undocumented "*" function versions of Incanter chart macros:
    (let [level-stages (map #(nth % level-num) stages)

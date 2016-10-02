@@ -60,5 +60,10 @@
         (str "The value " dims " was passed as dims, but this version of function is defined only for dims = 1"))))
   1) ; 1 is self-evaluating; no need for `()
 
+;; see Bogacz end of sect 2.4
+(defn limit-sigma
+  [sigma]
+  (if (< sigma 1.0) 1.0 sigma))
+
 ;#?(:clj   (def pm clojure.pprint/pprint)
 ;    :cljs (def pm cljs.pprint/pprint))
