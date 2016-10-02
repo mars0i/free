@@ -25,13 +25,13 @@
   :plugins [[lein-figwheel "0.5.4-7"]
             [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]
 
-  :source-paths ["src"]
+  ;:source-paths ["src"]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
   :cljsbuild {:builds
               [{:id "dev-scalar"
-                :source-paths ["src/cljs/general/free" "src/cljs/scalar/free" "src/cljs/utils"]
+                :source-paths ["src/cljs/general" "src/cljs/scalar" "src/cljs/utils" "dev"]
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
                 :figwheel {:on-jsload "free.core/on-js-reload"
                            ;; :open-urls will pop open your application
@@ -50,7 +50,7 @@
                            ;; https://github.com/binaryage/cljs-devtools
                            :preloads [devtools.preload]}}
                {:id "dev-matrix"
-                :source-paths ["src/cljs/general/free" "src/cljs/matrix/free" "src/cljs/utils"]
+                :source-paths ["src/cljs/general" "src/cljs/matrix" "src/cljs/utils" "dev"]
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
                 :figwheel {:on-jsload "free.core/on-js-reload"
                            ;; :open-urls will pop open your application
@@ -118,17 +118,18 @@
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
 
 
-  :profiles {:dev-scalar {:source-paths ["src/cljs/general/free" "src/cljs/scalar/free" "src/cljs/utils" "dev"]}
-             :dev-matrix {:source-paths ["src/cljs/general/free" "src/cljs/matrix/free" "src/cljs/utils" "dev"]}
-             :dev {:dependencies [[binaryage/devtools "0.7.2"]
-                                  [figwheel-sidecar "0.5.4-7"]
-                                  [com.cemerick/piggieback "0.2.1"]]
-                   ;; need to add dev source path here to get user.clj loaded
-                   :source-paths ["src" "dev"]
-                   ;; for CIDER
-                   ;; :plugins [[cider/cider-nrepl "0.12.0"]]
-                   :repl-options {; for nREPL dev you really need to limit output
-                                  :init (set! *print-length* 50)
-                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
+  :profiles {:dev-scalar {:source-paths ["src/cljs/general" "src/cljs/scalar" "src/cljs/utils"]}
+             :dev-matrix {:source-paths ["src/cljs/general" "src/cljs/matrix" "src/cljs/utils"]}
+            }
+;             :dev {:dependencies [[binaryage/devtools "0.7.2"]
+;                                  [figwheel-sidecar "0.5.4-7"]
+;                                  [com.cemerick/piggieback "0.2.1"]]
+;                   ;; need to add dev source path here to get user.clj loaded
+;                   :source-paths ["src" "dev"]
+;                   ;; for CIDER
+;                   ;; :plugins [[cider/cider-nrepl "0.12.0"]]
+;                   :repl-options {; for nREPL dev you really need to limit output
+;                                  :init (set! *print-length* 50)
+;                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
 
 )
