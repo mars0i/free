@@ -1,0 +1,3 @@
+#!/bin/sh
+echo Starting free with scalar mode in Clojure ...
+lein with-profile +dev-scalar "$@" repl
