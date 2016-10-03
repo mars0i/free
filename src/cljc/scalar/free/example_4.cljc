@@ -8,18 +8,11 @@
 (defn gen  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
 (defn gen' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
 
-;; Alternative generative function phi^8:
-;(defn gen  [phi] (nt/expt phi 8))
-;(defn gen' [phi] (* 8.0 (nt/expt phi 7.0))) 
-
 (def init-gen-wt 1) ; i.e. initially pass value of gen(phi) through unchanged
-
-;; simple next-bottom function
-;(def next-bottom (lvl/make-next-bottom #(ran/next-gaussian 2 5)))
 
 ;; next-bottom function
 ;; all this atom stuff is "bad", but is really just implementing a loop while allowing the function to be arg-less
-(def change-ticks$ (atom (range 0 100000000 10000)))
+(def change-ticks$ (atom (range 20000 1000000000 20000)))
 (def means$ (atom (cycle [10 2])))
 (def mean$ (atom 2))
 (def sd 5)
@@ -30,7 +23,7 @@
                        (reset! mean$ (first @means$))
                        (swap! change-ticks$ rest)
                        (swap! means$ rest))
-                     (ran/next-gaussian @mean$ sd))))
+                     (ran/next-gaussian @mean$ sd)))) ; SHOULD THIS BE FED INTO gen ?
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; err
@@ -63,7 +56,7 @@
               :phi-dt 0.0001
               :err-dt 0.01
               :sigma-dt 0.0001
-              :gen-wt-dt 0.00001})
+              :gen-wt-dt 0.00005})
 
 (def init-bot (lvl/map->Level bot-map))
 ;; mid-level state with adjustable gen-wt:
