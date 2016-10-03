@@ -63,7 +63,7 @@
               :phi-dt 0.0001
               :err-dt 0.01
               :sigma-dt 0.0001
-              :gen-wt-dt 0.000001})
+              :gen-wt-dt 0.00001})
 
 (def init-bot (lvl/map->Level bot-map))
 ;; mid-level state with adjustable gen-wt:
@@ -72,16 +72,5 @@
 (def init-mid-fixed-gen-wt (lvl/map->Level (assoc mid-map :gen-wt-dt 0.0)))
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :gen ; other fields will be nil
 
-;(def stages (iterate (partial lvl/next-levels next-bottom) [init-bot init-mid top]))
 (defn make-stages [] (iterate (partial lvl/next-levels next-bottom)
                               [init-bot init-mid top]))
-
-;; e.g.
-;;(plot-level (make-stages)) 1 1000000 1000) ; uses regular sequence ops
-;; with transducer:
-;;(plot-level (sequence (comp (take 1000000) (take-nth 1000)) (make-stages)) 1)
-;;(plot-level (into []  (comp (take 1000000) (take-nth 1000)) (make-stages)) 1)
-;; or even more efficient:
-;; (plot-level (sequence (comp (take 1000000000) (take-nth 10000) (map #(nth % 1))) (make-stages)))
-;; (plot-level (into []  (comp (take 1000000000) (take-nth 10000) (map #(nth % 1))) (make-stages)))
-;; Note however that at present plot-level has to realize the entire sequence passed in.
