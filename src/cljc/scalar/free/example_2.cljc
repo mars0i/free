@@ -1,3 +1,5 @@
+;; scalar example with fluctuations
+
 (ns free.example-2
   (:require [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
