@@ -9,17 +9,16 @@
 ;; SEE doc/level.md for documentation on general features of the code below.
 
 #?(:clj  (ns free.level
-           (:require [free.config :as conf]
-                     [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]] ; could be scalar or matrix
+           (:require [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]] ; could be scalar or matrix
                      [utils.string :as us]))
    :cljs (ns free.level
-           (:require [free.config :as conf]
-	             [utils.string :as us]
+           ;(:require [utils.string :as us])
+           (:require-macros [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]]))) ; could be scalar or matrix
+
                      ;; Clojurescript kludge: requiring core.matrix next will do 
                      ;; nothing if free.arithmetic is scalar version, but needed
                      ;; for matrix version when macros expand (?):
-                     [clojure.core.matrix :refer [mmul mul add sub transpose inverse identity-matrix]])
-           (:require-macros [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]]))) ; could be scalar or matrix
+                     ; [clojure.core.matrix :refer [mmul mul add sub transpose inverse identity-matrix]])
 
 ;;;;;;;;;;;;;;;;;;;;;
 (declare phi-inc   next-phi 
