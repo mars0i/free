@@ -2,8 +2,6 @@
   (:require [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
 
-#?(:clj (require '[clojure.math.numeric-tower :as nt]))
-
 ;; Generative function phi^2:
 (defn gen  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
 (defn gen' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
