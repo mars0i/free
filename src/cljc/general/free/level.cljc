@@ -14,7 +14,11 @@
                      [utils.string :as us]))
    :cljs (ns free.level
            (:require [free.config :as conf]
-	             [utils.string :as us])
+	             [utils.string :as us]
+                     ;; Clojurescript kludge: requiring core.matrix will do nothing 
+                     ;; if free.arithmetic is scalar version, but needed for matrix 
+                     ;; version when macros expand (?):
+                     [clojure.core.matrix :refer [mmul mul add sub transpose inverse identity-matrix]])
            (:require-macros [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]]))) ; could be scalar or matrix
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -54,8 +58,8 @@
   are n x n square matrices.  gen and gen' are functions that can be applied to 
   phi.  See doc/level.md for more information.")
 
-(us/add-to-docstr! ->Level    Level-docstring)
-(us/add-to-docstr! map->Level Level-docstring)
+#?(:clj (us/add-to-docstr! ->Level    Level-docstring))
+#?(:clj (us/add-to-docstr! map->Level Level-docstring))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Functions to calculate next state of system

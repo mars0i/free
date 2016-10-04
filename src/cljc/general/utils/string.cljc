@@ -40,11 +40,12 @@
     (clojure.string/replace (str f) #".*\$(.*)@.*" "$1") ; strip off initial and trailing parts of the identifier
     #"_" "-")) ; replace underlines with dashes
 
-(defmacro add-to-docstr!
-  "Appends string addlstr onto end of existing docstring for symbol sym.
-  (Tip: Consider beginning addlstr with \"\\n  \".)"
-  [sym addlstr] 
-  `(alter-meta! #'~sym update-in [:doc] str ~addlstr))
+#?(:clj
+    (defmacro add-to-docstr!
+      "Appends string addlstr onto end of existing docstring for symbol sym.
+      (Tip: Consider beginning addlstr with \"\\n  \".)"
+      [sym addlstr] 
+      `(alter-meta! #'~sym update-in [:doc] str ~addlstr)))
 
 #?(:clj 
     (defn set-pprint-width 
