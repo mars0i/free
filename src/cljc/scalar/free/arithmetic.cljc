@@ -10,6 +10,7 @@
 ;; matrices, then core.matrix will be available, and just alias the core.matrix 
 ;; operators.
 
+#?(:cljs (enable-console-print!))
 (println "Loading scalar operators.")
 
 ;; My cheesey macros only accept three arguments
@@ -61,9 +62,12 @@
   1) ; 1 is self-evaluating; no need for `()
 
 ;; see Bogacz end of sect 2.4
-(defn limit-sigma
+;; make it a macro simply because the others are (hack for Clojurescript)
+(defmacro limit-sigma
   [sigma]
-  (if (< sigma 1.0) 1.0 sigma))
+  `(if (< ~sigma 1.0)
+     1.0
+     ~sigma))
 
 ;#?(:clj   (def pm clojure.pprint/pprint)
 ;    :cljs (def pm cljs.pprint/pprint))

@@ -15,8 +15,8 @@
 ;; https://github.com/mikera/core.matrix/blob/develop/src/main/clojure/clojure/core/matrix/implementations.cljc
 
 ;; Clojurescript options:
-;; [clojure.core.matrix.impl.ndarray-object :as imp] ;; (why did I think this worked in Clojurescript?)
 ;; [thinktopic.aljabr.core :as imp]
+;; NOT?: [clojure.core.matrix.impl.ndarray-object :as imp] ;; (why did I think this worked in Clojurescript?)
 
 ;; Clojure options:
 ;; (mx/set-current-implementation :ndarray)
@@ -25,6 +25,7 @@
 ;; (mx/set-current-implementation :clatrix)
 ;; (mx/set-current-implementation :nd4clj)
 
+#?(:cljs (enable-console-print!))
 (println "Loading core.matrix operators.  Matrix implementation:" (mx/current-implementation))
 
 
@@ -82,7 +83,8 @@
 
 ;; Should use 'positive-definite?'?, which is not yet implemented in core.matrix
 ;; or maybe test for determinant being > 0 or some larger number
-(defn limit-sigma
+;; make it a macro simply because the others are (hack for Clojurescript)
+(defmacro limit-sigma
   [sigma]
   sigma)
 
