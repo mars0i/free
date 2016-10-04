@@ -1,4 +1,3 @@
 #!/bin/sh
 echo Starting free with matrix mode in Clojure ...
 lein with-profile +dev-matrix "$@" repl
-
