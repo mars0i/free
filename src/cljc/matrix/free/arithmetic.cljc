@@ -96,13 +96,15 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; These have no (and need no) equivalents in scalar-arithmetic:
+;; Macros only for the sake of Clojurescript.  Maybe move to a different
+;; file later.
 
-(defn col-mat
+(defmacro col-mat
   "Turns a sequence of numbers xs into a column vector."
   [xs]
-  (mx/matrix (map vector xs)))
+  `(mx/matrix (map vector ~xs)))
 
-(defn row-mat
+(defmacro row-mat
   "Turns a sequence of numbers xs into a row vector."
   [xs]
-  (mx/matrix (vector xs)))
+  `(mx/matrix (vector ~xs)))
