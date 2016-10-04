@@ -15,9 +15,9 @@
    :cljs (ns free.level
            (:require [free.config :as conf]
 	             [utils.string :as us]
-                     ;; Clojurescript kludge: requiring core.matrix will do nothing 
-                     ;; if free.arithmetic is scalar version, but needed for matrix 
-                     ;; version when macros expand (?):
+                     ;; Clojurescript kludge: requiring core.matrix next will do 
+                     ;; nothing if free.arithmetic is scalar version, but needed
+                     ;; for matrix version when macros expand (?):
                      [clojure.core.matrix :refer [mmul mul add sub transpose inverse identity-matrix]])
            (:require-macros [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]]))) ; could be scalar or matrix
 
