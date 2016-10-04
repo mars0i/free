@@ -3,14 +3,14 @@
 ;;; specified in the file LICENSE.
 
 (ns utils.random-utils
-  (:require [free.random])) ; different dependng on clj vs cljs
+  (:require [free.random :as r])) ; different dependng on clj vs cljs
 
 (defn make-rng-print-seed
   "Make a seed, print it to stdout, then pass it to make-rng."
   []
-  (let [seed (make-long-seed)]
+  (let [seed (r/make-long-seed)]
     (println seed)
-    (make-rng seed)))
+    (r/make-rng seed)))
 
 (defn truncate
   "Given an a function and arguments that generate random samples, returns a 
@@ -30,7 +30,7 @@
   [rng num-samples coll]
   (let [size (count coll)]
     (for [_ (range num-samples)]
-      (nth coll (rand-idx rng size)))))
+      (nth coll (r/rand-idx rng size)))))
 
 ;; lazy if more than one sample
 ;; (deal with license issues)
@@ -40,18 +40,20 @@
   (let [size (count coll)
         max-idx size]
     (cond
-      (= num-samples 1) (list (nth coll (rand-idx rng size)))  ; if only one element needed, don't bother with the "with replacement" algorithm
+      (= num-samples 1) (list (nth coll (r/rand-idx rng size)))  ; if only one element needed, don't bother with the "with replacement" algorithm
       ;; Rather than creating subseqs of the original coll, we create a seq of indices below,
       ;; and then [in effect] map (partial nth coll) through the indices to get the samples that correspond to them.
       (< num-samples size) (map #(nth coll %) 
                                 (loop [samp-indices [] indices-set #{}]    ; loop to create the set of indices
                                   (if (= (count samp-indices) num-samples) ; until we've collected the right number of indices
                                     samp-indices
-                                    (let [i (rand-idx rng size)]             ; get a random index
+                                    (let [i (r/rand-idx rng size)]             ; get a random index
                                       (if (contains? indices-set i)      ; if we've already seen that index,
                                         (recur samp-indices indices-set) ;  then try again
                                         (recur (conj samp-indices i) (conj indices-set i))))))) ; otherwise add it to our indices
-      :else (throw (Exception. "num-samples can't be larger than (count coll).")))))
+      :else (throw 
+              #?(:clj  (Exception. "num-samples can't be larger than (count coll).")
+                 :cljs (js/Error.  "num-samples can't be larger than (count coll)."))))))
 
 
 ;; lazy
@@ -60,7 +62,7 @@
 ;  [rng num-samples coll]
 ;  (let [size (count coll)]
 ;    (repeatedly num-samples 
-;                #(nth coll (rand-idx rng size)))))
+;                #(nth coll (r/rand-idx rng size)))))
 
 ;; lazy
 ;; This version is inspired by Incanter, which does it like this:
@@ -71,7 +73,7 @@
 ;  [rng num-samples coll]
 ;  (let [size (count coll)]
 ;    (map #(nth coll %) 
-;         (repeatedly num-samples #(rand-idx rng size)))))
+;         (repeatedly num-samples #(r/rand-idx rng size)))))
 
 ;; not lazy
 ;(defn sample-with-repl-4
@@ -80,5 +82,5 @@
 ;    (loop [remaining num-samples result []] 
 ;      (if (> remaining 0)
 ;        (recur (dec remaining) (conj result 
-;                                     (nth coll (rand-idx rng size))))
+;                                     (nth coll (r/rand-idx rng size))))
 ;        result))))
