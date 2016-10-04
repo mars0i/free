@@ -11,7 +11,7 @@
 ;; next-bottom function
 ;; all this atom stuff is "bad", but is really just implementing a loop while allowing the function to be arg-less
 (def change-ticks$ (atom (range 20000 1000000000 20000)))
-(def means$ (atom (cycle [10 2])))
+(def means$ (atom (cycle [40 2])))
 (def mean$ (atom 2))
 (def sd 5)
 (def tick$ (atom 0))
