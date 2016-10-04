@@ -59,11 +59,9 @@
               :gen-wt-dt 0.00005})
 
 (def init-bot (lvl/map->Level bot-map))
-;; mid-level state with adjustable gen-wt:
 (def init-mid (lvl/map->Level mid-map))
-;; alt mid-level state with fixed gen-wt:
 (def init-mid-fixed-gen-wt (lvl/map->Level (assoc mid-map :gen-wt-dt 0.0)))
-(def top (lvl/make-top-level v-p)) ; will have phi, and identity as :gen ; other fields will be nil
+(def top (lvl/make-top-level v-p)) ; will have phi, and identity as :gen ; other fields nil
 
 (defn make-stages [] (iterate (partial lvl/next-levels next-bottom)
                               [init-bot init-mid top]))
