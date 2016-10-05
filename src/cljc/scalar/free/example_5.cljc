@@ -7,8 +7,9 @@
 ;; Here are command that will show this:
 ;;    (use '[free.plots] :reload)
 ;;    (require '[free.example-5 :as e] :reload)
-;;    (plot-level (e/make-stages) 1 300000)
-;;    (plot-level (e/make-stages) 1 3500000 100)
+;;    (plot-level (e/make-stages) 1 300000) ; 300K ticks
+;;    (plot-level (e/make-stages) 1 3500000 100) 3.5M ticks, sampled every 100
+;; To see what's going on at the initial sensory level, replace 1 with 0.
 
 (ns free.example-5
   (:require [free.level :as lvl]
