@@ -76,8 +76,7 @@
   `(mx/inverse ~x))
 
 (defmacro make-identity-obj
-  "Returns 1, the identity operator for scalar multiplication.  Throws exception
-  if anything other than 1 is passed as dims."
+  "Returns 1, the identity operator for scalar multiplication."
   [dims]
   (mx/identity-matrix dims))
 
