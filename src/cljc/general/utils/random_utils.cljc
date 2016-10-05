@@ -3,7 +3,7 @@
 ;;; specified in the file LICENSE.
 
 (ns utils.random-utils
-  (:require [free.random :as r])) ; different dependng on clj vs cljs
+  (:require [utils.random :as r])) ; different dependng on clj vs cljs
 
 (defn make-rng-print-seed
   "Make a seed, print it to stdout, then pass it to make-rng."
