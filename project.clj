@@ -6,12 +6,13 @@
   :min-lein-version "2.6.1"
   :java-source-paths ["src/java"]
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 ;[org.clojure/clojure "1.9.0-alpha12"]
+                 ;[org.clojure/clojure "1.9.0-alpha9"]
                  [org.clojure/clojurescript "1.9.229"] ; very nitpicky spec tests
                  ;[org.clojure/clojurescript "1.9.225"]
                  [org.clojure/core.async "0.2.385" :exclusions [org.clojure/tools.reader]]
                  [org.clojure/math.numeric-tower "0.0.4"]
-                 [net.mikera/core.matrix "0.54.0"]
+                 [net.mikera/core.matrix "0.55.0"]
+                 ;[net.mikera/core.matrix "0.55.1-SNAPSHOT"]
                  [net.mikera/vectorz-clj "0.45.0"]
                  [thinktopic/aljabr "0.1.1"] ; ignore [... "0.4.0-SNAPSHOT"] in README.md--wishful thinking
                  [clatrix "0.5.0"]
