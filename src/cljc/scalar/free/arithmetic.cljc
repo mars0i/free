@@ -1,17 +1,11 @@
-;; fast scalar arithmetic; there's another version of this namespace for matrix arithmetic
+;; fast scalar arithmetic
+;; there's another version of this namespace for matrix arithmetic
 
-(ns free.arithmetic
-  #?(:cljs (:require cljs.pprint)))
+;; Note that for Clojurescript, this is a macro namespace, which means that it only runs
+;; in Clojure, before Clojurescript compilation.  So there's no reason to use any reader macros
+;; except to prevent something from happening during Clojurescript pre-compilation.
 
-;; This file contains distasteful kludge since using another name for basic 
-;; scalar operators slows them down.
-;; i.e. (def m* *) makes multiplication order of magnitude slower.  Solution for
-;; scalars is to use a macro--ugh--which preserves speed.  But if we need
-;; matrices, then core.matrix will be available, and just alias the core.matrix 
-;; operators.
-
-#?(:cljs (enable-console-print!))
-(println "Loading scalar operators.")
+(ns free.arithmetic)
 
 ;; My cheesey macros only accept three arguments
 
@@ -68,6 +62,3 @@
   `(if (< ~sigma 1.0)
      1.0
      ~sigma))
-
-;#?(:clj   (def pm clojure.pprint/pprint)
-;    :cljs (def pm cljs.pprint/pprint))
