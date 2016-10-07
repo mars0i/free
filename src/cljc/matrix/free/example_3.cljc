@@ -2,7 +2,7 @@
 
 (ns free.example-3
   (:require [free.level :as lvl]
-            [clojure.core.matrix :as mx]
+            [clojure.core.matrix :as mx] ; needed for arithmetic macros even if not used explicitly
 	    ;[thinktopic.aljabr.core :as imp] ;; IS THIS NEEDED IN THIS FILE??  IF SO WRAP IN #?()
             [free.random :as ran]) ; clj or cljs depending on dialect
   #?(:clj  (:require [free.arithmetic :as ar])
