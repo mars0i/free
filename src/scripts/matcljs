@@ -1,3 +1,4 @@
 #!/bin/sh
 echo Starting free with matrix mode in Clojurescript ...
-rlwrap lein figwheel dev-matrix "$@" 
+rlwrap lein with-profile dev-matrix figwheel dev-matrix "$@" 
+# need with-profile for Clojure-based macroexpand stage

@@ -1,3 +1,4 @@
 #!/bin/sh
 echo Starting free with scalar mode in Clojurescript ...
-rlwrap lein figwheel dev-scalar "$@" 
+rlwrap lein with-profile dev-scalar figwheel dev-scalar "$@" 
+# need with-profile for Clojure-based macroexpand stage
