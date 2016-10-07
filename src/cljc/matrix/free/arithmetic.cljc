@@ -1,14 +1,21 @@
-;; matrix arithmetic
+;; matrix arithmetic macros
 ;; there's another free.arithmetic with scalar operations
 
-#?(:clj  (ns free.arithmetic
-	   (:require [clojure.core.matrix :as mx]))
-   :cljs (ns free.arithmetic
-	    (:require [clojure.core.matrix :as mx])))
-                      ;[thinktopic.aljabr.core :as imp])))
+;; Note that for Clojurescript, this is a macro namespace, which means that it only runs
+;; in Clojure, before Clojurescript compilation.  So there's no reason to use any reader macros
+;; except to prevent something from happening during Clojurescript pre-compilation.
 
-#?(:clj  (mx/set-current-implementation :vectorz)
-   :cljs (mx/set-current-implementation :persistent-vector)) ; won't load it, but set default for e.g. mx/matrix
+(ns free.arithmetic
+  (:require [clojure.core.matrix :as mx]))
+;; *NOTE*: Any file that require-macro's this namespace in Clojurescript will need 
+;; to require core.matrix, since the macros below will expand into functions containing 
+;; literal core.matrix calls before the Clojurescript compiler sees the code.
+
+#?(:clj  (mx/set-current-implementation :vectorz))
+
+;; Since this is a macro file, and therefore for Clojurescript only runs *before* compilation,
+;; and is only run by Clojure, I don't think these would have any effect:
+   ;:cljs (mx/set-current-implementation :persistent-vector)) ; won't load it, but set default for e.g. mx/matrix
    ;:cljs (mx/set-current-implementation :aljabr)) ; won't load it, but set default for e.g. mx/matrix
 
 ;; List of all namespaces of implementations in KNOWN-IMPLEMENTATIONS in
@@ -25,7 +32,6 @@
 ;; (mx/set-current-implementation :clatrix)
 ;; (mx/set-current-implementation :nd4clj)
 
-#?(:cljs (enable-console-print!))
 (println "Loading core.matrix operators.  Matrix implementation:" (mx/current-implementation))
 
 
@@ -78,7 +84,7 @@
 (defmacro make-identity-obj
   "Returns an identity matrix with dims rows."
   [dims]
-  (mx/identity-matrix dims))
+  `(mx/identity-matrix ~dims))
 
 ;; Should use 'positive-definite?'?, which is not yet implemented in core.matrix
 ;; or maybe test for determinant being > 0 or some larger number
