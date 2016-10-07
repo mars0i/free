@@ -12,6 +12,11 @@
            (:require [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]] ; could be scalar or matrix
                      [utils.string :as us]))
    :cljs (ns free.level
+           ;; free.arithmetic contains macros defined in terms of either 
+           ;; Clojure primitives or core.matrix functions.  When Clojurescript
+           ;; sees this code, the macros have already been expanded, so if
+           ;; they use core.matrix, that will be needed here:
+           (:require [clojure.core.matrix :as mx]) ; does nothing if scalar free.arithmetic
            ;(:require [utils.string :as us])
            (:require-macros [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]]))) ; could be scalar or matrix
 
