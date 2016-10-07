@@ -1,0 +1,2 @@
+#!/bin/sh
+PATH=$PATH:`pwd`/src/scripts
