@@ -19,6 +19,7 @@
                  ;[org.clojars.ds923y/nd4clj "0.1.0-SNAPSHOT"]
 
                  [org.clojure/core.async "0.2.385" :exclusions [org.clojure/tools.reader]]
+
                  [org.clojure/math.numeric-tower "0.0.4"]
                  [incanter "1.5.7"]
                  [cljsjs/chance "0.7.3-0"] ; foreign, not Closure
@@ -28,8 +29,8 @@
                  [secretary "1.2.3"]
                  [venantius/accountant "0.1.7" :exclusions [org.clojure/tools.reader]]
 
-                 [cljsjs/d3 "3.5.16-0"]   ; foreign, not Closure
-                 [cljsjs/nvd3 "1.8.2-1"]] ; foreign, not Closure
+                 [cljsjs/d3 "3.5.16-0"]  ; foreign, not Closure
+                 [cljsjs/nvd3 "1.8.2-1"] ; foreign, not Closure
 
                  [criterium "0.4.4"]] ; to use, e.g.: (use '[criterium.core :as c])
 
