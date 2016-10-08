@@ -1,4 +1,7 @@
 #!/bin/sh
-echo Starting free with matrix mode in Clojurescript ...
+echo "Starting free with matrix mode in Clojurescript ..."
+echo "NOTE sigma-inc and next-level won't work since aljabr has no inverse."
+echo "See doc/notes/ClojurescriptTips.md for more info."
+
 rlwrap lein with-profile dev-matrix figwheel dev-matrix "$@" 
 # need with-profile for Clojure-based macroexpand stage
