@@ -2,7 +2,7 @@ notes on speed
 ===
 
 
-## Scalar vs matrix
+## scalar vs matrix with randomness:
 
 Using commit 1cc24e8 ...
 
@@ -47,3 +47,51 @@ it.  This could be tested.
 Or garbage collection?  What if I up the RAM?  Although in this
 experiment I'm not holding onto the sequence at all (unlike when I feed
 the sequence into `plot-level`), so the memory use shouldn't be high..
+
+
+## scalar vs. matrix without randomness
+
+Running
+
+    (bench (def k (nth (e/make-stages) 1000)))
+
+from `free.exercise-3` in commit 5c8ae8a.
+
+In the results below, the speed of the scalar version is 80% of the
+speed of the matrix version.  This shows that it's not the RNG that's
+eating up the predicted speed difference between the matrix and scalar
+versions.
+
+I wondered if maybe the inverse in `sigma-inc` was part of the
+problem, but that's silly.  In the scalar version, this is simple
+division, and I bet that's all it is in the matrix version, too.
+
+### Results:
+
+#### scalar:
+
+Evaluation count : 9540 in 60 samples of 159 calls.
+             Execution time mean : 6.512737 ms
+    Execution time std-deviation : 287.399512 µs
+   Execution time lower quantile : 6.251808 ms ( 2.5%)
+   Execution time upper quantile : 7.151339 ms (97.5%)
+                   Overhead used : 7.991068 ns
+
+Found 5 outliers in 60 samples (8.3333 %)
+	low-severe	 4 (6.6667 %)
+	low-mild	 1 (1.6667 %)
+ Variance from outliers : 30.3257 % Variance is moderately inflated by outliers
+
+#### matrix:
+
+Evaluation count : 7440 in 60 samples of 124 calls.
+             Execution time mean : 8.127744 ms
+    Execution time std-deviation : 48.569099 µs
+   Execution time lower quantile : 8.054842 ms ( 2.5%)
+   Execution time upper quantile : 8.260081 ms (97.5%)
+                   Overhead used : 7.944598 ns
+
+Found 4 outliers in 60 samples (6.6667 %)
+	low-severe	 3 (5.0000 %)
+	low-mild	 1 (1.6667 %)
+ Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
