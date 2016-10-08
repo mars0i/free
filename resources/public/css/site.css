@@ -1,0 +1,52 @@
+@import url("nv.d3.min.css");
+@import url("http://fonts.googleapis.com/css?family=Pontano Sans");
+
+text {
+  font-family:"Pontano Sans";
+}
+.text {
+  font-family:"Pontano Sans";
+}
+h1 {
+  font-family:"Pontano Sans";
+  font-size:180%;
+  font-weight:normal;
+  color:#D00000;
+}
+h2 {
+  font-family:"Pontano Sans";
+  font-size:150%;
+  font-weight:normal;
+  color:#D00000;
+}
+h3 {
+  font-family:"Pontano Sans";
+  font-size:120%;
+  font-weight:normal;
+  color:#C04040;
+}
+form {
+  font-family:"Pontano Sans";
+  font-size:16px;
+  font-weight:normal;
+}
+button {
+  color:#800000;
+  background-color:#e0e0ff;
+  border:2px solid #504060;
+  display:inline-block;
+  cursor:pointer;
+  font-family:"Pontano Sans";
+  font-size:14px;
+  font-weight:bold;
+  padding:1px 2px;
+  text-decoration:none;
+  border-radius:4px
+}
+button:hover {
+  background-color:#ffd0d0;
+}
+button:active {
+  position:relative;
+  top:1px;
+}
