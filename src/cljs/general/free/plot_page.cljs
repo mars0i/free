@@ -92,7 +92,7 @@
 ;; -------------------------
 ;; run simulations, generate chart
 
-(defn het-ratio-coords
+(defn get-data
   "DUMMY VERSION FIXME REPLACEME"
   [max-r s h x1 x2 x3]
   (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r num-sims))
@@ -105,7 +105,7 @@
   "Make NVD3 chart configuration data object."
   (let [{:keys [max-r s h x1 x2 x3]} @chart-params$]
     (clj->js
-      [{:values (het-ratio-coords max-r s h x1 x2 x3)
+      [{:values (get-data max-r s h x1 x2 x3)
         :key "het-ratio" 
         :color "#0000ff" 
         ;:strokeWidth 1 
@@ -130,10 +130,10 @@
         (.showYAxis true)
         (.forceY (clj->js [0,1]))) ; force y-axis to go to 1 even if data doesn't
     (-> chart.xAxis
-        (.axisLabel "r/s")
+        (.axisLabel "timesteps")
         (.tickFormat (fn [d] (pp/cl-format nil "~,3f" d))))
     (-> chart.yAxis
-        (.axisLabel "final/init heteterozygosity at the linked neutral locus")
+        ;(.axisLabel "final/init heteterozygosity at the linked neutral locus")
         (.tickFormat (fn [d] (pp/cl-format nil "~,3f" d))))
     ;; add chart to dom using d3:
     (.. js/d3
@@ -232,7 +232,7 @@
      [spaces 3]
      [float-text (- 1 x1 x2 x3) [:em "x"] [:sub 4]] ; display x4
      [spaces 13]
-     [float-text (two/B-het [x1 x2 x3]) "initial neutral heterozygosity"]
+     [float-text "initial neutral heterozygosity"]
      [:br]
      [:div {:id "error-text" 
             :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} ; TODO move styles into css file?
