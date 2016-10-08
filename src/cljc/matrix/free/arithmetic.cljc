@@ -32,8 +32,10 @@
 ;; (mx/set-current-implementation :clatrix)
 ;; (mx/set-current-implementation :nd4clj)
 
-(println "Loading core.matrix operators.  Matrix implementation:" (mx/current-implementation))
-
+;; DON'T do this:
+;(println "Loading core.matrix operators.  Matrix implementation:" (mx/current-implementation))
+;; In Clojurescript, it will get inserted into a .js file raw and
+;; break things in mysterious ways.
 
 ;; Note that these are functions, but in free.scalar-arithmetic, I define 
 ;; them as macros for the sake of performance.  So don't e.g. map the functions 
