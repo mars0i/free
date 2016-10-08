@@ -82,4 +82,5 @@
 
 (def init-levels [init-bot init-mid top])
 
-(def stages (iterate (partial lvl/next-levels next-bottom) init-levels))
+(defn make-stages []
+  (iterate (partial lvl/next-levels next-bottom) init-levels))
