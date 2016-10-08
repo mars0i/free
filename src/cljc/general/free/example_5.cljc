@@ -1,3 +1,7 @@
+;; This software is copyright 2016 by Marshall Abrams, and is distributed
+;; under the Gnu General Public License version 3.0 as specified in the
+;; the file LICENSE.
+
 ;; This example shows that
 ;; (a) Sigma responds to changing error rates due to changing
 ;;     causes (i.e. change in the mean of generated inputs), by

@@ -1,3 +1,7 @@
+;; This software is copyright 2016 by Marshall Abrams, and is distributed
+;; under the Gnu General Public License version 3.0 as specified in the
+;; the file LICENSE.
+
 (ns free.example-4
   (:require [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect

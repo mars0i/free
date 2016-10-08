@@ -7,21 +7,31 @@
   :java-source-paths ["src/java"]
   :dependencies [[org.clojure/clojure "1.8.0"]
                  ;[org.clojure/clojure "1.9.0-alpha9"]
-                 [org.clojure/clojurescript "1.9.229"] ; very nitpicky spec tests
-                 ;[org.clojure/clojurescript "1.7.228"] ; version aljabr knows
-                 [org.clojure/core.async "0.2.385" :exclusions [org.clojure/tools.reader]]
-                 [org.clojure/math.numeric-tower "0.0.4"]
+
+                 ;[org.clojure/clojurescript "1.7.228"] ; version aljabr wants
+                 [org.clojure/clojurescript "1.9.229"]
+
                  [net.mikera/core.matrix "0.55.0"]
                  ;[net.mikera/core.matrix "0.55.1-SNAPSHOT"]
                  [net.mikera/vectorz-clj "0.45.0"]
-                 [thinktopic/aljabr "0.1.1"] ; ignore [... "0.4.0-SNAPSHOT"] in README.md--wishful thinking
+                 [thinktopic/aljabr "0.1.1"]
                  [clatrix "0.5.0"]
-                 ;[org.clojars.ds923y/nd4clj "0.1.0-SNAPSHOT"] ; not ready for use
-                 [criterium "0.4.4"] ; to use, e.g.: (use '[criterium.core :as c])
-                 ;[org.jfree.chart "1.0.19"]
-                 ;[uncomplicate/fluokitten "0.5.0"]
+                 ;[org.clojars.ds923y/nd4clj "0.1.0-SNAPSHOT"]
+
+                 [org.clojure/core.async "0.2.385" :exclusions [org.clojure/tools.reader]]
+                 [org.clojure/math.numeric-tower "0.0.4"]
                  [incanter "1.5.7"]
-                 [cljsjs/chance "0.7.3-0"]]
+                 [cljsjs/chance "0.7.3-0"] ; foreign, not Closure
+
+                 [reagent "0.6.0"]
+                 [reagent-utils "0.1.9"] ; includes reagent.session
+                 [secretary "1.2.3"]
+                 [venantius/accountant "0.1.7" :exclusions [org.clojure/tools.reader]]
+
+                 [cljsjs/d3 "3.5.16-0"]   ; foreign, not Closure
+                 [cljsjs/nvd3 "1.8.2-1"]] ; foreign, not Closure
+
+                 [criterium "0.4.4"]] ; to use, e.g.: (use '[criterium.core :as c])
 
   :plugins [[lein-figwheel "0.5.4-7"]
             [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]
