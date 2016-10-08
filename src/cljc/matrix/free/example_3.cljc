@@ -3,12 +3,12 @@
 (ns free.example-3
   (:require [free.level :as lvl]
             [clojure.core.matrix :as mx] ; needed for arithmetic macros even if not used explicitly
-	    ;[thinktopic.aljabr.core :as imp] ;; IS THIS NEEDED IN THIS FILE??  IF SO WRAP IN #?()
+	    [thinktopic.aljabr.core :as imp] ;; IS THIS NEEDED IN THIS FILE??  IF SO WRAP IN #?()
             [free.random :as ran]) ; clj or cljs depending on dialect
   #?(:clj  (:require [free.arithmetic :as ar])
      :cljs (:require-macros [free.arithmetic :as ar])))
 
-;(mx/set-current-implementation :aljabr) ;; IS THIS NEEDED IN THIS FILE??  IF SO WRAP in #?()
+(mx/set-current-implementation :aljabr) ;; IS THIS NEEDED IN THIS FILE??  IF SO WRAP in #?()
 
 ;; Since these next three functions run on every tick, maybe slightly
 ;; faster not to use ar/col-mat:
