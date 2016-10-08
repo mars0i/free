@@ -6,12 +6,14 @@
 ;; except to prevent something from happening during Clojurescript pre-compilation.
 
 (ns free.arithmetic
-  (:require [clojure.core.matrix :as mx]))
+  (:require [clojure.core.matrix :as mx]
+            #?(:cljs [thinktopic.aljabr.core :as aj])))
 ;; *NOTE*: Any file that require-macro's this namespace in Clojurescript will need 
 ;; to require core.matrix, since the macros below will expand into functions containing 
 ;; literal core.matrix calls before the Clojurescript compiler sees the code.
 
-#?(:clj  (mx/set-current-implementation :vectorz))
+#?(:clj  (mx/set-current-implementation :vectorz)
+   :cljs (mx/set-current-implementation :aljabr)) ;; NEEDED?
 
 ;; Since this is a macro file, and therefore for Clojurescript only runs *before* compilation,
 ;; and is only run by Clojure, I don't think these would have any effect:
