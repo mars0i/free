@@ -1,6 +1,35 @@
 Tips for getting this to work in Clojurescript
 ===
 
+### notes on aljabr
+
+As of early October 2016, aljabr doesn't have inverse.  inverse lives
+in PMatrixOps, which aljabr doesn't implement.  This is because the
+original Javascript ndarray lib doesn't implement inverse.
+
+*And*, core.matrix provides a default implementation of inverse by
+*converting the matrix to vectorz*, then calling vectorz's inverse, and
+then converting it back to whatever the input implementation was. i.e.
+if there's no implementation of inverse.  (This is in
+clojure.core.matrix.impl.defaults.) e.g. This seems to be how
+core.matrix inverts persistent-vector *or ndarray* matrices.  Clatrix
+has its own inverter.  (You can see in action this if you modify
+project.clj or pom.xmlto disable vectorz.)
+
+So aljabr can't just use core.matrix's default implementation of
+inverse.
+
+So that's it.  It looks like I simply can't use a Clojurescript matrix
+version of free at this time (10/2016), i.e. not until there is a
+Clojurescript matrix implementation that supports inversion.  Wow.
+
+(Hmm.  But there are several other Javascript matrix libraries, and at
+least some of them provide inverse.  If the license is right, could I
+just copy the code into the Javascript ndarry and then add it to
+aljabr?  Well for now don't do that.  Other fish.)
+Sylvester	
+
+
 ### in-line require
 
 In some cases I want to require a namespace *after* I do something,
@@ -94,3 +123,9 @@ different directories, and then have different profiles in core.matrix
 that will load one or the other directory.  And don't have an atom
 controlling this difference at all.  Note this would then have to be
 done the same way in Clojure.
+
+### Misc tips
+
+Don't stick a println into a Clojurescript source file (at least not
+a macro file).  It will get inserted into the javascript output, raw,
+and cause mysterious errors.
