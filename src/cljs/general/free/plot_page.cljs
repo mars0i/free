@@ -12,7 +12,8 @@
             [goog.string]
             [cljsjs.d3]
             [cljsjs.nvd3]
-            [free.example-5 :as e5]))
+            [free.example-5 :as e5]
+            ))
 
 ;; -------------------------
 ;; globals
@@ -97,11 +98,11 @@
     ;(.log js/console every-nth)
     (vec (map #(hash-map :x %1 :y %2)
               (range) 
+              ;(take 100 (range))
+              ;))))
               (map (comp :phi second)
-                   ;(take-nth every-nth 
-                             (take timesteps (e5/make-stages))
-                   ;          )
-                   )))))
+                   (take-nth every-nth 
+                             (take timesteps (e5/make-stages))))))))
 
 ;(->> (e5/make-stages)
 ;     (take 50000)
