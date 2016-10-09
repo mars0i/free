@@ -12,15 +12,16 @@
             [goog.string]
             [cljsjs.d3]
             [cljsjs.nvd3]
-            ))
+            [free.example-5 :as e5]))
 
 ;; -------------------------
 ;; globals
 
 
-(def num-sims 200) ; How many simulations to run--i.e. how many recombination rate r values?
 (def svg-height 400)
 (def svg-width 600)
+(def num-points 1000) ; approx number of points to be sampled from data to be plotted
+
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
 (def error-color   "#FF0000")
@@ -34,8 +35,7 @@
                                 nbsp "See " [:em "Parameter ranges"] " on the More Information page"]})
 
 ;; Default simulation parameters
-(defonce chart-params$ (r/atom {:max-r 0.02 :s 0.1 :h 0.5
-                                :x1 0.0001 :x2 0 :x3 0.4999})) ; x4 = 0.5
+(defonce chart-params$ (r/atom {:timesteps 40000}))
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -48,6 +48,7 @@
 ;; -------------------------
 ;; spec
 
+;; FIXME
 (defn explain-data-problem-keys
   "Given the result of a call to spec/explain-data, returns the keys of 
   the tests that failed.  WARNING: This is for 
@@ -72,14 +73,10 @@
 (s/def ::x-freqs #(<= % 1.0)) ; will be passed x1+x2+x3
 (s/def ::B-freqs #(> % 0.0))  ; will be passed x1+x3
 
-;; Note that the last "parameters" are calculated, and should be assoc'ed onto the other
-;; parameters before spec testing, e.g. like this:
-;; (let [{:keys [x1 x2 x3]} @c/chart-params$]
-;;   (s/explain-data ::c/chart-params (assoc @c/chart-params$ ::x-freqs (+ x1 x2 x3))))
+(s/def ::timesteps (s/and integer? pos?))
 
-;; Note that :x-freqs and :B-freqs are not part of the map in global chart-params$; 
-;; they must be ;; assoc'ed in before testing with this spec.  See prep-params-for-validation.
-(s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs ::B-freqs]))
+;(s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs ::B-freqs]))
+(s/def ::chart-params (s/keys :req-un [::timesteps]))
 
 (defn prep-params-for-validation
   "assoc into params any additional entries needed for validation with spec."
@@ -92,20 +89,30 @@
 ;; -------------------------
 ;; run simulations, generate chart
 
+;; Consider storing the result of make-stages once
 (defn get-data
-  "DUMMY VERSION FIXME REPLACEME"
-  [max-r s h x1 x2 x3]
-  (let [rs (range 0.000 (+ max-r 0.00001) (/ max-r num-sims))
-        het-ratios rs]
+  "TEST VERSION"
+  [timesteps]
+  (let [every-nth (long (/ timesteps num-points))]
+    ;(.log js/console every-nth)
     (vec (map #(hash-map :x %1 :y %2)
-              (map #(/ % s) rs) ; we calculated the data wrt vals of r,
-              het-ratios))))      ; but we want to display it using r/s
+              (range) 
+              (map (comp :phi second)
+                   ;(take-nth every-nth 
+                             (take timesteps (e5/make-stages))
+                   ;          )
+                   )))))
+
+;(->> (e5/make-stages)
+;     (take 50000)
+;     (take-nth every-nth)
+;     (map (comp :phi second)))
 
 (defn make-chart-config [chart-params$]
   "Make NVD3 chart configuration data object."
-  (let [{:keys [max-r s h x1 x2 x3]} @chart-params$]
+  (let [{:keys [timesteps]} @chart-params$]
     (clj->js
-      [{:values (get-data max-r s h x1 x2 x3)
+      [{:values (get-data timesteps)
         :key "het-ratio" 
         :color "#0000ff" 
         ;:strokeWidth 1 
@@ -115,8 +122,7 @@
 (defn make-chart [svg-id chart-params$]
   "Create an NVD3 line chart with configuration parameters in @chart-params$
   and attach it to SVG object with id svg-id."
-  (let [s (:s @chart-params$)
-        chart (.lineChart js/nv.models)]
+  (let [chart (.lineChart js/nv.models)]
     ;; configure nvd3 chart:
     (-> chart
         (.height svg-height)
