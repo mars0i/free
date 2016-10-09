@@ -9,26 +9,25 @@
             [reagent.session :as session]
             [secretary.core :as secretary :include-macros true]
             [accountant.core :as accountant]
-            [goog.string]
-            [cljsjs.d3]
-            [cljsjs.nvd3]
-            [free.example-5 :as e5]
-            ))
+            [goog.string :as gs]
+            [cljsjs.d3 :as d3]       ; aliases unused but included
+            [cljsjs.nvd3 :as nvd3] ; in case Clojurescript likes 'em
+            [free.example-5 :as e5]))
 
 ;; -------------------------
 ;; globals
 
 
 (def svg-height 400)
-(def svg-width 600)
+(def svg-width 700)
 (def num-points 200) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
 (def error-color   "#FF0000")
 
-(def copyright-sym (goog.string/unescapeEntities "&copy;")) 
-(def nbsp (goog.string/unescapeEntities "&nbsp;")) 
+(def copyright-sym (gs/unescapeEntities "&copy;")) 
+(def nbsp (gs/unescapeEntities "&nbsp;")) 
 
 (def form-labels {:ready-label "re-run" 
                   :running-label "running..." 
