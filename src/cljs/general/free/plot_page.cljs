@@ -21,7 +21,7 @@
 
 (def svg-height 400)
 (def svg-width 600)
-(def num-points 1000) ; approx number of points to be sampled from data to be plotted
+(def num-points 200) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
@@ -36,7 +36,7 @@
                                 nbsp "See " [:em "Parameter ranges"] " on the More Information page"]})
 
 ;; Default simulation parameters
-(defonce chart-params$ (r/atom {:timesteps 40000}))
+(defonce chart-params$ (r/atom {:timesteps 100000}))
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -65,14 +65,14 @@
 (defn gt-le [inf sup] (s/and #(>  % inf) #(<= % sup)))
 (defn gt-lt [inf sup] (s/and #(>  % inf) #(<  % sup)))
 
-(s/def ::max-r (ge-le 0.0 1.0))
-(s/def ::s     (gt-le 0.0 1.0))
-(s/def ::h     (ge-le 0.0 1.0))
-(s/def ::x1    (ge-le 0.0 1.0))
-(s/def ::x2    (ge-le 0.0 1.0))
-(s/def ::x3    (ge-le 0.0 1.0))
-(s/def ::x-freqs #(<= % 1.0)) ; will be passed x1+x2+x3
-(s/def ::B-freqs #(> % 0.0))  ; will be passed x1+x3
+;(s/def ::max-r (ge-le 0.0 1.0))
+;(s/def ::s     (gt-le 0.0 1.0))
+;(s/def ::h     (ge-le 0.0 1.0))
+;(s/def ::x1    (ge-le 0.0 1.0))
+;(s/def ::x2    (ge-le 0.0 1.0))
+;(s/def ::x3    (ge-le 0.0 1.0))
+;(s/def ::x-freqs #(<= % 1.0)) ; will be passed x1+x2+x3
+;(s/def ::B-freqs #(> % 0.0))  ; will be passed x1+x3
 
 (s/def ::timesteps (s/and integer? pos?))
 
@@ -90,40 +90,46 @@
 ;; -------------------------
 ;; run simulations, generate chart
 
+(defn calc-every-nth
+  [timesteps]
+  (long (/ timesteps num-points)))
+
+
 ;; Consider storing the result of make-stages once
 (defn get-data
   "TEST VERSION"
-  [timesteps]
-  (let [every-nth (long (/ timesteps num-points))]
-    ;(.log js/console every-nth)
-    (vec (map #(hash-map :x %1 :y %2)
-              (range) 
-              ;(take 100 (range))
-              ;))))
-              (map (comp :phi second)
-                   (take-nth every-nth 
-                             (take timesteps (e5/make-stages))))))))
+  [timesteps every-nth]
+  (map second
+       (take-nth every-nth 
+                 (take (+ every-nth timesteps) ; round up
+                       (e5/make-stages)))))
 
 ;(->> (e5/make-stages)
 ;     (take 50000)
 ;     (take-nth every-nth)
 ;     (map (comp :phi second)))
 
-(defn make-chart-config [chart-params$]
+(defn for-nvd3
+  [ys]
+  (vec (map #(hash-map :x %1 :y %2)
+            (range)
+            ys)))
+
+(defn make-chart-config [chart-params$ every-nth]
   "Make NVD3 chart configuration data object."
-  (let [{:keys [timesteps]} @chart-params$]
+  (let [{:keys [timesteps]} @chart-params$
+        data (get-data timesteps every-nth)]
     (clj->js
-      [{:values (get-data timesteps)
-        :key "het-ratio" 
-        :color "#0000ff" 
-        ;:strokeWidth 1 
-        :area false
-        :fillOpacity -1}])))
+      [{:values (for-nvd3 (map :phi data))    :key "phi"    :color "#000000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map :err data))    :key "err"    :color "#ff0000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map :sigma data))  :key "sigma"  :color "#00ff00" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map :gen-wt data)) :key "gen-wt" :color "#0000ff" :area false :fillOpacity -1}])))
 
 (defn make-chart [svg-id chart-params$]
   "Create an NVD3 line chart with configuration parameters in @chart-params$
   and attach it to SVG object with id svg-id."
-  (let [chart (.lineChart js/nv.models)]
+  (let [chart (.lineChart js/nv.models)
+        every-nth (calc-every-nth (:timesteps @chart-params$))]
     ;; configure nvd3 chart:
     (-> chart
         (.height svg-height)
@@ -132,20 +138,18 @@
         (.useInteractiveGuideline true)
         (.duration 200) ; how long is gradual transition from old to new plot
         (.pointSize 1)
-        (.showLegend false) ; true is useful for multiple lines on same plot
+        (.showLegend true)
         (.showXAxis true)
-        (.showYAxis true)
-        (.forceY (clj->js [0,1]))) ; force y-axis to go to 1 even if data doesn't
+        (.showYAxis true)) ; force y-axis to go to 1 even if data doesn't
     (-> chart.xAxis
         (.axisLabel "timesteps")
-        (.tickFormat (fn [d] (pp/cl-format nil "~,3f" d))))
+        (.tickFormat (fn [d] (pp/cl-format nil "~:d" (* every-nth d)))))
     (-> chart.yAxis
-        ;(.axisLabel "final/init heteterozygosity at the linked neutral locus")
         (.tickFormat (fn [d] (pp/cl-format nil "~,3f" d))))
     ;; add chart to dom using d3:
     (.. js/d3
         (select svg-id)
-        (datum (make-chart-config chart-params$))
+        (datum (make-chart-config chart-params$ every-nth))
         (call chart))
     chart)) 
 
@@ -187,7 +191,7 @@
                               (do
                                 (reset! button-label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
-                                                 (make-chart svg-id params$)
+                                                 (make-chart svg-id params$) 
                                                  (reset! button-label$ ready-label))
                                                100))))}
        @button-label$])))
