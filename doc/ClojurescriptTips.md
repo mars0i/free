@@ -136,9 +136,3 @@ different directories, and then have different profiles in core.matrix
 that will load one or the other directory.  And don't have an atom
 controlling this difference at all.  Note this would then have to be
 done the same way in Clojure.
-
-### Misc tips
-
-Don't stick a println into a Clojurescript source file (at least not
-a macro file).  It will get inserted into the javascript output, raw,
-and cause mysterious errors.
