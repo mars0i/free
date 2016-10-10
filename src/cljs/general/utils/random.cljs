@@ -3,7 +3,7 @@
 ;; the file LICENSE.
 
 (ns utils.random
-  (:require [cljsjs.chance :as ran])) ; http://chancejs.com
+  (:require [cljsjs.chance])) ; http://chancejs.com
 
 (defn make-long-seed
   []
