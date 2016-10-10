@@ -17,9 +17,11 @@
 ;; -------------------------
 ;; globals
 
+;; Default simulation parameters
+(defonce chart-params$ (r/atom {:timesteps 100000}))
 
 (def svg-height 400)
-(def svg-width 800)
+(def svg-width 900)
 (def num-points 200) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
@@ -34,9 +36,6 @@
                   :error-text [:text "One or more values in red are illegal." 
                                 nbsp "See " [:em "Parameter ranges"] " on the More Information page"]})
 
-;; Default simulation parameters
-(defonce chart-params$ (r/atom {:timesteps 100000}))
-
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
 
@@ -44,6 +43,8 @@
 
 (defonce no-error-text [:text])
 (defonce error-text$ (r/atom no-error-text))
+
+(def raw-data (e5/make-stages)) ; REPLACE THIS
 
 ;; -------------------------
 ;; spec
@@ -94,19 +95,13 @@
   (long (/ timesteps num-points)))
 
 
-;; Consider storing the result of make-stages once
-(defn get-data
+(defn sample-data
   "TEST VERSION"
-  [timesteps every-nth]
+  [raw-data timesteps every-nth]
   (map second
        (take-nth every-nth 
                  (take (+ every-nth timesteps) ; round up
-                       (e5/make-stages)))))
-
-;(->> (e5/make-stages)
-;     (take 50000)
-;     (take-nth every-nth)
-;     (map (comp :phi second)))
+                       raw-data))))
 
 (defn for-nvd3
   [ys]
@@ -114,17 +109,19 @@
             (range)
             ys)))
 
-(defn make-chart-config [chart-params$ every-nth]
+(defn make-chart-config
+  [raw-data chart-params$ every-nth]
   "Make NVD3 chart configuration data object."
   (let [{:keys [timesteps]} @chart-params$
-        data (get-data timesteps every-nth)]
+        sampled-data (sample-data raw-data timesteps every-nth)]
     (clj->js
-      [{:values (for-nvd3 (map :phi data))    :key "phi"    :color "#000000" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map :err data))    :key "err"    :color "#ff0000" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map :sigma data))  :key "sigma"  :color "#00ff00" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map :gen-wt data)) :key "gen-wt" :color "#0000ff" :area false :fillOpacity -1}])))
+      [{:values (for-nvd3 (map :phi sampled-data))    :key "phi"    :color "#000000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map :err sampled-data))    :key "err"    :color "#ff0000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map :sigma sampled-data))  :key "sigma"  :color "#00ff00" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map :gen-wt sampled-data)) :key "gen-wt" :color "#0000ff" :area false :fillOpacity -1}])))
 
-(defn make-chart [svg-id chart-params$]
+(defn make-chart
+  [raw-data svg-id chart-params$]
   "Create an NVD3 line chart with configuration parameters in @chart-params$
   and attach it to SVG object with id svg-id."
   (let [chart (.lineChart js/nv.models)
@@ -148,7 +145,7 @@
     ;; add chart to dom using d3:
     (.. js/d3
         (select svg-id)
-        (datum (make-chart-config chart-params$ every-nth))
+        (datum (make-chart-config raw-data chart-params$ every-nth))
         (call chart))
     chart)) 
 
@@ -190,7 +187,7 @@
                               (do
                                 (reset! button-label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
-                                                 (make-chart svg-id params$) 
+                                                 (make-chart raw-data svg-id params$) 
                                                  (reset! button-label$ ready-label))
                                                100))))}
        @button-label$])))
@@ -263,7 +260,7 @@
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
-  (make-chart (str "#" chart-svg-id) chart-params$))
+  (make-chart raw-data (str "#" chart-svg-id) chart-params$))
 
 (defn home-page []
   (r/create-class {:reagent-render home-render
