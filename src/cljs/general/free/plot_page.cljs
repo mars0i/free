@@ -10,9 +10,9 @@
             [secretary.core :as secretary :include-macros true]
             [accountant.core :as accountant]
             [goog.string :as gs]
-            [cljsjs.d3 :as d3]       ; aliases unused but included
-            [cljsjs.nvd3 :as nvd3] ; in case Clojurescript likes 'em
-            [free.example-5 :as e5]))
+            [free.example-5 :as e5]
+            [cljsjs.d3]       ; aliases unused but included
+            [cljsjs.nvd3])) ; in case Clojurescript likes 'em
 
 ;; -------------------------
 ;; globals
