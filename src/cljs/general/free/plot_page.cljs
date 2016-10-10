@@ -21,8 +21,8 @@
 (defonce chart-params$ (r/atom {:timesteps 100000}))
 
 (def svg-height 400)
-(def svg-width 900)
-(def num-points 200) ; approx number of points to be sampled from data to be plotted
+(def svg-width 1000)
+(def num-points 300) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
