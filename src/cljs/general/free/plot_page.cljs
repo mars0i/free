@@ -3,7 +3,8 @@
 ;; the file LICENSE.
 
 (ns free.plot-page
-  (:require [cljs.spec :as s]
+  (:require [cljs.pprint :as pp]
+            [cljs.spec :as s]
             [reagent.core :as r]
             [reagent.session :as session]
             [secretary.core :as secretary :include-macros true]
