@@ -5,7 +5,8 @@
 (ns free.random
   (:require [utils.random :as ran])) ; clj or cljs, depending
 
-(def session-id (ran/make-long-seed)) (println "seed:" session-id)
+(def session-id (ran/make-long-seed))
+(println session-id) ;; IS THIS CAUSING PROBLEMS? I don't think so.
 (def rng$ (atom (ran/make-rng session-id)))
 
 (defn set-new-rng!
