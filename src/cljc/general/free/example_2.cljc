@@ -39,14 +39,12 @@
                      (when (and
                              ;(< @tick$ top-tick)
                              (= 0 (mod @tick$ ticks-between)))
-                       ;(println (swap! mean$ #(+ % (+ -1.5 (* 3 (ran/next-double))))))
-                       (println 
                          (swap! mean$ 
                                 #(let [new-mean (+ % ; symmetric random walk
                                                    (if (< (ran/next-double) 0.5)
                                                      1
                                                      -1))]
-                                   (if (pos? new-mean) new-mean 1))))) ; clipped below 1
+                                   (if (pos? new-mean) new-mean 1)))) ; clipped below 1
                      (ran/next-gaussian @mean$ @sd$))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
