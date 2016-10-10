@@ -1,6 +1,12 @@
 Tips for getting this to work in Clojurescript
 ===
 
+### Important tip
+
+Don't stick a println into a Clojurescript source file (at least not
+a macro file).  It will get inserted into the javascript output, raw,
+and cause mysterious errors.
+
 ### problem
 
 plot-pages and example-5 won't run in a new browser unles you do
@@ -21,10 +27,20 @@ with `make-rng`, which calls `Chance`.  `make-rng` also calls the
 flush routine on the new Mersenne Twister.
 
 But if you re-save utils/random.cljs, everything immediately starts
-working.
+working.  Even though `require`ing it at the repl, even with
+`:reload-all` help.
+
+You can tell when you've set things right because the random seed
+prints out; i.e. free.random successfully runs.
 
 I don't think this is relevant:
 http://dev.clojure.org/jira/browse/CLJS-1479
+
+### cljsjs
+
+cljsjs packages include this note:
+
+    Please note: You can not use :as or :refer with CLJSJS dependencies.
 
 ### notes on aljabr
 
