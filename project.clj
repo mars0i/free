@@ -4,7 +4,6 @@
   :license {:name "Gnu General Public License version 3.0"
             :url "http://www.gnu.org/copyleft/gpl.html"}
   :min-lein-version "2.6.1"
-  :java-source-paths ["src/java"]
   :dependencies [[org.clojure/clojure "1.8.0"]
                  ;[org.clojure/clojure "1.9.0-alpha9"]
 
@@ -38,13 +37,23 @@
             [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]
 
   ;:source-paths ["src"]
+  ;:java-source-paths ["src/java"]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
-  :profiles {:dev-scalar {:source-paths ["src/clj/general"  "src/clj/scalar"
-                                         "src/cljc/general" "src/cljc/scalar"]}
-             :dev-matrix {:source-paths ["src/clj/general"  "src/clj/matrix"
-                                         "src/cljc/general" "src/cljc/matrix"]}
+  :profiles {:clj-scalar {:source-paths ["src/clj/general"  "src/clj/scalar"
+                                         "src/cljc/general" "src/cljc/scalar"]
+                          :java-source-paths ["src/java"]}
+
+             :clj-matrix {:source-paths ["src/clj/general"  "src/clj/matrix"
+                                         "src/cljc/general" "src/cljc/matrix"]
+                          :java-source-paths ["src/java"]}
+
+             :cljs-scalar {:source-paths ["src/clj/general"  "src/clj/scalar"
+                                          "src/cljc/general" "src/cljc/scalar"]}
+
+             :cljs-matrix {:source-paths ["src/clj/general"  "src/clj/matrix"
+                                          "src/cljc/general" "src/cljc/matrix"]}
             }
 
   :cljsbuild {:builds
