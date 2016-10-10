@@ -5,9 +5,13 @@
 (ns free.random
   (:require [utils.random :as ran])) ; clj or cljs, depending
 
-(def session-id (ran/make-long-seed))
-(println session-id) ;; IS THIS CAUSING PROBLEMS? I don't think so.
-(def rng$ (atom (ran/make-rng session-id)))
+(def random-seed (ran/make-long-seed))
+
+; Don't ever use a print statement in Clojurescript without the following:
+(enable-console-print!)
+(println "random-seed:" random-seed)
+
+(def rng$ (atom (ran/make-rng random-seed)))
 
 (defn set-new-rng!
   ([]     (reset! rng$ (ran/make-rng)))
