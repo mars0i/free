@@ -7,7 +7,7 @@ Don't stick a println into a Clojurescript source file (at least not
 a macro file).  It will get inserted into the javascript output, raw,
 and cause mysterious errors.
 
-### problem
+### a problem
 
 plot-pages and example-5 won't run in a new browser unles you do
 something more, e.g.  load free.random at the repl, with `:reload`.
@@ -35,6 +35,9 @@ prints out; i.e. free.random successfully runs.
 
 I don't think this is relevant:
 http://dev.clojure.org/jira/browse/CLJS-1479
+
+The problem goes away completely in free.exercise-3, which doesn't use
+any of the random namespaces.
 
 ### cljsjs
 
