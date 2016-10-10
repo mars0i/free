@@ -19,7 +19,7 @@
 
 
 (def svg-height 400)
-(def svg-width 700)
+(def svg-width 800)
 (def num-points 200) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
