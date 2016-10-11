@@ -15,7 +15,7 @@
 ;;    (plot-level (e/make-stages) 1 3500000 100) 3.5M ticks, sampled every 100
 ;; To see what's going on at the initial sensory level, replace 1 with 0.
 
-(ns free.example-5
+(ns free.example-6
   (:require [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
 
@@ -28,7 +28,7 @@
 ;; next-bottom function
 ;; all this atom stuff is "bad", but is really just implementing a loop while allowing the function to be arg-less
 (def change-every 20000)  ; change in inputs every this many ticks
-(def stop-changing-after 3000000)
+(def stop-changing-after 3000000000)
 (def change-ticks$ (atom (range change-every stop-changing-after change-every)))
 (def means$ (atom (cycle [40 2]))) ; cycle between these means
 (def mean$ (atom 2)) ; initial value of mean
@@ -74,7 +74,7 @@
               :phi-dt 0.0001
               :epsilon-dt 0.01
               :sigma-dt 0.0001
-              :theta-dt 0.00005})
+              :theta-dt 0.0000001})
 
 (def init-bot (lvl/map->Level bot-map))
 (def init-mid (lvl/map->Level mid-map))
