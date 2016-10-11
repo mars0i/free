@@ -27,6 +27,7 @@
                  [reagent-utils "0.1.9"] ; includes reagent.session
                  [secretary "1.2.3"]
                  [venantius/accountant "0.1.7" :exclusions [org.clojure/tools.reader]]
+                 [binaryage/devtools "0.8.2"]
 
                  [cljsjs/d3 "3.5.16-0"]  ; foreign, not Closure
                  [cljsjs/nvd3 "1.8.2-1"] ; foreign, not Closure
