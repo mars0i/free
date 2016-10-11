@@ -21,14 +21,14 @@
 
 ;; The data that results is supposed to look like the rhs of fig. 2.
 ;; i.e. phi from the middle level is phi in that plot;
-;; err from middle is err_p and err from bottom is err_u.
+;; epsilon from middle is epsilon_p and epsilon from bottom is epsilon_u.
 ;; Here's one way to do this:
 ;; 
-;; (def s500 (take 500 stages)) ; number of timesterr Bogacz uses: (/ 5 0.01)
+;; (def s500 (take 500 stages)) ; number of timesteps Bogacz uses: (/ 5 0.01)
 ;; (use '[incanter.charts])
 ;; (def xy (xy-plot (range) (map (comp :phi second) s500)))
-;; (add-lines xy    (range) (map (comp :err second) s500))
-;; (add-lines xy    (range) (map (comp :err first)  s500))
+;; (add-lines xy    (range) (map (comp :epsilon second) s500))
+;; (add-lines xy    (range) (map (comp :epsilon first)  s500))
 ;; (use '[incanter.core])
 ;; (view xy)
 ;; (use '[incanter.pdf])
@@ -39,7 +39,7 @@
 (def dt 0.01) ; version in Bogacz
 
 ;; all-level parameters
-(def gen-wt 1) ; i.e. pass value of gen(phi) through unchanged
+(def theta 1) ; i.e. pass value of gen(phi) through unchanged
 (defn gen  [phi] (* phi phi))
 (defn gen' [phi] (* phi 2))
 
@@ -56,27 +56,27 @@
 
 (def init-bot
   (lvl/map->Level {:phi u
-                  :err error-u
+                  :epsilon error-u
                   :sigma sigma-u
-                  :gen-wt gen-wt   ; preserves gen(phi)
-                  :gen  nil ; unused at bottom since err update uses higher gen
+                  :theta theta   ; preserves gen(phi)
+                  :gen  nil ; unused at bottom since epsilon update uses higher gen
                   :gen' nil ; unused at bottom since phi comes from outside
                   :phi-dt dt
-                  :err-dt dt
+                  :epsilon-dt dt
                   :sigma-dt 0    ; sigma never changes
-                  :gen-wt-dt 0})) ; gen-wt never changes
+                  :theta-dt 0})) ; theta never changes
 
 (def init-mid
   (lvl/map->Level {:phi v-p
-                  :err error-p
+                  :epsilon error-p
                   :sigma sigma-p
-                  :gen-wt gen-wt       ; preserves gen(phi)
+                  :theta theta       ; preserves gen(phi)
                   :gen  gen
                   :gen' gen'
                   :phi-dt dt
-                  :err-dt dt
+                  :epsilon-dt dt
                   :sigma-dt 0    ; sigma never changes
-                  :gen-wt-dt 0})) ; gen-wt never changes
+                  :theta-dt 0})) ; theta never changes
 
 (def top (lvl/make-top-level v-p))
 

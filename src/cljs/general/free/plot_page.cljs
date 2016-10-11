@@ -116,9 +116,9 @@
         sampled-data (sample-data raw-data timesteps every-nth)]
     (clj->js
       [{:values (for-nvd3 (map :phi sampled-data))    :key "phi"    :color "#000000" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map :err sampled-data))    :key "err"    :color "#ff0000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map :epsilon sampled-data))    :key "epsilon"    :color "#ff0000" :area false :fillOpacity -1}
        {:values (for-nvd3 (map :sigma sampled-data))  :key "sigma"  :color "#00ff00" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map :gen-wt sampled-data)) :key "gen-wt" :color "#0000ff" :area false :fillOpacity -1}])))
+       {:values (for-nvd3 (map :theta sampled-data)) :key "theta" :color "#0000ff" :area false :fillOpacity -1}])))
 
 (defn make-chart
   [raw-data svg-id chart-params$]

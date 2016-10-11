@@ -27,9 +27,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;
 (declare phi-inc   next-phi 
-         err-inc   next-err 
+         epsilon-inc   next-epsilon 
          sigma-inc next-sigma
-         gen-wt-inc next-gen-wt
+         theta-inc next-theta
          next-level next-levels
          m-square)
 
@@ -37,28 +37,28 @@
 ;; Level
 
                                        ; In Bogacz:
-(defrecord Level [phi err sigma gen-wt ; phi, epsilon, sigma, theta
+(defrecord Level [phi epsilon sigma theta ; phi, epsilon, sigma, theta
                   gen gen'             ; h, h'
-                  phi-dt err-dt sigma-dt gen-wt-dt]) ; increment sizes for approaching limit
+                  phi-dt epsilon-dt sigma-dt theta-dt]) ; increment sizes for approaching limit
 
 (def Level-docstring
   "\n  A Level records values at one level of a prediction-error/free-energy
   minimization model.  
   phi:     Current value of input at this level, or generative function parameter.
-  err:     Epsilon--the error at this level.
+  epsilon:     Epsilon--the error at this level.
   sigma:   Covariance matrix or variance of assumed distribution over inputs 
            at this level.  Variance should usually be >= 1 (p. 5 col 2).
-  gen-wt:  Scaling factor theta (scalar or matrix) for generative function.  When 
-           gen-wt is multiplied by result of gen(phi), the result is the current 
+  theta:  Scaling factor theta (scalar or matrix) for generative function.  When 
+           theta is multiplied by result of gen(phi), the result is the current 
            estimated mean of the assumed distrubtion.  
-           i.e. g(phi) = gen-wt * gen(phi), where '*' here is scalar or matrix 
+           i.e. g(phi) = theta * gen(phi), where '*' here is scalar or matrix 
            multiplication as appropriate.
   <x>-dt:  A scalar multiplier (e.g. 0.01) determining how fast <x> is updated.
-  gen, gen': See gen-wt; gen' is the derivative of gen.  These never change.
+  gen, gen': See theta; gen' is the derivative of gen.  These never change.
 
   All of these notations are defined in Bogacz's \"Tutorial\" paper.
-  phi and err can be scalars, in which case gen-wt and sigma are as well.  
-  Or phi and err can be vectors of length n, in which case sigma and gen-wt
+  phi and epsilon can be scalars, in which case theta and sigma are as well.  
+  Or phi and epsilon can be vectors of length n, in which case sigma and theta
   are n x n square matrices.  gen and gen' are functions that can be applied to 
   phi.  See doc/level.md for more information.")
 
@@ -73,9 +73,9 @@
   [[-level level +level]]
   (assoc level 
          :phi (next-phi  -level  level)
-         :err (next-err   level +level)
+         :epsilon (next-epsilon   level +level)
          :sigma (next-sigma level)
-         :gen-wt (next-gen-wt level +level)))
+         :theta (next-theta level +level)))
 
 ;; See notes in levels.md on this function.
 (defn next-levels
@@ -102,9 +102,9 @@
   (fn [[level +level]]
     (assoc level 
            :phi (phi-generator)
-           :err (next-err level +level)
+           :epsilon (next-epsilon level +level)
            :sigma (next-sigma level)
-           :gen-wt (next-gen-wt level +level))))
+           :theta (next-theta level +level))))
 
 (defn make-top-level
   "Makes a top level with constant value phi for :phi.  Also sets :gen to
@@ -118,50 +118,50 @@
 
 (defn phi-inc
   "Calculates slope/increment to the next 'hypothesis' phi from the 
-  current phi using the error -err from the level below, scaled by
-  the generative function scaling factor gen-wt and the derivative gen' of 
+  current phi using the error -epsilon from the level below, scaled by
+  the generative function scaling factor theta and the derivative gen' of 
   the generative function gen at this level, and subtracting the error at 
   this level.  See equations (44), (53) in Bogacz's \"Tutorial\"."
-  [phi err -err -gen-wt gen']
+  [phi epsilon -epsilon -theta gen']
   (m- (e* (gen' phi)
-          (m* (tr -gen-wt) -err))
-      err))
+          (m* (tr -theta) -epsilon))
+      epsilon))
 
 (defn next-phi 
   "Calculates the the next-timestep 'hypothesis' phi from this level 
   and the one below."
   [-level level]
-  (let [{:keys [phi phi-dt err gen']} level
-        -err (:err -level)
-        -gen-wt (:gen-wt -level)]
+  (let [{:keys [phi phi-dt epsilon gen']} level
+        -epsilon (:epsilon -level)
+        -theta (:theta -level)]
     (m+ phi 
         (e* phi-dt
-            (phi-inc phi err -err -gen-wt gen')))))
+            (phi-inc phi epsilon -epsilon -theta gen')))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; epsilon update
 
-(defn err-inc 
+(defn epsilon-inc 
   "Calculates the slope/increment to the next 'error' epsilon from 
   the current epsilon, using the mean of the generative model at the
-  next level up, but scaling the current error err by the
+  next level up, but scaling the current error epsilon by the
   variance/cov-matrix at this level, and making the whole thing
   relative to phi at this level. See equation (54) in Bogacz's \"Tutorial\"."
-  [err phi +phi sigma gen-wt +gen]
+  [epsilon phi +phi sigma theta +gen]
   (m- phi 
-      (m* gen-wt (+gen +phi))
-      (m* sigma err)))
+      (m* theta (+gen +phi))
+      (m* sigma epsilon)))
 
 (defn next-err
   "Calculates the next-timestep 'error' epsilon from this level and the one
   above."
   [level +level]
-  (let [{:keys [phi err err-dt sigma gen-wt]} level
+  (let [{:keys [phi epsilon epsilon-dt sigma theta]} level
         +phi (:phi +level)
         +gen (:gen +level)]
     (m+ err
-        (e* err-dt
-            (err-inc err phi +phi sigma gen-wt +gen)))))
+        (e* epsilon-dt
+            (epsilon-inc epsilon phi +phi sigma theta +gen)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; sigma update
@@ -172,43 +172,43 @@
   at this level.  See equation (55) in Bogacz's \"Tutorial\".  (Note uses 
   matrix inversion for vector/matrix calcualtions, a non-Hebbian calculation,
   rather than the local update methods of section 5.)"
-  [err sigma]
-  (e* 0.5 (m- (m-square err)
+  [epsilon sigma]
+  (e* 0.5 (m- (m-square epsilon)
               (inv sigma))))
 
 (defn next-sigma
   "Calculates the next-timestep sigma, i.e. the variance or the covariance 
   matrix of the distribution of inputs at this level."
   [level]
-  (let [{:keys [err sigma sigma-dt]} level]
+  (let [{:keys [epsilon sigma sigma-dt]} level]
     (limit-sigma
       (m+ sigma
           (e* sigma-dt
-              (sigma-inc err sigma))))))
+              (sigma-inc epsilon sigma))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;
-;; gen-wt update
+;; theta update
 
-(defn gen-wt-inc
-  "Calculates the slope/increment to the next gen-wt component of the mean
-  value function from the current gen-wt using the error err at this level
+(defn theta-inc
+  "Calculates the slope/increment to the next theta component of the mean
+  value function from the current theta using the error epsilon at this level
   along with the mean of the generative function at the next level up.  
   See equation (56) in Bogacz's \"Tutorial\"."
-  [err +phi +gen]
-  (m* err 
+  [epsilon +phi +gen]
+  (m* epsilon 
       (tr (+gen +phi))))
 
-(defn next-gen-wt
-  "Calculates the next-timestep gen-wt component of the mean value function
+(defn next-theta
+  "Calculates the next-timestep theta component of the mean value function
   from this level and the one above."
   [level +level]
-  (let [{:keys [err gen-wt gen-wt-dt]} level
+  (let [{:keys [epsilon theta theta-dt]} level
         +phi (:phi +level)
         +gen (:gen +level)]
-    (m+ gen-wt
-        (e* gen-wt-dt
-            (gen-wt-inc err +phi +gen)))))
+    (m+ theta
+        (e* theta-dt
+            (theta-inc epsilon +phi +gen)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Utility functions

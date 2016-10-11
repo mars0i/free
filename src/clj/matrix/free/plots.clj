@@ -8,9 +8,9 @@
            [incanter.core :as co]))
 
 (def phi-base-color    (java.awt.Color. 0   0   0))
-(def err-base-color    (java.awt.Color. 255 0   0))
+(def epsilon-base-color    (java.awt.Color. 255 0   0))
 (def sigma-base-color  (java.awt.Color. 0   255 0))
-(def gen-wt-base-color (java.awt.Color. 0   0   255))
+(def theta-base-color (java.awt.Color. 0   0   255))
 (def no-color (java.awt.Color. 0 0 0 0))
 ;; Can use java.awt.Color.brighter() and .darker() to get 5-10 variations:
 ;; wrap Java methods in functions so they can be passed:
@@ -19,7 +19,7 @@
 
 
 (defn plot-param-stages
-  "Plot the stages for a single parameter--phi, err, etc."
+  "Plot the stages for a single parameter--phi, epsilon, etc."
   [chart base-color color-inc first-line-num plot-fn level-stages level-param]
   (let [param-stages (map level-param level-stages)
         idxs-seq (mx/index-seq (first param-stages)) ; TODO for sigma only use two, since it's symmetric?
@@ -53,9 +53,9 @@
          phi-color      (if (== 0 level-num) nil phi-base-color) ; let Incanter set different color for each dataset
          ;; Using identity to not adjust colors within category, but might later:
          line-num (plot-param-stages chart phi-color         identity 1        first-plot-fn level-stages :phi) ; number 0 used up in scatter-plot call
-         line-num (plot-param-stages chart err-base-color    identity line-num ch/add-lines* level-stages :err)
+         line-num (plot-param-stages chart epsilon-base-color    identity line-num ch/add-lines* level-stages :epsilon)
          line-num (plot-param-stages chart sigma-base-color  identity line-num ch/add-lines* level-stages :sigma)]
-     (plot-param-stages              chart gen-wt-base-color identity line-num ch/add-lines* level-stages :gen-wt)
+     (plot-param-stages              chart theta-base-color identity line-num ch/add-lines* level-stages :theta)
      (ch/set-stroke-color chart no-color :dataset 0) ; set spurious nil/nil dataset to no color so it's invisible in legend
      (co/view chart :width 800 :height 600)
      chart)))

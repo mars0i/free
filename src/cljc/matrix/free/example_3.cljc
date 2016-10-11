@@ -32,34 +32,34 @@
                    #(mx/matrix [[(ran/next-gaussian  2 5)]
                                 [(ran/next-gaussian -1 3)]])))
 
-(def init-gen-wt (ar/make-identity-obj 2)) ; i.e. initially pass value of gen(phi) through unchanged
+(def init-theta (ar/make-identity-obj 2)) ; i.e. initially pass value of gen(phi) through unchanged
 
 ; what phi is initialized to, and prior mean at top:
 (def v-p (ar/col-mat [3.0 3.0]))
 
 (def bot-map {:phi   (ar/col-mat [0.0 0.0]) ; immediately replaced by next-bottom
-              :err   (ar/col-mat [0.0 0.0])
+              :epsilon   (ar/col-mat [0.0 0.0])
               :sigma (mx/matrix [[2.0  0.25]  ; it's a covariance matrix, so
                                  [0.25 2.0]]) ; should be symmetric
-              :gen-wt init-gen-wt
+              :theta init-theta
               :gen  nil
               :gen' nil
               :phi-dt    0.01
-              :err-dt    0.01
+              :epsilon-dt    0.01
               :sigma-dt  0.0
-              :gen-wt-dt 0.0})
+              :theta-dt 0.0})
 
 (def mid-map {:phi v-p
-              :err   (ar/col-mat [0.0 0.0])
+              :epsilon   (ar/col-mat [0.0 0.0])
               :sigma (mx/matrix [[2.0  0.25]
                                  [0.25 2.0]])
-              :gen-wt init-gen-wt
+              :theta init-theta
               :gen  gen
               :gen' gen'
               :phi-dt    0.0001
-              :err-dt    0.01
+              :epsilon-dt    0.01
               :sigma-dt  0.0001
-              :gen-wt-dt 0.01})
+              :theta-dt 0.01})
 
 (def init-bot (lvl/map->Level bot-map))
 (def init-mid (lvl/map->Level mid-map))
