@@ -45,7 +45,7 @@
 
 ;; bottom level params
 (def u 2)       ; phi
-(def error-u 0) ; err
+(def error-u 0) ; epsilon
 (def sigma-u 1)
 (def next-bottom (lvl/make-next-bottom (constantly u)))
 

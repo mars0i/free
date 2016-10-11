@@ -48,7 +48,7 @@
                      (ran/next-gaussian @mean$ @sd$))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
-(def error-u 0) ; err
+(def error-u 0) ; epsilon
 ;; Note that the bottom-level phi needs to be an arbitrary number so that 
 ;; epsilon-inc doesn't NPE on the first tick, but the number doesn't matter, and 
 ;; it will immediately replaced when next-bottom is run.

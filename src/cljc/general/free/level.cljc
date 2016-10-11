@@ -36,8 +36,7 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Level
 
-                                       ; In Bogacz:
-(defrecord Level [phi epsilon sigma theta ; phi, epsilon, sigma, theta
+(defrecord Level [phi epsilon sigma theta ; names from Bogacz
                   gen gen'             ; h, h'
                   phi-dt epsilon-dt sigma-dt theta-dt]) ; increment sizes for approaching limit
 
@@ -152,14 +151,14 @@
       (m* theta (+gen +phi))
       (m* sigma epsilon)))
 
-(defn next-err
+(defn next-epsilon
   "Calculates the next-timestep 'error' epsilon from this level and the one
   above."
   [level +level]
   (let [{:keys [phi epsilon epsilon-dt sigma theta]} level
         +phi (:phi +level)
         +gen (:gen +level)]
-    (m+ err
+    (m+ epsilon
         (e* epsilon-dt
             (epsilon-inc epsilon phi +phi sigma theta +gen)))))
 
