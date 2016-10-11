@@ -28,7 +28,7 @@
        (ch/add-lines (range) (map :epsilon   stages) :series-label "epsilon")
        (ch/add-lines (range) (map :sigma stages) :series-label "sigma")
        (ch/add-lines (range) (map :theta stages) :series-label "theta")
-       (ch/set-point-size 1) ; applies to points, not lines. apparently only applies to the first series.
+       (ch/set-point-size 0.5) ; applies to points, not lines. apparently only applies to the first series.
        (ch/set-stroke-color java.awt.Color/black :dataset 0) ; phi. For xy-plot and add-lines use :dataset instead of :series.This is a bug in Incanter. See issue #233 in Incanter repo.
        (ch/set-stroke-color java.awt.Color/red   :dataset 1) ; epsilon. 
        (ch/set-stroke-color java.awt.Color/green :dataset 2) ; sigma
