@@ -8,7 +8,7 @@
 (def random-seed (ran/make-long-seed))
 
 ; Don't ever use a print statement in Clojurescript without the following:
-(enable-console-print!)
+#?(:cljs (enable-console-print!))
 (println "random-seed:" random-seed)
 
 (def rng$ (atom (ran/make-rng random-seed)))
