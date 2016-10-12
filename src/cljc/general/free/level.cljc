@@ -44,7 +44,7 @@
   "\n  A Level records values at one level of a prediction-error/free-energy
   minimization model.  
   phi:     Current value of input at this level, or generative function parameter.
-  epsilon:     Epsilon--the error at this level.
+  epsilon: Epsilon--the error at this level.
   sigma:   Covariance matrix or variance of assumed distribution over inputs 
            at this level.  Variance should usually be >= 1 (p. 5 col 2).
   theta:  Scaling factor theta (scalar or matrix) for generative function.  When 
