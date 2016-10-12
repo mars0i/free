@@ -77,6 +77,7 @@
          :theta   (next-theta      level +level)))
 
 ;; See notes in levels.md on this function.
+;; OLD VERSION
 (defn next-levels
   "Given a functions for updating gen, gen', and a bottom-level creation function
   that accepts two levels (its level and the next up), along with a sequence of 
@@ -88,6 +89,34 @@
           (map next-level                 ; Each middle level depends on levels
                (partition 3 1 levels))    ;  immediately below and above it.
           [(last levels)]))               ; top is carried forward as-is
+
+;; NEW VERSION
+(defn next-levels*
+  "Given a functions for updating gen, gen', and a bottom-level creation function
+  that accepts two levels (its level and the next up), along with a sequence of 
+  levels at one timestep, returns a vector of levels at the next timestep.  
+  The top level will be used to calculate the next level down, but won't be 
+  remade; it will be used again, as is, as the new top level."
+  [next-bottom levels]
+  (cons (next-bottom (take 2 levels))     ; Bottom level is special case.
+        (conj
+          (vec (map next-level            ; Each middle level depends on levels
+                 (partition 3 1 levels))) ;  immediately below and above it.
+          (last levels))))                ; Top is carried forward as-is
+
+;; DIFFERENT NEW VERSION
+(defn next-levels**
+  "Given a functions for updating gen, gen', and a bottom-level creation function
+  that accepts two levels (its level and the next up), along with a sequence of 
+  levels at one timestep, returns a vector of levels at the next timestep.  
+  The top level will be used to calculate the next level down, but won't be 
+  remade; it will be used again, as is, as the new top level."
+  [next-bottom [[level-0 level-1] :as levels]]
+  (cons (next-bottom [level-0 level-1])     ; Bottom level is special case.
+        (conj
+          (vec (map next-level            ; Each middle level depends on levels
+                 (partition 3 1 levels))) ;  immediately below and above it.
+          (last levels))))                ; Top is carried forward as-is
 
 (defn next-levels-3
   "Version of next-levels that may be more efficient with exactly three levels.
