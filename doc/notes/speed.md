@@ -70,28 +70,91 @@ division, and I bet that's all it is in the matrix version, too.
 
 #### scalar:
 
-Evaluation count : 9540 in 60 samples of 159 calls.
-             Execution time mean : 6.512737 ms
-    Execution time std-deviation : 287.399512 µs
-   Execution time lower quantile : 6.251808 ms ( 2.5%)
-   Execution time upper quantile : 7.151339 ms (97.5%)
-                   Overhead used : 7.991068 ns
-
-Found 5 outliers in 60 samples (8.3333 %)
-	low-severe	 4 (6.6667 %)
-	low-mild	 1 (1.6667 %)
- Variance from outliers : 30.3257 % Variance is moderately inflated by outliers
+    Evaluation count : 9540 in 60 samples of 159 calls.
+                 Execution time mean : 6.512737 ms
+        Execution time std-deviation : 287.399512 µs
+       Execution time lower quantile : 6.251808 ms ( 2.5%)
+       Execution time upper quantile : 7.151339 ms (97.5%)
+                       Overhead used : 7.991068 ns
+    
+    Found 5 outliers in 60 samples (8.3333 %)
+    	low-severe	 4 (6.6667 %)
+    	low-mild	 1 (1.6667 %)
+     Variance from outliers : 30.3257 % Variance is moderately inflated by outliers
 
 #### matrix:
 
-Evaluation count : 7440 in 60 samples of 124 calls.
-             Execution time mean : 8.127744 ms
-    Execution time std-deviation : 48.569099 µs
-   Execution time lower quantile : 8.054842 ms ( 2.5%)
-   Execution time upper quantile : 8.260081 ms (97.5%)
-                   Overhead used : 7.944598 ns
+    Evaluation count : 7440 in 60 samples of 124 calls.
+                 Execution time mean : 8.127744 ms
+        Execution time std-deviation : 48.569099 µs
+       Execution time lower quantile : 8.054842 ms ( 2.5%)
+       Execution time upper quantile : 8.260081 ms (97.5%)
+                       Overhead used : 7.944598 ns
+    
+    Found 4 outliers in 60 samples (6.6667 %)
+    	low-severe	 3 (5.0000 %)
+    	low-mild	 1 (1.6667 %)
+     Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
 
-Found 4 outliers in 60 samples (6.6667 %)
-	low-severe	 3 (5.0000 %)
-	low-mild	 1 (1.6667 %)
- Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
+
+## transducer vs. traditional lazy sequence
+
+This shows that using a transducer to construct the sequence of stages
+doesn't seem to improve speed significantly.
+
+    user=> (require '[free.example-5 :as e])
+
+### Results:
+
+#### traditional:
+
+    user=> (require '[free.example-5 :as e])
+    user=> (bench (def _ (last (take-nth 3000 (take 120000 (e/make-stages))))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 5.898407 sec
+        Execution time std-deviation : 652.647864 ms
+       Execution time lower quantile : 5.408534 sec ( 2.5%)
+       Execution time upper quantile : 7.535030 sec (97.5%)
+                       Overhead used : 31.932235 ns
+    
+    Found 7 outliers in 60 samples (11.6667 %)
+    	low-severe	 4 (6.6667 %)
+    	low-mild	 3 (5.0000 %)
+     Variance from outliers : 73.8035 % Variance is severely inflated by outliers
+
+
+#### lazy transducer:
+
+    user=> (require '[free.example-5 :as e])
+    user=> (def xf (comp (take 120000) (take-nth 3000)))
+    user=> (bench (def _ (last (sequence xf (e/make-stages)))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 5.762172 sec
+        Execution time std-deviation : 481.426511 ms
+       Execution time lower quantile : 5.409790 sec ( 2.5%)
+       Execution time upper quantile : 7.034231 sec (97.5%)
+                       Overhead used : 31.932235 ns
+    
+    Found 7 outliers in 60 samples (11.6667 %)
+    	low-severe	 3 (5.0000 %)
+    	low-mild	 4 (6.6667 %)
+     Variance from outliers : 61.8369 % Variance is severely inflated by outliers
+
+
+#### non-lazy transducer:
+
+    user=> (require '[free.example-5 :as e])
+    user=> (def xf (comp (take 120000) (take-nth 3000)))
+    user=> (bench (def _ (last (into [] xf (e/make-stages)))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 6.038467 sec
+        Execution time std-deviation : 626.724656 ms
+       Execution time lower quantile : 5.591108 sec ( 2.5%)
+       Execution time upper quantile : 7.243018 sec (97.5%)
+                       Overhead used : 31.932235 ns
+    
+    Found 7 outliers in 60 samples (11.6667 %)
+    	low-severe	 4 (6.6667 %)
+    	low-mild	 3 (5.0000 %)
+     Variance from outliers : 72.0332 % Variance is severely inflated by outliers
+
