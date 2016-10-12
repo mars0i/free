@@ -71,10 +71,10 @@
   "Returns the value of this level for the next timestep."
   [[-level level +level]]
   (assoc level 
-         :phi (next-phi  -level  level)
-         :epsilon (next-epsilon   level +level)
-         :sigma (next-sigma level)
-         :theta (next-theta level +level)))
+         :phi     (next-phi -level level)
+         :epsilon (next-epsilon    level +level)
+         :sigma   (next-sigma      level)
+         :theta   (next-theta      level +level)))
 
 ;; See notes in levels.md on this function.
 (defn next-levels
