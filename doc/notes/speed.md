@@ -158,3 +158,48 @@ doesn't seem to improve speed significantly.
     	low-mild	 3 (5.0000 %)
      Variance from outliers : 72.0332 % Variance is severely inflated by outliers
 
+
+## Adding to both ends of levels in `next-levels`:
+
+This is how I `next-levels` adds elements to both ends of a sequence
+before mid-October 2016 (e.g. commit 2886cfa):
+
+    (defn add-both-ends-1
+      [x1 xs xn]
+      (doall (concat [x1] xs [xn])))
+
+Let's test its speed:
+
+    user=> (bench (add-both-ends-1 :a [:b :c] :d))
+    Evaluation count : 79975440 in 60 samples of 1332924 calls.
+                 Execution time mean : 738.873636 ns
+        Execution time std-deviation : 6.155384 ns
+       Execution time lower quantile : 727.423897 ns ( 2.5%)
+       Execution time upper quantile : 753.145185 ns (97.5%)
+                       Overhead used : 7.809086 ns
+    
+    Found 4 outliers in 60 samples (6.6667 %)
+    	low-severe	 1 (1.6667 %)
+    	low-mild	 3 (5.0000 %)
+     Variance from outliers : 1.6389 % Variance is slightly inflated by outliers
+
+Here's an alternative
+
+    (defn add-both-ends-2
+      [x1 xs xn]
+      (cons x1 
+            (conj (vec xs) xn)))
+
+that's more than 3X faster:
+
+    user=> (bench (add-both-ends-2 :a [:b :c] :d))
+    Evaluation count : 315449100 in 60 samples of 5257485 calls.
+                 Execution time mean : 200.432284 ns
+        Execution time std-deviation : 14.926679 ns
+       Execution time lower quantile : 182.528894 ns ( 2.5%)
+       Execution time upper quantile : 226.777741 ns (97.5%)
+                       Overhead used : 7.809086 ns
+    
+    Found 1 outliers in 60 samples (1.6667 %)
+    	low-severe	 1 (1.6667 %)
+     Variance from outliers : 55.1589 % Variance is severely inflated by outliers
