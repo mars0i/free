@@ -72,12 +72,19 @@
   (long (/ timesteps num-points)))
 
 
+;; transducer version
 (defn sample-data
-  "TEST VERSION"
   [raw-data timesteps every-nth]
-  (take-nth every-nth 
-            (take (+ every-nth timesteps) ; round up
-                  raw-data)))
+  (sequence (comp (take (+ every-nth timesteps)) ; rounds up
+                  (take-nth every-nth))
+                  raw-data))
+
+;; traditional version
+;(defn sample-data
+;  [raw-data timesteps every-nth]
+;  (take-nth every-nth 
+;            (take (+ every-nth timesteps) ; round up
+;                  raw-data)))
 
 (defn for-nvd3
   [ys]
@@ -91,7 +98,7 @@
   (let [{:keys [timesteps]} @chart-params$
         sampled-data (sample-data raw-data timesteps every-nth)]
     (clj->js
-      [{:values (for-nvd3 (map (comp :phi first) sampled-data))      :key "sensory" :color "#000000" :area false :fillOpacity -1}
+      [{:values (for-nvd3 (map (comp :phi first) sampled-data))      :key "sensory" :size 1 :shape "circle" :color "#000000" :area false :fillOpacity -1}
        {:values (for-nvd3 (map (comp :phi second) sampled-data))     :key "phi"     :color "#000000" :area false :fillOpacity -1}
        {:values (for-nvd3 (map (comp :epsilon second) sampled-data)) :key "epsilon" :color "#ff0000" :area false :fillOpacity -1}
        {:values (for-nvd3 (map (comp :sigma second) sampled-data))   :key "sigma"   :color "#00ff00" :area false :fillOpacity -1}
