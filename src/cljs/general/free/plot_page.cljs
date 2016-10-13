@@ -49,7 +49,6 @@
 ;; -------------------------
 ;; spec
 
-;; FIXME
 (defn explain-data-problem-keys
   "Given the result of a call to spec/explain-data, returns the keys of 
   the tests that failed."
@@ -57,32 +56,13 @@
   (mapcat :path 
           (:cljs.spec/problems data)))
 
-(defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
-(defn ge-lt [inf sup] (s/and #(>= % inf) #(<  % sup)))
-(defn gt-le [inf sup] (s/and #(>  % inf) #(<= % sup)))
-(defn gt-lt [inf sup] (s/and #(>  % inf) #(<  % sup)))
-
+;(defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
 ;(s/def ::max-r (ge-le 0.0 1.0))
-;(s/def ::s     (gt-le 0.0 1.0))
-;(s/def ::h     (ge-le 0.0 1.0))
-;(s/def ::x1    (ge-le 0.0 1.0))
-;(s/def ::x2    (ge-le 0.0 1.0))
-;(s/def ::x3    (ge-le 0.0 1.0))
-;(s/def ::x-freqs #(<= % 1.0)) ; will be passed x1+x2+x3
-;(s/def ::B-freqs #(> % 0.0))  ; will be passed x1+x3
 
 (s/def ::timesteps (s/and integer? pos?))
 
 ;(s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs ::B-freqs]))
 (s/def ::chart-params (s/keys :req-un [::timesteps])) ; require these keys (with single colon), and check that they conform
-
-;(defn prep-params-for-validation
-;  "assoc into params any additional entries needed for validation with spec."
-;  [params]
-;  (let [{:keys [x1 x2 x3]} params]
-;    (-> params
-;        (assoc :x-freqs (+ x1 x2 x3))
-;        (assoc :B-freqs (+ x1 x3)))))
 
 ;; -------------------------
 ;; run simulations, generate chart
@@ -95,10 +75,9 @@
 (defn sample-data
   "TEST VERSION"
   [raw-data timesteps every-nth]
-  (map second
-       (take-nth every-nth 
-                 (take (+ every-nth timesteps) ; round up
-                       raw-data))))
+  (take-nth every-nth 
+            (take (+ every-nth timesteps) ; round up
+                  raw-data)))
 
 (defn for-nvd3
   [ys]
@@ -112,10 +91,11 @@
   (let [{:keys [timesteps]} @chart-params$
         sampled-data (sample-data raw-data timesteps every-nth)]
     (clj->js
-      [{:values (for-nvd3 (map :phi sampled-data))    :key "phi"    :color "#000000" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map :epsilon sampled-data))    :key "epsilon"    :color "#ff0000" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map :sigma sampled-data))  :key "sigma"  :color "#00ff00" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map :theta sampled-data)) :key "theta" :color "#0000ff" :area false :fillOpacity -1}])))
+      [{:values (for-nvd3 (map (comp :phi first) sampled-data))      :key "sensory" :color "#000000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map (comp :phi second) sampled-data))     :key "phi"     :color "#000000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map (comp :epsilon second) sampled-data)) :key "epsilon" :color "#ff0000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map (comp :sigma second) sampled-data))   :key "sigma"   :color "#00ff00" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map (comp :theta second) sampled-data))   :key "theta"   :color "#0000ff" :area false :fillOpacity -1}])))
 
 (defn make-chart
   [raw-data svg-id chart-params$]
