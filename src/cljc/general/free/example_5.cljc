@@ -81,5 +81,4 @@
 (def init-mid-fixed-theta (lvl/map->Level (assoc mid-map :theta-dt 0.0)))
 (def top (lvl/make-top-level v-p)) ; will have phi, and identity as :gen ; other fields nil
 
-(defn make-stages [] (iterate (partial lvl/next-levels next-bottom)
-                              [init-bot init-mid top]))
+(defn make-stages [] (iterate (partial lvl/next-levels-3 next-bottom) [init-bot init-mid top]))
