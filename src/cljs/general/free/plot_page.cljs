@@ -34,7 +34,7 @@
 (def form-labels {:ready-label "re-run" 
                   :running-label "running..." 
                   :error-text [:text "One or more values in red are illegal." 
-                                nbsp "See " [:em "Parameter ranges"] " on the More Information page"]})
+                                nbsp "See " [:em "parameters"] " on the information page"]})
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -217,24 +217,15 @@
 (defn chart-params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id params$ colors$]
-  (let [float-width 6
+  (let [float-width 7
+        int-width 10
         {:keys [x1 x2 x3]} @params$]  ; seems ok: entire form re-rendered(?)
     [:form 
-     [float-input :s     params$ colors$ float-width "selection coeff"]
-     [float-input :h     params$ colors$ float-width "heterozygote coeff"]
-     [float-input :max-r params$ colors$ float-width "max recomb prob" [:em "r"]]
+     [float-input :timesteps params$ colors$ int-width ""]
      [spaces 4]
      [chart-button svg-id params$ colors$ form-labels]
-     [:br]
-     [float-input :x1    params$ colors$ float-width "" [:em "x"] [:sub 1]]
-     [float-input :x2    params$ colors$ float-width "" [:em "x"] [:sub 2]]
-     [float-input :x3    params$ colors$ float-width "" [:em "x"] [:sub 3]]
-     [spaces 3]
-     [float-text (- 1 x1 x2 x3) [:em "x"] [:sub 4]] ; display x4
-     [spaces 13]
-     [float-text "initial neutral heterozygosity"]
-     [:br]
-     [:div {:id "error-text" 
+     [spaces 5]
+     [:span {:id "error-text" 
             :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} ; TODO move styles into css file?
        @error-text$]]))
 
