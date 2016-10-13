@@ -203,3 +203,162 @@ that's more than 3X faster:
     Found 1 outliers in 60 samples (1.6667 %)
     	low-severe	 1 (1.6667 %)
      Variance from outliers : 55.1589 % Variance is severely inflated by outliers
+
+
+## next-levels with both ends code, destructuring, etc.
+
+### old version:
+
+#### code
+
+    (defn next-levels
+      [next-bottom levels]
+      (concat [(next-bottom (take 2 levels))] ; Bottom level is special case.
+              (map next-level                 ; Each middle level depends on levels
+                   (partition 3 1 levels))    ;  immediately below and above it.
+              [(last levels)]))               ; top is carried forward as-is
+
+#### time
+
+    user=> (bench (def _ (last (take-nth 3000 (take 120000 (e/make-stages))))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 5.616549 sec
+        Execution time std-deviation : 93.551572 ms
+       Execution time lower quantile : 5.488649 sec ( 2.5%)
+       Execution time upper quantile : 5.797978 sec (97.5%)
+                       Overhead used : 31.379479 ns
+    
+    Found 1 outliers in 60 samples (1.6667 %)
+    	low-severe	 1 (1.6667 %)
+     Variance from outliers : 6.2495 % Variance is slightly inflated by outliers
+
+Another run:
+
+    user=> (bench (def _ (last (take-nth 3000 (take 120000 (e/make-stages))))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 5.715559 sec
+        Execution time std-deviation : 201.409108 ms
+       Execution time lower quantile : 5.426575 sec ( 2.5%)
+       Execution time upper quantile : 6.132154 sec (97.5%)
+                       Overhead used : 31.379479 ns
+
+### new way of adding to both ends of seq
+
+#### code
+
+    (defn next-levels*
+      [next-bottom levels]
+      (cons (next-bottom (take 2 levels))     ; Bottom level is special case.
+            (conj
+              (vec (map next-level            ; Each middle level depends on levels
+                     (partition 3 1 levels))) ;  immediately below and above it.
+              (last levels))))                ; Top is carried forward as-is
+
+#### time
+
+    (bench (def _ (last (take-nth 3000 (take 120000 (e/make-stages*))))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 5.579666 sec
+        Execution time std-deviation : 480.501335 ms
+       Execution time lower quantile : 4.919300 sec ( 2.5%)
+       Execution time upper quantile : 6.614420 sec (97.5%)
+                       Overhead used : 31.379479 ns
+    
+    Found 6 outliers in 60 samples (10.0000 %)
+    	low-severe	 6 (10.0000 %)
+     Variance from outliers : 63.5164 % Variance is severely inflated by outliers
+
+This run was slightly better:
+
+    user=> (bench (def _ (last (take-nth 3000 (take 120000 (e/make-stages*))))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 5.361443 sec
+        Execution time std-deviation : 535.546539 ms
+       Execution time lower quantile : 5.009388 sec ( 2.5%)
+       Execution time upper quantile : 6.435113 sec (97.5%)
+                       Overhead used : 31.379479 ns
+    
+    Found 8 outliers in 60 samples (13.3333 %)
+    	low-severe	 5 (8.3333 %)
+    	low-mild	 3 (5.0000 %)
+     Variance from outliers : 70.3262 % Variance is severely inflated by outliers
+
+
+So that's interesting: Raw tests on different ways to add to both ends
+of a sequence show a big difference (above), but that doesn't make a significant
+difference on next-levels.
+
+
+### new both-ends plus destructuring for next-bottom:
+
+#### code
+
+    (defn next-levels**
+      [next-bottom [level-0 level-1 :as levels]]
+      (cons (next-bottom [level-0 level-1])     ; Bottom level is special case.
+            (conj
+              (vec (map next-level            ; Each middle level depends on levels
+                     (partition 3 1 levels))) ;  immediately below and above it.
+              (last levels))))                ; Top is carried forward as-is
+
+#### time
+
+    (bench (def _ (last (take-nth 3000 (take 120000 (e/make-stages**))))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 5.333680 sec
+        Execution time std-deviation : 627.464346 ms
+       Execution time lower quantile : 4.909855 sec ( 2.5%)
+       Execution time upper quantile : 7.202714 sec (97.5%)
+                       Overhead used : 31.379479 ns
+    
+    Found 8 outliers in 60 samples (13.3333 %)
+    	low-severe	 5 (8.3333 %)
+    	low-mild	 3 (5.0000 %)
+     Variance from outliers : 75.5607 % Variance is severely inflated by outliers
+
+
+This is just a little big faster than the non-destructuring versions.
+
+Another run:
+
+    user=> (bench (def _ (last (take-nth 3000 (take 120000 (e/make-stages**))))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 5.144079 sec
+        Execution time std-deviation : 179.876555 ms
+       Execution time lower quantile : 4.944930 sec ( 2.5%)
+       Execution time upper quantile : 5.570915 sec (97.5%)
+                       Overhead used : 31.379479 ns
+    
+    Found 4 outliers in 60 samples (6.6667 %)
+    	low-severe	 4 (6.6667 %)
+     Variance from outliers : 22.1738 % Variance is moderately inflated by outliers
+
+
+
+### special three-level version:
+
+### code
+
+(defn next-levels-3
+  [next-bottom [level-0 level-1 :as levels]]
+  [(next-bottom [level-0 level-1]) ; Bottom level is special case.
+   (next-level levels)             ; Each middle level depends on levels immediately below and above it.
+   (last levels)])                 ; top is carried forward as-is
+
+### time
+
+    user=> (bench (def _ (last (take-nth 3000 (take 120000 (e/make-stages-3))))))
+    Evaluation count : 60 in 60 samples of 1 calls.
+                 Execution time mean : 3.534503 sec
+        Execution time std-deviation : 536.809760 ms
+       Execution time lower quantile : 3.306916 sec ( 2.5%)
+       Execution time upper quantile : 4.802435 sec (97.5%)
+                       Overhead used : 31.379479 ns
+    
+    Found 10 outliers in 60 samples (16.6667 %)
+    	low-severe	 2 (3.3333 %)
+    	low-mild	 8 (13.3333 %)
+     Variance from outliers : 84.1843 % Variance is severely inflated by outliers
+
+
+Again, this is significantly faster.  Enough that I should use it often.
