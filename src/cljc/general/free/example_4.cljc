@@ -57,8 +57,8 @@
               :gen' gen' ; used to update phi at this level
               :phi-dt 0.0001
               :epsilon-dt 0.01
-              :sigma-dt 0.0001
-              :theta-dt 0.00005})
+              :sigma-dt 0.00001    ; Note Friston et al. 2010 "Generalized Filtering" p.2 says changes in precisions i.e. in sigma should be small
+              :theta-dt 0.00005}) ; and that changes in parameters i.e. theta should be small
 
 (def init-bot (lvl/map->Level bot-map))
 (def init-mid (lvl/map->Level mid-map))
