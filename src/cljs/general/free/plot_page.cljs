@@ -73,18 +73,18 @@
 
 
 ;; transducer version
-(defn sample-data
-  [raw-data timesteps every-nth]
-  (sequence (comp (take (+ every-nth timesteps)) ; rounds up
-                  (take-nth every-nth))
-                  raw-data))
-
-;; traditional version
 ;(defn sample-data
 ;  [raw-data timesteps every-nth]
-;  (take-nth every-nth 
-;            (take (+ every-nth timesteps) ; round up
-;                  raw-data)))
+;  (sequence (comp (take (+ every-nth timesteps)) ; rounds up
+;                  (take-nth every-nth))
+;                  raw-data))
+
+;; traditional version
+(defn sample-data
+  [raw-data timesteps every-nth]
+  (take-nth every-nth 
+            (take (+ every-nth timesteps) ; round up
+                  raw-data)))
 
 (defn for-nvd3
   [ys]
@@ -93,23 +93,26 @@
             ys)))
 
 (defn make-chart-config
-  [raw-data chart-params$ every-nth]
+  [data]
   "Make NVD3 chart configuration data object."
-  (let [{:keys [timesteps]} @chart-params$
-        sampled-data (sample-data raw-data timesteps every-nth)]
     (clj->js
-      [{:values (for-nvd3 (map (comp :phi first) sampled-data))      :key "sensory" :size 1 :shape "circle" :color "#000000" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map (comp :phi second) sampled-data))     :key "phi"     :color "#000000" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map (comp :epsilon second) sampled-data)) :key "epsilon" :color "#ff0000" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map (comp :sigma second) sampled-data))   :key "sigma"   :color "#00ff00" :area false :fillOpacity -1}
-       {:values (for-nvd3 (map (comp :theta second) sampled-data))   :key "theta"   :color "#0000ff" :area false :fillOpacity -1}])))
+      [;{:values (for-nvd3 (map (comp :phi first) data))      :key "sensory" :color "#000000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map (comp :phi second) data))     :key "phi"     :color "#000000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map (comp :epsilon second) data)) :key "epsilon" :color "#ff0000" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map (comp :sigma second) data))   :key "sigma"   :color "#00ff00" :area false :fillOpacity -1}
+       {:values (for-nvd3 (map (comp :theta second) data))   :key "theta"   :color "#0000ff" :area false :fillOpacity -1}]))
+
+;(defn add-points
+;  [
 
 (defn make-chart
   [raw-data svg-id chart-params$]
   "Create an NVD3 line chart with configuration parameters in @chart-params$
   and attach it to SVG object with id svg-id."
   (let [chart (.lineChart js/nv.models)
-        every-nth (calc-every-nth (:timesteps @chart-params$))]
+        timesteps (:timesteps @chart-params$)
+        every-nth (calc-every-nth timesteps)
+        sampled-data (sample-data raw-data timesteps every-nth)]
     ;; configure nvd3 chart:
     (-> chart
         (.height svg-height)
@@ -129,7 +132,7 @@
     ;; add chart to dom using d3:
     (.. js/d3
         (select svg-id)
-        (datum (make-chart-config raw-data chart-params$ every-nth))
+        (datum (make-chart-config sampled-data))
         (call chart))
     chart)) 
 
