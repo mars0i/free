@@ -52,13 +52,10 @@
 ;; FIXME
 (defn explain-data-problem-keys
   "Given the result of a call to spec/explain-data, returns the keys of 
-  the tests that failed.  WARNING: This is for 
-  Clojurescript 1.9.89/Clojure 1.9.0-alpha7.  It will have to be changed 
-  to work with Clojure 1.9.0-alpha10."
+  the tests that failed."
   [data]
-  (map first 
-       (keys
-         (:cljs.spec/problems data))))
+  (mapcat :path 
+          (:cljs.spec/problems data)))
 
 (defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
 (defn ge-lt [inf sup] (s/and #(>= % inf) #(<  % sup)))
@@ -77,15 +74,15 @@
 (s/def ::timesteps (s/and integer? pos?))
 
 ;(s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs ::B-freqs]))
-(s/def ::chart-params (s/keys :req-un [::timesteps]))
+(s/def ::chart-params (s/keys :req-un [::timesteps])) ; require these keys (with single colon), and check that they conform
 
-(defn prep-params-for-validation
-  "assoc into params any additional entries needed for validation with spec."
-  [params]
-  (let [{:keys [x1 x2 x3]} params]
-    (-> params
-        (assoc :x-freqs (+ x1 x2 x3))
-        (assoc :B-freqs (+ x1 x3)))))
+;(defn prep-params-for-validation
+;  "assoc into params any additional entries needed for validation with spec."
+;  [params]
+;  (let [{:keys [x1 x2 x3]} params]
+;    (-> params
+;        (assoc :x-freqs (+ x1 x2 x3))
+;        (assoc :B-freqs (+ x1 x3)))))
 
 ;; -------------------------
 ;; run simulations, generate chart
@@ -175,15 +172,11 @@
                 :on-click (fn []
                             (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
                             (reset! error-text$ no-error-text)
-                            (if-let [spec-data (s/explain-data ::chart-params (prep-params-for-validation @params$))] ; if bad inputs (nil if ok)
+                            (if-let [spec-data (s/explain-data ::chart-params @params$)] ; if bad inputs (nil if ok)
                               (do
                                 (reset! error-text$ error-text)
-                                (doseq [ki (explain-data-problem-keys spec-data)] ; NOTE this function must change with new Clojurescript release
-                                  (let [ks (cond (= ki :x-freqs) [:x1 :x2 :x3] ; special case--need to highlight multiple fields
-                                                 (= ki :B-freqs) [:x1 :x3]     ; ditto
-                                                 :else [ki])] ; degenerate default: only one field to highlight this time
-                                    (doseq [k ks]
-                                      (swap! colors$ assoc k error-color)))))
+                                (doseq [k (explain-data-problem-keys spec-data)] ; NOTE this function must change with new Clojurescript release
+                                  (swap! colors$ assoc k error-color)))
                               (do
                                 (reset! button-label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
