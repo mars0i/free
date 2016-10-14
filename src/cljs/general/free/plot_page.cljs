@@ -186,16 +186,27 @@
 
 
 (defn level-checkbox
-  [level-num params$ label]
+  [level-num params$]
   (let [levels-to-display (:levels-to-display @params$)
         checked (boolean (levels-to-display level-num))] ; l-t-d is a set, btw
-    [:input {:type "checkbox"
-             :id (str "level-" level-num)
-             :checked checked
-             :on-change #(swap! params$ 
-                                (if checked disj conj) ; i.e. if it was checked, now unchecked, so remove level; else it's now checked, so add level
-                                level-num)}
-     level-num]))
+    [[:text (str " " level-num ": ")]
+     [:input {:type "checkbox"
+              :id (str "level-" level-num)
+              :checked checked
+              :on-change #(swap! params$ 
+                                 update :levels-to-display 
+                                 (if checked disj conj) ; i.e. if checked, now unchecked, so remove level from set; else it's now checked, so add level
+                                 level-num)}]]))
+
+(defn level-checkboxes
+  [params$]
+  (vec 
+    (concat
+      [:span {:id "level-checkboxes"}
+       [:text "Levels to display: "]]
+      (mapcat 
+        #(level-checkbox % params$)
+        (range num-levels)))))
 
 
 ;; For comparison, in lescent, I used d3 to set the onchange of dropdowns to a function that set a single global var for each.
@@ -237,7 +248,8 @@
      [chart-button svg-id params$ colors$ form-labels]
      [spaces 4]
      [float-input :timesteps params$ colors$ int-width ""]
-     [spaces 5]
+     [spaces 4]
+     [level-checkboxes params$]
      [:span {:id "error-text" 
             :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} ; TODO move styles into css file?
        @error-text$]]))
