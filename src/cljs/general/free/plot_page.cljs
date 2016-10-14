@@ -20,7 +20,7 @@
 ;; Default simulation parameters
 (defonce chart-params$ (r/atom {:timesteps 100000}))
 
-(def svg-height 400)
+(def svg-height 600)
 (def svg-width 1100)
 (def num-points 300) ; approx number of points to be sampled from data to be plotted
 
@@ -93,14 +93,20 @@
             ys)))
 
 (defn make-chart-config
-  [data]
   "Make NVD3 chart configuration data object."
+  [data]
+  (let [bottom (map first data)
+        level-2 (map second data)]
     (clj->js
-      [;{:key "sensory" :values (for-nvd3 (map (comp :phi first) data))      :color "#000000" :area false :fillOpacity -1}
-       {:key "phi"     :values (for-nvd3 (map (comp :phi second) data))     :color "#000000" :area false :fillOpacity -1}
-       {:key "epsilon" :values (for-nvd3 (map (comp :epsilon second) data)) :color "#ff0000" :area false :fillOpacity -1}
-       {:key "sigma"   :values (for-nvd3 (map (comp :sigma second) data))   :color "#00ff00" :area false :fillOpacity -1}
-       {:key "theta"   :values (for-nvd3 (map (comp :theta second) data))   :color "#0000ff" :area false :fillOpacity -1}]))
+      ;; The first entry will be turned into dots rather than a line using voodoo CSS I stuck at the end of site.css.
+      ;; Got that from http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure and a bunch of trial and error.
+      [{:key "sensory input"   :values (for-nvd3 (map :phi bottom))      :color "#808080" :area false :fillOpacity -1}
+       {:key "sensory epsilon" :values (for-nvd3 (map :epsilon bottom))  :color "#ffd0e0" :area false :fillOpacity -1}
+       {:key "phi"     :values (for-nvd3 (map :phi level-2))     :color "#000000" :area false :fillOpacity -1}
+       {:key "epsilon" :values (for-nvd3 (map :epsilon level-2)) :color "#ff0000" :area false :fillOpacity -1}
+       {:key "sigma"   :values (for-nvd3 (map :sigma level-2))   :color "#00ff00" :area false :fillOpacity -1}
+       {:key "theta"   :values (for-nvd3 (map :theta  level-2))   :color "#0000ff" :area false :fillOpacity -1}
+       ])))
 
 
 (defn make-chart
