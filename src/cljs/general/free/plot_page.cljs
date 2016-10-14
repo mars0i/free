@@ -20,7 +20,7 @@
 ;; Default simulation parameters
 (defonce chart-params$ (r/atom {:timesteps 100000}))
 
-(def svg-height 600)
+(def svg-height 500)
 (def svg-width 1100)
 (def num-points 300) ; approx number of points to be sampled from data to be plotted
 
@@ -88,9 +88,9 @@
 
 (defn for-nvd3
   [ys]
-  (vec (map #(hash-map :x %1 :y %2)
-            (range)
-            ys)))
+  (map #(hash-map :x %1 :y %2)
+       (range)
+       ys))
 
 (defn make-chart-config
   "Make NVD3 chart configuration data object."
@@ -100,7 +100,7 @@
     (clj->js
       ;; The first entry will be turned into dots rather than a line using voodoo CSS I stuck at the end of site.css.
       ;; Got that from http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure and a bunch of trial and error.
-      [{:key "sensory input"   :values (for-nvd3 (map :phi bottom))      :color "#808080" :area false :fillOpacity -1}
+      [{:key "sensory input"   :values (for-nvd3 (map :phi bottom))      :color "#606060" :area false :fillOpacity -1}
        {:key "sensory epsilon" :values (for-nvd3 (map :epsilon bottom))  :color "#ffd0e0" :area false :fillOpacity -1}
        {:key "phi"     :values (for-nvd3 (map :phi level-2))     :color "#000000" :area false :fillOpacity -1}
        {:key "epsilon" :values (for-nvd3 (map :epsilon level-2)) :color "#ff0000" :area false :fillOpacity -1}
