@@ -10,7 +10,7 @@
             [secretary.core :as secretary :include-macros true]
             [accountant.core :as accountant]
             [goog.string :as gs]
-            [free.example-5 :as e5]
+            [free.example-5 :as e]
             [cljsjs.d3]       ; aliases unused but included
             [cljsjs.nvd3])) ; in case Clojurescript likes 'em
 
@@ -18,11 +18,10 @@
 ;; globals
 
 ;; Default simulation parameters
-(defonce chart-params$ (r/atom {:timesteps 100000}))
 
 (def svg-height 500)
 (def svg-width 1100)
-(def num-points 300) ; approx number of points to be sampled from data to be plotted
+(def num-points 500) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
@@ -36,6 +35,12 @@
                   :error-text [:text "One or more values in red are illegal." 
                                 nbsp "See " [:em "parameters"] " on the information page"]})
 
+(def raw-data (e/make-stages)) ; REPLACE THIS
+(def num-levels (dec (count (first raw-data)))) ; don't count top level as a level
+
+(defonce chart-params$ (r/atom {:timesteps 100000
+                                :levels-to-display (set (rest (range num-levels)))})) ; defaults to all levels but first
+
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
 
@@ -43,8 +48,6 @@
 
 (defonce no-error-text [:text])
 (defonce error-text$ (r/atom no-error-text))
-
-(def raw-data (e5/make-stages)) ; REPLACE THIS
 
 ;; -------------------------
 ;; spec
@@ -68,12 +71,13 @@
 ;; run simulations, generate chart
 
 (defn calc-every-nth
+  "Calculate how often to sample data to generate a certain number of points."
   [timesteps]
   (long (/ timesteps num-points)))
 
-
 ;; transducer version
 (defn sample-data
+  "samples stages from raw stages sequence."
   [raw-data timesteps every-nth]
   (sequence (comp (take (+ every-nth timesteps)) ; rounds up
                   (take-nth every-nth))
@@ -86,7 +90,7 @@
 ;            (take (+ every-nth timesteps) ; round up
 ;                  raw-data)))
 
-(defn for-nvd3
+(defn xy-pairs
   [ys]
   (map #(hash-map :x %1 :y %2)
        (range)
@@ -100,12 +104,12 @@
     (clj->js
       ;; The first entry will be turned into dots rather than a line using voodoo CSS I stuck at the end of site.css.
       ;; Got that from http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure and a bunch of trial and error.
-      [{:key "sensory input"   :values (for-nvd3 (map :phi bottom))      :color "#606060" :area false :fillOpacity -1}
-       {:key "sensory epsilon" :values (for-nvd3 (map :epsilon bottom))  :color "#ffd0e0" :area false :fillOpacity -1}
-       {:key "phi"     :values (for-nvd3 (map :phi level-2))     :color "#000000" :area false :fillOpacity -1}
-       {:key "epsilon" :values (for-nvd3 (map :epsilon level-2)) :color "#ff0000" :area false :fillOpacity -1}
-       {:key "sigma"   :values (for-nvd3 (map :sigma level-2))   :color "#00ff00" :area false :fillOpacity -1}
-       {:key "theta"   :values (for-nvd3 (map :theta  level-2))   :color "#0000ff" :area false :fillOpacity -1}
+      [{:key "sensory input"   :values (xy-pairs (map :phi bottom))      :color "#606060" :area false :fillOpacity -1}
+       {:key "sensory epsilon" :values (xy-pairs (map :epsilon bottom))  :color "#ffd0e0" :area false :fillOpacity -1}
+       {:key "phi"     :values (xy-pairs (map :phi level-2))     :color "#000000" :area false :fillOpacity -1}
+       {:key "epsilon" :values (xy-pairs (map :epsilon level-2)) :color "#ff0000" :area false :fillOpacity -1}
+       {:key "sigma"   :values (xy-pairs (map :sigma level-2))   :color "#00ff00" :area false :fillOpacity -1}
+       {:key "theta"   :values (xy-pairs (map :theta  level-2))   :color "#0000ff" :area false :fillOpacity -1}
        ])))
 
 
@@ -180,6 +184,20 @@
                                                100))))}
        @button-label$])))
 
+
+(defn level-checkbox
+  [level-num params$ label]
+  (let [levels-to-display (:levels-to-display @params$)
+        checked (boolean (levels-to-display level-num))] ; l-t-d is a set, btw
+    [:input {:type "checkbox"
+             :id (str "level-" level-num)
+             :checked checked
+             :on-change #(swap! params$ 
+                                (if checked disj conj) ; i.e. if it was checked, now unchecked, so remove level; else it's now checked, so add level
+                                level-num)}
+     level-num]))
+
+
 ;; For comparison, in lescent, I used d3 to set the onchange of dropdowns to a function that set a single global var for each.
 (defn float-input 
   "Create a text input that accepts numbers.  k is keyword to be used to extract
@@ -216,9 +234,9 @@
         int-width 10
         {:keys [x1 x2 x3]} @params$]  ; seems ok: entire form re-rendered(?)
     [:form 
-     [float-input :timesteps params$ colors$ int-width ""]
-     [spaces 4]
      [chart-button svg-id params$ colors$ form-labels]
+     [spaces 4]
+     [float-input :timesteps params$ colors$ int-width ""]
      [spaces 5]
      [:span {:id "error-text" 
             :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} ; TODO move styles into css file?
@@ -232,10 +250,10 @@
 (defn home-render []
   "Set up main chart page (except for chart)."
   (head)
-  [:div
    [:div {:id "chart-div"}
-    [:svg {:id chart-svg-id :height (str svg-height "px")}]
-    [chart-params-form (str "#" chart-svg-id) chart-params$ chart-param-colors$]]])
+    [:br]
+    [chart-params-form (str "#" chart-svg-id) chart-params$ chart-param-colors$]
+    [:svg {:id chart-svg-id :height (str svg-height "px")}]])
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
