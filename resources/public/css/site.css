@@ -58,6 +58,5 @@ button:active {
 }
 #chart-svg g.nv-series-0 path.nv-line
 {
-    fill-opacity: 1;
     stroke-opacity: 0;
 }
