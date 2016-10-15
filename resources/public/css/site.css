@@ -51,7 +51,7 @@ button:active {
   top:1px;
 }
 /* voodoo css by trial and error based on http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure */
-#chart-svg g.nv-scatter g.nv-series-0 path.nv-point
+#chart-svg g.nv-series-0 path.nv-point
 {
     fill-opacity: 1;
     stroke-opacity: 1;
