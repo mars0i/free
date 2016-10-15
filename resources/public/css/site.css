@@ -50,13 +50,25 @@ button:active {
   position:relative;
   top:1px;
 }
-/* voodoo css by trial and error based on http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure */
+/* voodoo css based on http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure */
+/* Exlanation:
+ * The lines have classes nv-series-0, nv-series-1, etc., depending on the sequence
+ * in the chart data vector.
+ * path.nv-point inside nv-series-0 inside chart-svg is a point that gets drawn.
+ * opacity sets how visible it is.
+ * Normally this inherits these properties from nv-series-0, which also contains 
+ * the line.
+ * So to show the points and not the lines, make sure that the points are visible,
+ * but the line is not, but setting the points' opacity to 1 and the line's to 0.
+ */
 #chart-svg g.nv-series-0 path.nv-point
 {
     fill-opacity: 1;
     stroke-opacity: 1;
 }
+/* Now being set using d3 in make-chart:
 #chart-svg g.nv-series-0 path.nv-line
 {
     stroke-opacity: 0;
 }
+*/

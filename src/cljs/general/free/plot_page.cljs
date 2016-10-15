@@ -19,8 +19,8 @@
 
 ;; Default simulation parameters
 
-(def initial-svg-height 500)
-(def initial-svg-width 1100)
+(def initial-height 500)
+(def initial-width 1100)
 (def num-points 500) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
@@ -42,11 +42,15 @@
 
 (def num-levels (dec (count (first raw-stages)))) ; don't count top level as a level
 
-(defonce chart-params$ (r/atom {:svg-height initial-svg-height
-                                :svg-width  initial-svg-width
+(defonce chart-params$ (r/atom {:height initial-height
+                                :width  initial-width
                                 :timesteps 100000
                                 :levels-to-display (apply sorted-set 
                                                           (rest (range num-levels)))})) ; defaults to all levels but first
+;; NOTE code in make-chart assumes that if 0 is in levels-display, indicating
+;; that level 0 should be displayed, the 0 must be first so that its points
+;; will be plotted first (in which case nvd3 will name its group "nv-series-0".
+
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -103,6 +107,8 @@
        (range)
        ys))
 
+;; NOTE code in make-chart assumes that if level 0 exists, it comes first 
+;; in the output of this function, and its phi data is first in that.
 (defn make-level-chart-data
   [stages level-num]
   (let [level-stages (map #(nth % level-num) stages)]
@@ -114,6 +120,8 @@
        {:key (str "sigma "   level-num) :values (xy-pairs (map :sigma level-stages))   :color "#00ff00"}
        {:key (str "theta "   level-num) :values (xy-pairs (map :theta  level-stages))  :color "#0000ff"}])))
 
+;; NOTE code in make-chart assumes that if level 0 exists, it comes first 
+;; in the output of this function, and its phi data is first in that.
 (defn make-chart-data
   "Make NVD3 chart configuration data object."
   [stages params$]
@@ -130,11 +138,11 @@
         sampled-stages (sample-stages raw-stages timesteps every-nth)]
     ;; configure nvd3 chart:
     (-> chart
-        (.height (:svg-height @params$))
-        (.width (:svg-width @params$))
+        (.height (:height @params$))
+        (.width (:width @params$))
         ;(.margin {:left 100}) ; what does this do?
         (.useInteractiveGuideline true)
-        (.duration 200) ; how long is gradual transition from old to new plot
+        (.duration 1500) ; how long is gradual transition from old to new plot
         (.pointSize 1)
         (.showLegend true)
         (.showXAxis true)
@@ -149,8 +157,21 @@
         (select svg-id)
         (datum (make-chart-data sampled-stages params$))
         (call chart))
+    ;; If we are displaying level 0, then its phi should be the first set of 
+    ;; points displayed, which nvd3 puts in a group called "nv-series-0".
+    ;; In this case, turn off the line and just leave its points.  This depends
+    ;; on some CSS set in site.css in addition to this CSS here (because I can't
+    ;; get it to work here--not sure why).
+    (when (= 0 (first (:levels-to-display @params$)))
+      (.. js/d3
+          (select "#chart-svg g.nv-series-0 path.nv-line")
+          (style (clj->js {:stroke-opacity 0}))))
     chart)) 
 
+; doesn't work. why? instead I'll set it statically in site.css, which is ok.
+;    (.. js/d3
+;        (select "#chart-svg g.nv-series-0 path.nv-point")
+;        (style (clj->js {:fill-opacity 1 :stroke-opacity 1})))
 
 ;; -------------------------
 ;; form: set chart parameters, re-run simulations and chart
@@ -257,9 +278,9 @@
      [spaces 4]
      [level-checkboxes params$]
      [spaces 4]
-     [float-input :svg-width params$ colors$ int-width ""]
-     [spaces 4]
-     [float-input :svg-height params$ colors$ int-width ""]
+     [float-input :width params$ colors$ int-width ""]
+     [spaces 2]
+     [float-input :height params$ colors$ int-width ""]
      [:span {:id "error-text" 
             :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} ; TODO move styles into css file?
        @error-text$]]))
@@ -275,7 +296,7 @@
    [:div {:id "chart-div"}
     [:br]
     [chart-params-form (str "#" chart-svg-id) chart-params$ chart-param-colors$]
-    [:svg {:id chart-svg-id :height (str (:svg-height @chart-params$) "px")}]])
+    [:svg {:id chart-svg-id :height (str (:height @chart-params$) "px")}]])
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
