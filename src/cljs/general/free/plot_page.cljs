@@ -117,21 +117,27 @@
 ;; or maybe I can force the order.  reset the chart or something.
 ;; oh maybe this is kind of a reagent issue. i.e. it's only updating what needs to be updated, and that
 ;; affects the order.
-;; r/force-update or r/force-update-all might be useful.
+;; r/force-update or r/force-update-all might be useful.  YES THIS HELPS SEE END OF make-chart
 ;; Maybe I need to clear the data from the chart.  can this help?:
 ;; http://stackoverflow.com/questions/22452112/nvd3-clear-svg-before-loading-new-chart
 ;; something like this?  (.remove (.select js/d3 "nv-series-0"))
+    ;; Cause Reagent to re-render all plot paths so they'll get renamed
+    ;; in order to nv-series-0, nv-series-1, etc., so we can depend on
+    ;; their names to set the CSS attributes to make some dots rather
+    ;; than lines:
+    ;(.. js/d3 (select svg-id) (r/force-update))
+;; wait I fixed it and don't now how?  preceding line was actually erroring-out
 (defn make-bottom-chart-data
   [level-stages]
-  [{:id "sensory" :key "sensory input"   :values (xy-pairs (map :phi level-stages))     :color "#606060" :area false :fillOpacity -1}
-   {:key "sensory epsilon" :values (xy-pairs (map :epsilon level-stages)) :color "#ffd0e0" :area false :fillOpacity -1}])
+  [{:key "sensory input"   :values (xy-pairs (map :phi level-stages))     :color "#606060"}
+   {:key "sensory epsilon" :values (xy-pairs (map :epsilon level-stages)) :color "#ffd0e0"}])
 
 (defn make-level-chart-data
   [level-stages]
-  [{:key "phi"     :values (xy-pairs (map :phi level-stages))     :color "#000000" :area false :fillOpacity -1}
-   {:key "epsilon" :values (xy-pairs (map :epsilon level-stages)) :color "#ff0000" :area false :fillOpacity -1}
-   {:key "sigma"   :values (xy-pairs (map :sigma level-stages))   :color "#00ff00" :area false :fillOpacity -1}
-   {:key "theta"   :values (xy-pairs (map :theta  level-stages))   :color "#0000ff" :area false :fillOpacity -1}])
+  [{:key "phi"     :values (xy-pairs (map :phi level-stages))     :color "#000000"}
+   {:key "epsilon" :values (xy-pairs (map :epsilon level-stages)) :color "#ff0000"}
+   {:key "sigma"   :values (xy-pairs (map :sigma level-stages))   :color "#00ff00"}
+   {:key "theta"   :values (xy-pairs (map :theta  level-stages))  :color "#0000ff"}])
 
 (defn make-chart-data
   "Make NVD3 chart configuration data object."
