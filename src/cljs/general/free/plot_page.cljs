@@ -35,11 +35,16 @@
                   :error-text [:text "One or more values in red are illegal." 
                                 nbsp "See " [:em "parameters"] " on the information page"]})
 
-(def raw-data (e/make-stages)) ; REPLACE THIS
-(def num-levels (dec (count (first raw-data)))) ; don't count top level as a level
+
+;; THIS is intentionally not defonce or a ratom.  I want it to be
+;; revisable by reloading to model file and this file.
+(def raw-stages (e/make-stages))
+
+(def num-levels (dec (count (first raw-stages)))) ; don't count top level as a level
 
 (defonce chart-params$ (r/atom {:timesteps 100000
-                                :levels-to-display (set (rest (range num-levels)))})) ; defaults to all levels but first
+                                :levels-to-display (apply sorted-set 
+                                                          (rest (range num-levels)))})) ; defaults to all levels but first
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -71,24 +76,24 @@
 ;; run simulations, generate chart
 
 (defn calc-every-nth
-  "Calculate how often to sample data to generate a certain number of points."
+  "Calculate how often to sample stages to generate a certain number of points."
   [timesteps]
   (long (/ timesteps num-points)))
 
 ;; transducer version
-(defn sample-data
+(defn sample-stages
   "samples stages from raw stages sequence."
-  [raw-data timesteps every-nth]
+  [raw-stages timesteps every-nth]
   (sequence (comp (take (+ every-nth timesteps)) ; rounds up
                   (take-nth every-nth))
-                  raw-data))
+                  raw-stages))
 
 ;; traditional version
-;(defn sample-data
-;  [raw-data timesteps every-nth]
+;(defn sample-stages
+;  [raw-stages timesteps every-nth]
 ;  (take-nth every-nth 
 ;            (take (+ every-nth timesteps) ; round up
-;                  raw-data)))
+;                  raw-stages)))
 
 (defn xy-pairs
   [ys]
@@ -96,32 +101,39 @@
        (range)
        ys))
 
-(defn make-chart-config
+;; The first entry will be turned into dots rather than a line using voodoo CSS I stuck at the end of site.css.
+;; Got that from http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure and a bunch of trial and error.
+(defn make-bottom-chart-data
+  [level-stages]
+  [{:key "sensory input"   :values (xy-pairs (map :phi level-stages))     :color "#606060" :area false :fillOpacity -1}
+   {:key "sensory epsilon" :values (xy-pairs (map :epsilon level-stages)) :color "#ffd0e0" :area false :fillOpacity -1}])
+
+(defn make-level-chart-data
+  [level-stages]
+  [{:key "phi"     :values (xy-pairs (map :phi level-stages))     :color "#000000" :area false :fillOpacity -1}
+   {:key "epsilon" :values (xy-pairs (map :epsilon level-stages)) :color "#ff0000" :area false :fillOpacity -1}
+   {:key "sigma"   :values (xy-pairs (map :sigma level-stages))   :color "#00ff00" :area false :fillOpacity -1}
+   {:key "theta"   :values (xy-pairs (map :theta  level-stages))   :color "#0000ff" :area false :fillOpacity -1}])
+
+(defn make-chart-data
   "Make NVD3 chart configuration data object."
-  [data]
-  (let [bottom (map first data)
-        level-2 (map second data)]
-    (clj->js
-      ;; The first entry will be turned into dots rather than a line using voodoo CSS I stuck at the end of site.css.
-      ;; Got that from http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure and a bunch of trial and error.
-      [{:key "sensory input"   :values (xy-pairs (map :phi bottom))      :color "#606060" :area false :fillOpacity -1}
-       {:key "sensory epsilon" :values (xy-pairs (map :epsilon bottom))  :color "#ffd0e0" :area false :fillOpacity -1}
-       {:key "phi"     :values (xy-pairs (map :phi level-2))     :color "#000000" :area false :fillOpacity -1}
-       {:key "epsilon" :values (xy-pairs (map :epsilon level-2)) :color "#ff0000" :area false :fillOpacity -1}
-       {:key "sigma"   :values (xy-pairs (map :sigma level-2))   :color "#00ff00" :area false :fillOpacity -1}
-       {:key "theta"   :values (xy-pairs (map :theta  level-2))   :color "#0000ff" :area false :fillOpacity -1}
-       ])))
+  [stages params$]
+  (clj->js (vec (mapcat (fn [level-num] ((if (= level-num 0)      ; choose function to apply
+                                           make-bottom-chart-data ; bottom level gets special handling
+                                           make-level-chart-data) ; other levels are generic 
+                                         (map #(nth % level-num) stages))) ; select data for this level
+                        (:levels-to-display @params$)))))
 
 
 (defn make-chart
-  [raw-data svg-id chart-params$]
-  "Create an NVD3 line chart with configuration parameters in @chart-params$
+  [raw-stages svg-id params$]
+  "Create an NVD3 line chart with configuration parameters in @params$
   and attach it to SVG object with id svg-id."
   (let [chart (.lineChart js/nv.models)
         ;chart (.multiChart js/nv.models)
-        timesteps (:timesteps @chart-params$)
+        timesteps (:timesteps @params$)
         every-nth (calc-every-nth timesteps)
-        sampled-data (sample-data raw-data timesteps every-nth)]
+        sampled-stages (sample-stages raw-stages timesteps every-nth)]
     ;; configure nvd3 chart:
     (-> chart
         (.height svg-height)
@@ -141,7 +153,7 @@
     ;; add chart to dom using d3:
     (.. js/d3
         (select svg-id)
-        (datum (make-chart-config sampled-data))
+        (datum (make-chart-data sampled-stages params$))
         (call chart))
     chart)) 
 
@@ -179,7 +191,7 @@
                               (do
                                 (reset! button-label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs
-                                                 (make-chart raw-data svg-id params$) 
+                                                 (make-chart raw-stages svg-id params$) 
                                                  (reset! button-label$ ready-label))
                                                100))))}
        @button-label$])))
@@ -269,7 +281,7 @@
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
-  (make-chart raw-data (str "#" chart-svg-id) chart-params$))
+  (make-chart raw-stages (str "#" chart-svg-id) chart-params$))
 
 (defn home-page []
   (r/create-class {:reagent-render home-render
