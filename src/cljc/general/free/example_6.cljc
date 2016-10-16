@@ -8,7 +8,7 @@
 ;;     going up and down in response,
 ;; (b) Eventually settling in a region with a stable cycle
 ;; (c) When change stops, sigma goes to zero (or as low as we allow).
-;; Here are command that will show this:
+;; Here are commands that will show this:
 ;;    (use '[free.plots] :reload)
 ;;    (require '[free.example-5 :as e] :reload)
 ;;    (plot-level (e/make-stages) 1 300000) ; 300K ticks
