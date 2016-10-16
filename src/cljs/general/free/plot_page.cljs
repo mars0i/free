@@ -10,7 +10,7 @@
             [secretary.core :as secretary :include-macros true]
             [accountant.core :as accountant]
             [goog.string :as gs]
-            [free.example-5 :as e]
+            [free.model :as m]
             [cljsjs.d3]       ; aliases unused but included
             [cljsjs.nvd3])) ; in case Clojurescript likes 'em
 
@@ -38,7 +38,7 @@
 
 ;; THIS is intentionally not defonce or a ratom.  I want it to be
 ;; revisable by reloading to model file and this file.
-(def raw-stages (e/make-stages))
+(def raw-stages (m/make-stages))
 
 (def num-levels (dec (count (first raw-stages)))) ; don't count top level as a level
 
