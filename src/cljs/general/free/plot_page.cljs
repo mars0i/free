@@ -74,10 +74,16 @@
 ;(defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
 ;(s/def ::max-r (ge-le 0.0 1.0))
 
-(s/def ::timesteps (s/and integer? pos?))
+(s/def pos-int? (s/and integer? pos?))
+(s/def ::height pos-int?)
+(s/def ::width pos-int?)
+(s/def ::num-points pos-int?)
+(s/def ::timesteps pos-int?)
 
-;(s/def ::chart-params (s/keys :req-un [::max-r ::s ::h ::x1 ::x2 ::x3 ::x-freqs ::B-freqs]))
-(s/def ::chart-params (s/keys :req-un [::timesteps])) ; require these keys (with single colon), and check that they conform
+(s/def ::chart-params (s/keys :req-un [::height ; require these keys (with single colon), and check that they conform
+                                       ::width
+                                       ::num-points
+                                       ::timesteps]))
 
 ;; -------------------------
 ;; run simulations, generate chart
