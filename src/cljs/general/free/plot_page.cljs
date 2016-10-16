@@ -21,7 +21,7 @@
 
 (def initial-height 500)
 (def initial-width 1100)
-(def num-points 500) ; approx number of points to be sampled from data to be plotted
+(def initial-num-points 500) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
@@ -30,7 +30,7 @@
 (def copyright-sym (gs/unescapeEntities "&copy;")) 
 (def nbsp (gs/unescapeEntities "&nbsp;")) 
 
-(def form-labels {:ready-label "re-run" 
+(def form-labels {:ready-label "re-plot" 
                   :running-label "running..." 
                   :error-text [:text "One or more values in red are illegal." 
                                 nbsp "See " [:em "parameters"] " on the information page"]})
@@ -44,6 +44,7 @@
 
 (defonce chart-params$ (r/atom {:height initial-height
                                 :width  initial-width
+                                :num-points initial-num-points
                                 :timesteps 100000
                                 :levels-to-display (apply sorted-set 
                                                           (rest (range num-levels)))})) ; defaults to all levels but first
@@ -83,8 +84,9 @@
 
 (defn calc-every-nth
   "Calculate how often to sample stages to generate a certain number of points."
-  [timesteps]
-  (long (/ timesteps num-points)))
+  [params$]
+  (let [params @params$]
+    (long (/ (:timesteps params) (:num-points params)))))
 
 ;; transducer version
 (defn sample-stages
@@ -133,9 +135,10 @@
   "Create an NVD3 line chart with configuration parameters in @params$
   and attach it to SVG object with id svg-id."
   (let [chart (.lineChart js/nv.models)
-        timesteps (:timesteps @params$)
-        every-nth (calc-every-nth timesteps)
-        sampled-stages (sample-stages raw-stages timesteps every-nth)]
+        every-nth (calc-every-nth params$)
+        sampled-stages (sample-stages raw-stages
+                                      (:timesteps @params$)
+                                      every-nth)]
     ;; configure nvd3 chart:
     (-> chart
         (.height (:height @params$))
@@ -279,8 +282,8 @@
      [level-checkboxes params$]
      [spaces 4]
      [float-input :width params$ colors$ int-width ""]
-     [spaces 2]
      [float-input :height params$ colors$ int-width ""]
+     [float-input :num-points params$ colors$ int-width ""]
      [:span {:id "error-text" 
             :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} ; TODO move styles into css file?
        @error-text$]]))
