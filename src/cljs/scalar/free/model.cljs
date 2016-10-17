@@ -19,10 +19,11 @@
 
 ;; next-bottom function
 ;; all this atom stuff is "bad", but is really just implementing a loop while allowing the function to be arg-less
-(def change-every 20000)  ; change in inputs every this many ticks
+(def change-every 2000)  ; change in inputs every this many ticks
 (def stop-changing-after 3000000000)
 (def change-ticks$ (atom (range change-every stop-changing-after change-every)))
-(def means$ (atom (cycle [40 2]))) ; cycle between these means
+;(def means$ (atom (cycle [40 2]))) ; cycle between these means
+(def means$ (atom (cons 40 (repeat 2)))) ; cycle between these means
 (def mean$ (atom 2)) ; initial value of mean
 (def sd 5)           ; constant stddev
 (def tick$ (atom 0)) ; timestep
@@ -66,7 +67,7 @@
               :phi-dt 0.0001
               :epsilon-dt 0.01
               :sigma-dt 0.0001
-              :theta-dt 0.0000001})
+              :theta-dt 0.0001})
 
 (def init-bot (lvl/map->Level bot-map))
 (def init-mid (lvl/map->Level mid-map))
