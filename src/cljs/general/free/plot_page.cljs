@@ -122,7 +122,7 @@
   (let [level-stages (map #(nth % level-num) stages)]
     (if (= level-num 0) ;; level 0, the sensory input level, get special handling
       [{:key "sensory input"   :values (xy-pairs (map :phi level-stages))     :color "#606060"}
-       {:key "sensory epsilon" :values (xy-pairs (map :epsilon level-stages)) :color "#ffd0e0"}]
+       {:key "sensory epsilon" :values (xy-pairs (map :epsilon level-stages)) :color "#ffc0d0"}]
       [{:key (str "phi "     level-num) :values (xy-pairs (map :phi level-stages))     :color "#000000"}
        {:key (str "epsilon " level-num) :values (xy-pairs (map :epsilon level-stages)) :color "#ff0000"}
        {:key (str "sigma "   level-num) :values (xy-pairs (map :sigma level-stages))   :color "#00ff00"}
@@ -151,7 +151,7 @@
         (.width (:width @params$))
         ;(.margin {:left 100}) ; what does this do?
         (.useInteractiveGuideline true)
-        (.duration 1500) ; how long is gradual transition from old to new plot
+        (.duration 500) ; how long is gradual transition from old to new plot
         (.pointSize 1)
         (.showLegend true)
         (.showXAxis true)
