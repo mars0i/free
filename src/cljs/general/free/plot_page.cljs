@@ -20,8 +20,8 @@
 ;; Default simulation parameters
 
 (def initial-height 500)
-(def initial-width 1100)
-(def initial-num-points 500) ; approx number of points to be sampled from data to be plotted
+(def initial-width 1200)
+(def initial-num-points 6000) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
@@ -45,7 +45,7 @@
 (defonce chart-params$ (r/atom {:height initial-height
                                 :width  initial-width
                                 :num-points initial-num-points
-                                :timesteps 100000
+                                :timesteps 6000
                                 :levels-to-display (apply sorted-set 
                                                           (rest (range num-levels)))})) ; defaults to all levels but first
 ;; NOTE code in make-chart assumes that if 0 is in levels-display, indicating
