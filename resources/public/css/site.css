@@ -25,6 +25,12 @@ h3 {
   font-weight:normal;
   color:#C04040;
 }
+.title {
+  font-family:"Pontano Sans";
+  font-size:150%;
+  font-weight:normal;
+  color:#D00000;
+}
 form {
   font-family:"Pontano Sans";
   font-size:16px;
