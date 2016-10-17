@@ -71,9 +71,9 @@
                            ;:open-urls ["http://localhost:3449/index.html"]
 			   }
                 :compiler {:main free.core
-                           :asset-path "js/compiled/out"
+                           :asset-path "js/compiled/out/scalar"
                            :output-to "resources/public/js/compiled/free.js"
-                           :output-dir "resources/public/js/compiled/out"
+                           :output-dir "resources/public/js/compiled/out/scalar"
                            :pretty-print false
                            :optimizations :none
                            :source-map-timestamp true
@@ -93,9 +93,9 @@
                            ;:open-urls ["http://localhost:3449/index.html"]
 			   }
                 :compiler {:main free.core
-                           :asset-path "js/compiled/out"
+                           :asset-path "js/compiled/out/matrix"
                            :output-to "resources/public/js/compiled/free.js"
-                           :output-dir "resources/public/js/compiled/out"
+                           :output-dir "resources/public/js/compiled/out/matrix"
                            :pretty-print false
                            :optimizations :none
                            :source-map-timestamp true
