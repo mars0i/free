@@ -21,7 +21,7 @@
 
 (def initial-height 500)
 (def initial-width 1200)
-(def initial-num-points 6000) ; approx number of points to be sampled from data to be plotted
+(def initial-num-points 600) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
