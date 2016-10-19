@@ -64,7 +64,7 @@
               :theta init-theta
               :gen  gen  ; used to calc error at next level down, i.e. epsilon
               :gen' gen' ; used to update phi at this level
-              :phi-dt 0.005
+              :phi-dt 0.0001
               :epsilon-dt 0.01
               :sigma-dt 0.01
               :theta-dt 0.0001})
