@@ -268,27 +268,26 @@
                :on-change #(swap! params$ assoc k (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
 
-
 (defn level-param-float-input
   [colors$ params$ float-width k]
-  ;(if (k @params$) 
+  (if (k @params$) 
     (float-input k params$ colors$ float-width "")
-  ;  [:text "yow"]
-  ;  )
-  )
+    nil))
 
 (defn level-form-elems
-  [colors$ params$]
+  [colors$ params$ level-num]
   (let [float-width 7]
     (vec (concat
-           [:span 
-            [:br]]
-           (vec (map (partial colors$ params$ float-width) 
+           [:span [:br] [:text (pp/cl-format nil "level ~d:" level-num)]]
+           (vec (map (partial level-param-float-input colors$ params$ float-width) 
                      [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))))))
 
 (defn model-form-elems
   [params colors$]
-  (vec (cons :span (map (partial level-form-elems colors$) params))))
+  (vec (cons :span 
+             (map (partial level-form-elems colors$)
+                  params
+                  (range)))))
 
 (defn chart-params-form
   "Create form to allow changing model parameters and creating a new chart."
@@ -307,7 +306,7 @@
      [float-input :width chart-params$ colors$ int-width ""]
      [float-input :height chart-params$ colors$ int-width ""]
      [float-input :num-points chart-params$ colors$ int-width ""]
-     ;(model-form-elems model-params colors$)
+     [model-form-elems model-params colors$]
      ]))
 
 (defn head []

@@ -47,7 +47,7 @@
 (def sigma-p 2) ; controls how close to true value at level 1
 (def error-p 0)
 
-(def bot-map {:phi 0 ; needs a number for epsilon-inc on 1st tick; immediately replaced by next-bottom
+(def bot-map {:phi nil ; APPARENTLY NOT: needs a number for epsilon-inc on 1st tick; immediately replaced by next-bottom
               :epsilon error-u
               :sigma sigma-u
               :theta init-theta
