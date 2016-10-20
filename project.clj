@@ -8,7 +8,8 @@
                  ;[org.clojure/clojure "1.9.0-alpha13"]
 
                  ;[org.clojure/clojurescript "1.7.228"] ; version aljabr wants
-                 [org.clojure/clojurescript "1.9.229"]
+                 ;[org.clojure/clojurescript "1.9.229"]
+                 [org.clojure/clojurescript "1.9.293"]
 
                  [net.mikera/core.matrix "0.55.0"]
                  ;[net.mikera/core.matrix "0.55.1-SNAPSHOT"]
