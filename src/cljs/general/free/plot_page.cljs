@@ -30,9 +30,13 @@
 (def copyright-sym (gs/unescapeEntities "&copy;")) 
 (def nbsp (gs/unescapeEntities "&nbsp;")) 
 
-(def form-labels {:ready-label "re-plot" 
-                  :running-label "running..." 
-                  :error-text [:text "Values in red are illegal." ]})
+(def plot-button-labels {:ready-label "re-plot" 
+                         :running-label "plotting ..." 
+                         :error-text [:text "Values in red are illegal." ]})
+
+(def run-button-labels {:ready-label "re-run" 
+                        :running-label "running ..." 
+                        :error-text [:text "Values in red are illegal." ]})
 
 (def num-levels (dec (count m/first-stage))) ; don't count top level as a level
 
@@ -46,11 +50,11 @@
 ;; that level 0 should be displayed, the 0 must be first so that its points
 ;; will be plotted first (in which case nvd3 will name its group "nv-series-0".
 
-(defonce model-params (map r/atom m/first-stage))
+(defonce model-params (map r/atom m/first-stage)) ; no $ on end because it's not a ratom; it's a sequence of ratoms
 
 ;; THIS is intentionally not defonce or a ratom.  I want it to be
 ;; revisable by reloading to model file and this file.
-(def raw-stages (m/make-stages (map deref model-params)))
+(def raw-stages$ (r/atom (m/make-stages (map deref model-params))))
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -96,17 +100,17 @@
 ;; transducer version
 (defn sample-stages
   "samples stages from raw stages sequence."
-  [raw-stages timesteps every-nth]
+  [raw-stages$ timesteps every-nth]
   (sequence (comp (take (+ every-nth timesteps)) ; rounds up
                   (take-nth every-nth))
-                  raw-stages))
+                  @raw-stages$))
 
 ;; traditional version
 ;(defn sample-stages
-;  [raw-stages timesteps every-nth]
+;  [raw-stages$ timesteps every-nth]
 ;  (take-nth every-nth 
 ;            (take (+ every-nth timesteps) ; round up
-;                  raw-stages)))
+;                  raw-stages$)))
 
 (defn xy-pairs
   [ys]
@@ -135,13 +139,14 @@
   (clj->js (vec (mapcat (partial make-level-chart-data stages)
                         (:levels-to-display @params$)))))
 
+
 (defn make-chart
-  [raw-stages svg-id params$]
+  [raw-stages$ svg-id params$]
   "Create an NVD3 line chart with configuration parameters in @params$
   and attach it to SVG object with id svg-id."
   (let [chart (.lineChart js/nv.models)
         every-nth (calc-every-nth params$)
-        sampled-stages (sample-stages raw-stages
+        sampled-stages (sample-stages raw-stages$
                                       (:timesteps @params$)
                                       every-nth)]
     ;; configure nvd3 chart:
@@ -176,6 +181,12 @@
           (style (clj->js {:stroke-opacity 0}))))
     chart)) 
 
+(defn run-model
+  [stages$ svg-id params$]
+  (reset! m/means$ m/init-means) ; TODO kludge. specific to particular models. what's more elegant?
+  (reset! stages$ (m/make-stages (map deref model-params)))
+  (make-chart stages$ svg-id params$))
+
 ;; -------------------------
 ;; form: set chart parameters, re-run simulations and chart
 
@@ -185,19 +196,18 @@
   (into [:text] (repeat n nbsp)))
 
 ;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
-(defn chart-button
+(defn button
   "Create submit button runs validation tests on form inputs and changes 
   its appearance to indicate that the simulations are running.  svg-id is
   is of SVG object to which the chart will be attached.  params$ is an atom
   containing a chart parameter map.  colors$ is an atom containing the text
   colors for each of the inputs in the form.  labels is a map containing
   three labels for the button, indicating ready to run, running, or bad inputs."
-  [svg-id params$ colors$ labels]
+  [svg-id params$ colors$ run-fn labels]
   (let [{:keys [ready-label running-label error-text]} labels
         button-label$ (r/atom ready-label)] ; runs only once
     (fn [svg-id params$ colors$ _]   ; called repeatedly. (already have labels from the let)
       [:button {:type "button" 
-                :id "chart-button"
                 :on-click (fn []
                             (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
                             (reset! error-text$ no-error-text)
@@ -209,7 +219,7 @@
                               (do
                                 (reset! button-label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs so I can change the button to show things are in progress
-                                                 (make-chart raw-stages svg-id params$) 
+                                                 (run-fn raw-stages$ svg-id params$) 
                                                  (reset! button-label$ ready-label))
                                                100))))}
        @button-label$])))
@@ -294,7 +304,9 @@
         int-width 10
         {:keys [x1 x2 x3]} @chart-params$]  ; seems ok: entire form re-rendered(?)
     [:form 
-     [chart-button svg-id chart-params$ colors$ form-labels]
+     [button svg-id chart-params$ colors$ make-chart plot-button-labels]
+     [spaces 3]
+     [button svg-id chart-params$ colors$ run-model  run-button-labels]
      [:span
       {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}}
       nbsp nbsp @error-text$]
@@ -322,7 +334,7 @@
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
-  (make-chart raw-stages (str "#" chart-svg-id) chart-params$))
+  (make-chart raw-stages$ (str "#" chart-svg-id) chart-params$))
 
 (defn home-page []
   (r/create-class {:reagent-render home-render
