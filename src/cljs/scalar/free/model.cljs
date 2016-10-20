@@ -23,7 +23,8 @@
 (def stop-changing-after 3000000000)
 (def change-ticks$ (atom (range change-every stop-changing-after change-every)))
 ;(def means$ (atom (cycle [40 2]))) ; cycle between these means
-(def means$ (atom (cons 20 (repeat 2)))) ; cycle between these means
+(def init-means (cons 20 (repeat 2))) ; cycle between these means
+(def means$ (atom init-means)) ; cycle between these means
 (def mean$ (atom 2)) ; initial value of mean
 (def sd 5)           ; constant stddev
 (def tick$ (atom 0)) ; timestep
@@ -67,7 +68,7 @@
               :phi-dt 0.0001
               :epsilon-dt 0.01
               :sigma-dt 0.01
-              :theta-dt 0.0001})
+              :theta-dt 0.001})
 
 (def init-bot (lvl/map->Level bot-map))
 (def init-mid (lvl/map->Level mid-map))
