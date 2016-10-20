@@ -55,8 +55,8 @@
               :gen' nil ; unused at bottom since phi comes from outside
               :phi-dt 0.01
               :epsilon-dt 0.01
-              :sigma-dt 0.0
-              :theta-dt 0.0})
+              :sigma-dt nil
+              :theta-dt nil})
 
 (def mid-map {:phi v-p
               :epsilon error-p
