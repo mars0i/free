@@ -35,12 +35,7 @@
                   :error-text [:text "One or more values in red are illegal." 
                                 nbsp "See " [:em "parameters"] " on the information page"]})
 
-
-;; THIS is intentionally not defonce or a ratom.  I want it to be
-;; revisable by reloading to model file and this file.
-(def raw-stages (m/make-stages))
-
-(def num-levels (dec (count (first raw-stages)))) ; don't count top level as a level
+(def num-levels (dec (count m/first-stage))) ; don't count top level as a level
 
 (defonce chart-params$ (r/atom {:height initial-height
                                 :width  initial-width
@@ -52,6 +47,11 @@
 ;; that level 0 should be displayed, the 0 must be first so that its points
 ;; will be plotted first (in which case nvd3 will name its group "nv-series-0".
 
+(defonce model-params (map r/atom m/first-stage))
+
+;; THIS is intentionally not defonce or a ratom.  I want it to be
+;; revisable by reloading to model file and this file.
+(def raw-stages (m/make-stages (map deref model-params)))
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -177,11 +177,6 @@
           (style (clj->js {:stroke-opacity 0}))))
     chart)) 
 
-; doesn't work. why? instead I'll set it statically in site.css, which is ok.
-;    (.. js/d3
-;        (select "#chart-svg g.nv-series-0 path.nv-point")
-;        (style (clj->js {:fill-opacity 1 :stroke-opacity 1})))
-
 ;; -------------------------
 ;; form: set chart parameters, re-run simulations and chart
 
@@ -244,6 +239,12 @@
         #(level-checkbox % params$)
         (range num-levels)))))
 
+(defn float-text
+  "Display a number with a label so that size is similar to float inputs."
+  [n & label]
+  (vec (concat [:text] label [": "]
+               (list [:span {:style {:font-size "12px"}} 
+                      (pp/cl-format nil "~,4f" n)]))))
 
 ;; For comparison, in lescent, I used d3 to set the onchange of dropdowns to a function that set a single global var for each.
 (defn float-input 
@@ -267,32 +268,47 @@
                :on-change #(swap! params$ assoc k (js/parseFloat (-> % .-target .-value)))}]
       [spaces 4]])))
 
-(defn float-text
-  "Display a number with a label so that size is similar to float inputs."
-  [n & label]
-  (vec (concat [:text] label [": "]
-               (list [:span {:style {:font-size "12px"}} 
-                      (pp/cl-format nil "~,4f" n)]))))
+
+(defn level-param-float-input
+  [colors$ params$ float-width k]
+  ;(if (k @params$) 
+    (float-input k params$ colors$ float-width "")
+  ;  [:text "yow"]
+  ;  )
+  )
+
+(defn level-form-elems
+  [colors$ params$]
+  (let [float-width 7]
+    (vec (concat
+           [:span 
+            [:br]]
+           (vec (map (partial colors$ params$ float-width) 
+                     [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))))))
+
+(defn model-form-elems
+  [params colors$]
+  (vec (cons :span (map (partial level-form-elems colors$) params))))
 
 (defn chart-params-form
   "Create form to allow changing model parameters and creating a new chart."
-  [svg-id params$ colors$]
+  [svg-id chart-params$ model-params colors$]
   (let [float-width 7
         int-width 10
-        {:keys [x1 x2 x3]} @params$]  ; seems ok: entire form re-rendered(?)
+        {:keys [x1 x2 x3]} @chart-params$]  ; seems ok: entire form re-rendered(?)
     [:form 
-     [chart-button svg-id params$ colors$ form-labels]
+     [chart-button svg-id chart-params$ colors$ form-labels]
+     [:span {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} @error-text$]
+     [:br]
+     [float-input :timesteps chart-params$ colors$ int-width ""]
      [spaces 4]
-     [float-input :timesteps params$ colors$ int-width ""]
+     [level-checkboxes chart-params$]
      [spaces 4]
-     [level-checkboxes params$]
-     [spaces 4]
-     [float-input :width params$ colors$ int-width ""]
-     [float-input :height params$ colors$ int-width ""]
-     [float-input :num-points params$ colors$ int-width ""]
-     [:span {:id "error-text" 
-            :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} ; TODO move styles into css file?
-       @error-text$]]))
+     [float-input :width chart-params$ colors$ int-width ""]
+     [float-input :height chart-params$ colors$ int-width ""]
+     [float-input :num-points chart-params$ colors$ int-width ""]
+     ;(model-form-elems model-params colors$)
+     ]))
 
 (defn head []
   [:head
@@ -303,9 +319,8 @@
   "Set up main chart page (except for chart)."
   (head)
    [:div {:id "chart-div"}
-    [:br]
-    [chart-params-form (str "#" chart-svg-id) chart-params$ chart-param-colors$]
-    [:svg {:id chart-svg-id :height (str (:height @chart-params$) "px")}]])
+    [:svg {:id chart-svg-id :height (str (:height @chart-params$) "px")}]
+    [chart-params-form (str "#" chart-svg-id) chart-params$ model-params chart-param-colors$]])
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
