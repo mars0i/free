@@ -32,8 +32,7 @@
 
 (def form-labels {:ready-label "re-plot" 
                   :running-label "running..." 
-                  :error-text [:text "One or more values in red are illegal." 
-                                nbsp "See " [:em "parameters"] " on the information page"]})
+                  :error-text [:text "Values in red are illegal." ]})
 
 (def num-levels (dec (count m/first-stage))) ; don't count top level as a level
 
@@ -271,23 +270,22 @@
 (defn level-param-float-input
   [colors$ params$ float-width k]
   (if (k @params$) 
-    (float-input k params$ colors$ float-width "")
-    nil))
+    [:td (float-input k params$ colors$ float-width "")]
+    [:td]))
 
 (defn level-form-elems
   [colors$ params$ level-num]
   (let [float-width 7]
-    (vec (concat
-           [:span [:br] [:text (pp/cl-format nil "level ~d:" level-num)]]
-           (vec (map (partial level-param-float-input colors$ params$ float-width) 
-                     [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))))))
+    (vec (into [:tr [:td "level " level-num ":"]]
+                     (map (partial level-param-float-input colors$ params$ float-width) 
+                          [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt])))))
 
 (defn model-form-elems
   [params colors$]
-  (vec (cons :span 
-             (map (partial level-form-elems colors$)
-                  params
-                  (range)))))
+  [:table (vec (cons :tbody
+                     (map (partial level-form-elems colors$)
+                          params
+                          (range))))])
 
 (defn chart-params-form
   "Create form to allow changing model parameters and creating a new chart."
@@ -297,12 +295,13 @@
         {:keys [x1 x2 x3]} @chart-params$]  ; seems ok: entire form re-rendered(?)
     [:form 
      [chart-button svg-id chart-params$ colors$ form-labels]
-     [:span {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} @error-text$]
+     [:span
+      {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}}
+      nbsp nbsp @error-text$]
      [:br]
-     [float-input :timesteps chart-params$ colors$ int-width ""]
-     [spaces 4]
      [level-checkboxes chart-params$]
      [spaces 4]
+     [float-input :timesteps chart-params$ colors$ int-width ""]
      [float-input :width chart-params$ colors$ int-width ""]
      [float-input :height chart-params$ colors$ int-width ""]
      [float-input :num-points chart-params$ colors$ int-width ""]
