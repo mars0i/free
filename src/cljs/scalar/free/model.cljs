@@ -19,11 +19,12 @@
 
 ;; next-bottom function
 ;; all this atom stuff is "bad", but is really just implementing a loop while allowing the function to be arg-less
-(def change-every 500)  ; change in inputs every this many ticks
-(def stop-changing-after 3000000000)
-(def change-ticks$ (atom (range change-every stop-changing-after change-every)))
-;(def means$ (atom (cycle [40 2]))) ; cycle between these means
-(def init-means (cons 20 (repeat 2))) ; cycle between these means
+(def change-every 5000)  ; change in inputs every this many ticks
+(def stop-changing-after 30000000000)
+;(def change-ticks$ (atom (range change-every stop-changing-after change-every)))
+(def change-ticks$ (atom (interleave (range 3000 stop-changing-after 3000) (range 3100 stop-changing-after 3000))))
+(def init-means (cycle [20 2])) ; cycle between these means
+;(def init-means (cons 20 (repeat 2)))
 (def means$ (atom init-means)) ; cycle between these means
 (def mean$ (atom 2)) ; initial value of mean
 (def sd 5)           ; constant stddev
@@ -65,10 +66,10 @@
               :theta init-theta
               :gen  gen  ; used to calc error at next level down, i.e. epsilon
               :gen' gen' ; used to update phi at this level
-              :phi-dt 0.0001
+              :phi-dt 0.001
               :epsilon-dt 0.01
               :sigma-dt 0.01
-              :theta-dt 0.001})
+              :theta-dt 0.00001})
 
 (def init-bot (lvl/map->Level bot-map))
 (def init-mid (lvl/map->Level mid-map))
