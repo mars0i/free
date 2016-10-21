@@ -44,9 +44,7 @@
 (defonce chart-params$ (r/atom {:height initial-height
                                 :width  initial-width
                                 :timesteps initial-timesteps
-                                :num-points (if (<= initial-num-points initial-timesteps) ; silently force sanity:
-                                              initial-num-points                          ; if num-points > timesteps,
-                                              initial-timesteps)                          ; no points will be sampled
+                                :num-points initial-num-points
                                 :levels-to-display (apply sorted-set 
                                                           (rest (range num-levels)))})) ; defaults to all levels but first
 ;; NOTE code in make-chart assumes that if 0 is in levels-display, indicating
@@ -97,8 +95,8 @@
 (defn calc-every-nth
   "Calculate how often to sample stages to generate a certain number of points."
   [params$]
-  (let [params @params$]
-    (long (/ (:timesteps params) (:num-points params)))))
+  (let [{:keys [num-points timesteps]} @params$]
+    (max 1 (long (/ timesteps num-points)))))
 
 ;; transducer version
 (defn sample-stages
