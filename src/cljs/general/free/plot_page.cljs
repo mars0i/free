@@ -21,7 +21,8 @@
 
 (def initial-height 500)
 (def initial-width 1200)
-(def initial-num-points 10000) ; approx number of points to be sampled from data to be plotted
+(def initial-timesteps 6000)
+(def initial-num-points 1000) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
@@ -42,8 +43,10 @@
 
 (defonce chart-params$ (r/atom {:height initial-height
                                 :width  initial-width
-                                :num-points initial-num-points
-                                :timesteps 6000
+                                :timesteps initial-timesteps
+                                :num-points (if (<= initial-num-points initial-timesteps) ; silently force sanity:
+                                              initial-num-points                          ; if num-points > timesteps,
+                                              initial-timesteps)                          ; no points will be sampled
                                 :levels-to-display (apply sorted-set 
                                                           (rest (range num-levels)))})) ; defaults to all levels but first
 ;; NOTE code in make-chart assumes that if 0 is in levels-display, indicating
