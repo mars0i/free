@@ -11,6 +11,8 @@
 
 (ns free.arithmetic)
 
+(def sigma-min 1.0)
+
 ;; My cheesey macros only accept three arguments
 
 (defmacro m* 
@@ -63,6 +65,6 @@
 ;; make it a macro simply because the others are (hack for Clojurescript)
 (defmacro limit-sigma
   [sigma]
-  `(if (< ~sigma 1.0)
-     1.0
+  `(if (< ~sigma ~sigma-min)
+     ~sigma-min
      ~sigma))
