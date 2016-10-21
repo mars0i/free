@@ -21,7 +21,7 @@
 
 (def initial-height 500)
 (def initial-width 1200)
-(def initial-num-points 600) ; approx number of points to be sampled from data to be plotted
+(def initial-num-points 10000) ; approx number of points to be sampled from data to be plotted
 
 (def chart-svg-id "chart-svg")
 (def default-input-color "#000000")
@@ -304,9 +304,9 @@
         int-width 10
         {:keys [x1 x2 x3]} @chart-params$]  ; seems ok: entire form re-rendered(?)
     [:form 
-     [button svg-id chart-params$ colors$ make-chart plot-button-labels]
-     [spaces 3]
      [button svg-id chart-params$ colors$ run-model  run-button-labels]
+     [spaces 3]
+     [button svg-id chart-params$ colors$ make-chart plot-button-labels]
      [:span
       {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}}
       nbsp nbsp @error-text$]
