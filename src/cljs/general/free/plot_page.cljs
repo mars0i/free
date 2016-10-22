@@ -169,6 +169,7 @@
     ;; add chart to dom using d3:
     (.. js/d3
         (select svg-id)
+        (style "height" (:height @params$)) ; because I've disabled Reagent control of svg height in home-render
         (datum (make-chart-data sampled-stages params$))
         (call chart))
     ;; If we are displaying level 0, then its phi should be the first set of 
@@ -326,12 +327,18 @@
    [:meta {:charset "utf-8"}]
    [:script {:type "text/javascript" :src "js/compiled/linkage.js"}]])
 
+;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
+;; Only reason to do this here is so that svg height set only once here--not controlled by reagent, which makes size change while editing field.
+;; This means have to resize svg object by hand in make-chart.
 (defn home-render []
   "Set up main chart page (except for chart)."
   (head)
-   [:div {:id "chart-div"}
-    [:svg {:id chart-svg-id :height (str (:height @chart-params$) "px")}]
-    [chart-params-form (str "#" chart-svg-id) chart-params$ model-params chart-param-colors$]])
+  (let [svg-height (str (:height @chart-params$) "px")] ; store initial svg height permanently (until changed elsewhere)
+    (fn []
+      [:div {:id "chart-div"}
+       [:svg {:id chart-svg-id :height svg-height}]
+       [chart-params-form (str "#" chart-svg-id) chart-params$ model-params chart-param-colors$]])))
+
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
