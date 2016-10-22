@@ -51,11 +51,11 @@
 ;; that level 0 should be displayed, the 0 must be first so that its points
 ;; will be plotted first (in which case nvd3 will name its group "nv-series-0".
 
-(defonce model-params (map r/atom m/first-stage)) ; no $ on end because it's not a ratom; it's a sequence of ratoms
+(defonce level-params (map r/atom m/first-stage)) ; no $ on end because it's not a ratom; it's a sequence of ratoms
 
 ;; THIS is intentionally not defonce or a ratom.  I want it to be
 ;; revisable by reloading to model file and this file.
-(def raw-stages$ (r/atom (m/make-stages (map deref model-params))))
+(def raw-stages$ (r/atom (m/make-stages (map deref level-params))))
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -185,8 +185,8 @@
 
 (defn run-model
   [stages$ svg-id params$]
-  (reset! m/means$ m/init-means) ; TODO kludge. specific to particular models. what's more elegant?
-  (reset! stages$ (m/make-stages (map deref model-params)))
+  (swap! m/other-model-params$ assoc :means m/init-means)
+  (reset! stages$ (m/make-stages (map deref level-params)))
   (make-chart stages$ svg-id params$))
 
 ;; -------------------------
@@ -301,7 +301,7 @@
 
 (defn chart-params-form
   "Create form to allow changing model parameters and creating a new chart."
-  [svg-id chart-params$ model-params colors$]
+  [svg-id chart-params$ level-params colors$]
   (let [float-width 7
         int-width 10
         {:keys [x1 x2 x3]} @chart-params$]  ; seems ok: entire form re-rendered(?)
@@ -319,7 +319,7 @@
      [float-input :width chart-params$ colors$ int-width ""]
      [float-input :height chart-params$ colors$ int-width ""]
      [float-input :num-points chart-params$ colors$ int-width ""]
-     [model-form-elems model-params colors$]
+     [model-form-elems level-params colors$]
      ]))
 
 (defn head []
@@ -337,7 +337,7 @@
     (fn []
       [:div {:id "chart-div"}
        [:svg {:id chart-svg-id :height svg-height}]
-       [chart-params-form (str "#" chart-svg-id) chart-params$ model-params chart-param-colors$]])))
+       [chart-params-form (str "#" chart-svg-id) chart-params$ level-params chart-param-colors$]])))
 
 
 (defn home-did-mount [this]

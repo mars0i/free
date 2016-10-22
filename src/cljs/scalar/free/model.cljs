@@ -17,26 +17,37 @@
 
 (def init-theta 1) ; i.e. initially pass value of gen(phi) through unchanged
 
+(defn stepped-range  ; from http://stackoverflow.com/a/32042392/1455243
+  "Like range, but returning every step'th number forever."
+  [start step]
+  (iterate #(+ % step) start))
+
+(defn swap-rest!
+  "Replace the sequence value of key k in the map to which map-atom$ refers
+  with the rest of the sequence.  Unlike swap!, returns the previous first 
+  element."
+  [map-atom$ k]
+  (let [prev-first (first (:k @map-atom$))]
+    (swap! map-atom$ 
+           assoc k (rest (k @map-atom$)))
+    prev-first))
+
 ;; next-bottom function
 ;; all this atom stuff is "bad", but is really just implementing a loop while allowing the function to be arg-less
-(def change-every 5000)  ; change in inputs every this many ticks
-(def stop-changing-after 30000000000)
-;(def change-ticks$ (atom (range change-every stop-changing-after change-every)))
-(def change-ticks$ (atom (interleave (range 3000 stop-changing-after 3000) (range 3100 stop-changing-after 3000))))
-(def init-means (cycle [20 2])) ; cycle between these means
-;(def init-means (cons 20 (repeat 2)))
-(def means$ (atom init-means)) ; cycle between these means
-(def mean$ (atom 2)) ; initial value of mean
-(def sd 5)           ; constant stddev
+(def init-means (cycle [20 2])) ; need to be able to reset means to this later
+(def other-model-params$ (atom {:change-ticks (interleave (stepped-range 3000 3000) (stepped-range 3100 3000))
+                                :init-means init-means
+                                :means init-means
+                                :sd 5}))
+
+(def curr-mean$ (atom 2)) ; initial value of mean
 (def tick$ (atom 0)) ; timestep
 (def next-bottom (lvl/make-next-bottom 
                    (fn []
-                     (when (and (first @change-ticks$) ; stop when sequence exhausted
-		                (= (swap! tick$ inc) (first @change-ticks$)))
-                       (reset! mean$ (first @means$))
-                       (swap! change-ticks$ rest)
-                       (swap! means$ rest))
-                     (ran/next-gaussian @mean$ sd)))) ; SHOULD THIS BE FED INTO gen ?
+                     (when (= (swap! tick$ inc) (first (:change-ticks @other-model-params$)))
+                       (swap-rest! other-model-params$ :change-ticks)
+                       (reset! curr-mean$ (swap-rest! other-model-params$ :means)))
+                     (ran/next-gaussian @curr-mean$ (:sd @other-model-params$)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; epsilon
