@@ -32,8 +32,11 @@
            assoc k (rest (k @map-atom$)))
     prev-first))
 
-;; next-bottom function
-;; all this atom stuff is "bad", but is really just implementing a loop while allowing the function to be arg-less
+;; all this atom stuff is "bad", below but is really just implementing a loop while allowing the function to be arg-less
+;; then again, now I'm having to set it here from plot-pages.
+;; shouldn't it be passed into a function that creates a new model?
+;; and define next-bottom in that function?
+
 (def init-means (cycle [20 2])) ; need to be able to reset means to this later
 (def other-model-params$ (atom {:change-ticks (interleave (stepped-range 3000 3000) (stepped-range 3100 3000))
                                 :init-means init-means
