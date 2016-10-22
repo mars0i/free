@@ -3,9 +3,9 @@
 ;; the file LICENSE.
 
 (ns free.plots
-  (require [clojure.core.matrix :as mx]
-           [incanter.charts :as ch]
-           [incanter.core :as co]))
+  (:require [clojure.core.matrix :as mx]
+            [incanter.charts :as ch]
+            [incanter.core :as co]))
 
 (def phi-base-color    (java.awt.Color. 0   0   0))
 (def epsilon-base-color    (java.awt.Color. 255 0   0))

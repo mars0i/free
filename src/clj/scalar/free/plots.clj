@@ -3,9 +3,9 @@
 ;; the file LICENSE.
 
 (ns free.plots
-  (require [clojure.core.matrix :as mx]
-           [incanter.charts :as ch]
-           [incanter.core :as co]))
+  (:require [clojure.core.matrix :as mx]
+            [incanter.charts :as ch]
+            [incanter.core :as co]))
 
 (defn plot-level
   "Plot phi, epsilon, sigma, and theta for all level records at level level-num
