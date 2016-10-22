@@ -293,7 +293,8 @@
                           [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt])))))
 
 (defn model-form-elems
-  [params colors$]
+  [params other-params$ colors$]
+  ;; TODO ADD other-params$ elements to form
   [:table (vec (cons :tbody
                      (map (partial level-form-elems colors$)
                           params
@@ -319,7 +320,7 @@
      [float-input :width chart-params$ colors$ int-width ""]
      [float-input :height chart-params$ colors$ int-width ""]
      [float-input :num-points chart-params$ colors$ int-width ""]
-     [model-form-elems level-params colors$]
+     [model-form-elems level-params m/other-model-params$ colors$]
      ]))
 
 (defn head []
