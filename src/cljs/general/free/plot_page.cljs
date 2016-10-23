@@ -189,7 +189,6 @@
 
 (defn run-model
   [stages$ svg-id params$]
-  (swap! m/other-model-params assoc :means m/init-means)
   (reset! stages$ (m/make-stages (map deref level-params)))
   (make-chart stages$ svg-id params$))
 
@@ -299,7 +298,7 @@
      ;(if other-params$
      ;  (into [:tr [:td]] (map (partial level-param-float-input colors$ other-params$ float-width)
      ;                         (keys @other-params$)))
-     ;  [:tr];)
+     ;  [:tr])
     ]
     ))
 

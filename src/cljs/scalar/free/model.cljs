@@ -23,10 +23,9 @@
   "Replace the sequence value of key k in the map to which map-atom$ refers
   with the rest of the sequence.  Unlike swap!, returns the previous first 
   element."
-  [map-atom$ k]
-  (let [prev-first (first (k @map-atom$))]
-    (swap! map-atom$ 
-           assoc k (rest (k @map-atom$)))
+  [atom$]
+  (let [prev-first (first @atom$)]
+    (swap! atom$ rest)
     prev-first))
 
 ;; all this atom stuff is "bad", below but is really just implementing a loop while allowing the function to be arg-less
@@ -34,27 +33,28 @@
 ;; shouldn't it be passed into a function that creates a new model?
 ;; and define next-bottom in that function?
 
-(def init-means (cycle [20 2])) ; need to be able to reset means to this later
-
-;; TODO PROBLEM: :change-ticks can't be displayed in a field.
 ;; This will be used by free.plot-pages.  It should have one element for each level--nil if no params needed for that level.
 (defonce other-model-params [nil
-                             (atom {:change-ticks (interleave (stepped-range 3000 3000)
-                                                              (stepped-range 3100 3000))
-                                    :init-means init-means
-                                    :means init-means
+                             (atom {:init-change-ticks [3000 100]
+                                    :init-means [20 2]
                                     :sd 5})
                              nil])
 
-(def curr-mean$ (atom 2)) ; initial value of mean
-(def tick$ (atom 0)) ; timestep
 (def next-bottom (lvl/make-next-bottom 
-                   (let [model-params$ (second other-model-params)]
+                   (let [tick$ (atom 0)
+                         curr-mean$ (atom 2)
+                         model-params$ (second other-model-params)
+                         change-intervals (:init-change-ticks model-params$)
+                         interval-1 (first change-intervals)
+                         interval-2 (+ interval-1 (second change-intervals))
+                         change-ticks$ (atom (interleave (stepped-range interval-1 interval-1)
+                                                         (stepped-range interval-2 interval-1)))
+                         means$ (atom (cycle (:init-means (model-params$))))]
                      (fn []
-                       (when (= (swap! tick$ inc) (first (:change-ticks @model-params$)))
-                         (swap-rest! model-params$ :change-ticks)
-                         (reset! curr-mean$ (swap-rest! model-params$ :means)))
-                       (ran/next-gaussian @curr-mean$ (:sd @model-params$))))))
+                       (when (= (swap! tick$ inc) (first @change-ticks$))
+                         (swap! change-ticks$ rest)
+                         (curr-mean$ (swap-rest! means$))
+                       (ran/next-gaussian @curr-mean$ (:sd @model-params$)))))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; epsilon
