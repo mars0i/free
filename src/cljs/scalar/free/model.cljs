@@ -36,6 +36,7 @@
 
 (def init-means (cycle [20 2])) ; need to be able to reset means to this later
 
+;; TODO PROBLEM: :change-ticks can't be displayed in a field.
 ;; This will be used by free.plot-pages.  It should have one element for each level--nil if no params needed for that level.
 (defonce other-model-params [nil
                              (atom {:change-ticks (interleave (stepped-range 3000 3000)
@@ -50,10 +51,10 @@
 (def next-bottom (lvl/make-next-bottom 
                    (let [model-params$ (second other-model-params)]
                      (fn []
-                       (when (= (swap! tick$ inc) (first (:change-ticks @other-model-params$)))
-                         (swap-rest! other-model-params$ :change-ticks)
-                         (reset! curr-mean$ (swap-rest! other-model-params$ :means)))
-                       (ran/next-gaussian @curr-mean$ (:sd @other-model-params$))))))
+                       (when (= (swap! tick$ inc) (first (:change-ticks @model-params$)))
+                         (swap-rest! model-params$ :change-ticks)
+                         (reset! curr-mean$ (swap-rest! model-params$ :means)))
+                       (ran/next-gaussian @curr-mean$ (:sd @model-params$))))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; epsilon

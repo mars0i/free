@@ -19,6 +19,8 @@
 
 ;; Default simulation parameters
 
+(def yo m/other-model-params)
+
 (def initial-height 500)
 (def initial-width 1200)
 (def initial-timesteps 6000)
@@ -290,18 +292,21 @@
 (defn level-form-elems
   [colors$ params$ other-params$ level-num]
   (let [float-width 7]
-    (vec (into [:tr [:td "level " level-num ":"]]
-                     (map (partial level-param-float-input colors$ params$ float-width) 
-                          [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt])))))
+    [(into [:tr [:td "level " level-num ":"]]
+           (map (partial level-param-float-input colors$ params$ float-width) 
+                [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))
+     ;; DOESN'T WORK:
+     ;(if other-params$
+     ;  (into [:tr [:td]] (map (partial level-param-float-input colors$ other-params$ float-width)
+     ;                         (keys @other-params$)))
+     ;  [:tr];)
+    ]
+    ))
 
 (defn model-form-elems
   [params other-params colors$]
-  ;; TODO ADD other-params elements to form
   [:table (vec (cons :tbody
-                     (map (partial level-form-elems colors$)
-                          params
-                          other-params
-                          (range))))])
+                     (mapcat (partial level-form-elems colors$) params other-params (range))))])
 
 (defn chart-params-form
   "Create form to allow changing model parameters and creating a new chart."
