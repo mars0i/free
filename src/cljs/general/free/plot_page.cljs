@@ -54,7 +54,6 @@
 ;; will be plotted first (in which case nvd3 will name its group "nv-series-0".
 
 (defonce level-params (map r/atom m/first-stage)) ; no $ on end because it's not a ratom; it's a sequence of ratoms
-
 ;; NOTE we also use m/other-model-params below
 
 ;; THIS is intentionally not defonce.  I want it to be
@@ -287,6 +286,12 @@
   (if (k @params$) 
     [:td (float-input k params$ colors$ float-width "")]
     [:td]))
+
+(defn some-kind-of-input
+  [k colors$ params$ size label]
+  (let [val (k @params$)]
+    ))
+
 
 (defn level-form-elems
   [colors$ params$ other-params$ level-num]
