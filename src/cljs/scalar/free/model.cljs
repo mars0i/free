@@ -8,9 +8,6 @@
 ;; This file contains whatever is current default model for the Clojurescript
 ;; version of free.  The material below may be repeatedly edited or replaced.
 
-
-;; from free.example-6:
-
 ;; Generative function phi^2:
 (defn gen  [phi] (* phi phi)) ;; or: (lvl/m-square phi)
 (defn gen' [phi] (* phi 2.0))   ;; or: (ar/m* phi 2))
@@ -27,7 +24,7 @@
   with the rest of the sequence.  Unlike swap!, returns the previous first 
   element."
   [map-atom$ k]
-  (let [prev-first (first (:k @map-atom$))]
+  (let [prev-first (first (k @map-atom$))]
     (swap! map-atom$ 
            assoc k (rest (k @map-atom$)))
     prev-first))
@@ -92,4 +89,7 @@
 
 (def first-stage [init-bot init-mid top])
 
-(defn make-stages [stage] (iterate (partial lvl/next-levels next-bottom) stage))
+(defn make-stages
+  [stage]
+  (iterate (partial lvl/next-levels next-bottom) 
+           stage))
