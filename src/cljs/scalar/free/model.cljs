@@ -42,18 +42,18 @@
 
 (def next-bottom (lvl/make-next-bottom 
                    (let [tick$ (atom 0)
-                         curr-mean$ (atom 2)
                          model-params$ (second other-model-params)
-                         change-intervals (:init-change-ticks model-params$)
+                         curr-mean$ (atom (second (:init-means model-params$)))
+                         means$ (atom (cycle (:init-means @model-params$)))
+                         change-intervals (:init-change-ticks @model-params$)
                          interval-1 (first change-intervals)
                          interval-2 (+ interval-1 (second change-intervals))
                          change-ticks$ (atom (interleave (stepped-range interval-1 interval-1)
-                                                         (stepped-range interval-2 interval-1)))
-                         means$ (atom (cycle (:init-means (model-params$))))]
+                                                         (stepped-range interval-2 interval-1)))]
                      (fn []
                        (when (= (swap! tick$ inc) (first @change-ticks$))
                          (swap! change-ticks$ rest)
-                         (curr-mean$ (swap-rest! means$))
+                         (reset! curr-mean$ (swap-rest! means$))
                        (ran/next-gaussian @curr-mean$ (:sd @model-params$)))))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
