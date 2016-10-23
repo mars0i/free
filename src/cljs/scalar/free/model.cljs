@@ -35,19 +35,25 @@
 ;; and define next-bottom in that function?
 
 (def init-means (cycle [20 2])) ; need to be able to reset means to this later
-(def other-model-params$ (atom {:change-ticks (interleave (stepped-range 3000 3000) (stepped-range 3100 3000))
-                                :init-means init-means
-                                :means init-means
-                                :sd 5}))
+
+;; This will be used by free.plot-pages.  It should have one element for each level--nil if no params needed for that level.
+(defonce other-model-params [nil
+                             (atom {:change-ticks (interleave (stepped-range 3000 3000)
+                                                              (stepped-range 3100 3000))
+                                    :init-means init-means
+                                    :means init-means
+                                    :sd 5})
+                             nil])
 
 (def curr-mean$ (atom 2)) ; initial value of mean
 (def tick$ (atom 0)) ; timestep
 (def next-bottom (lvl/make-next-bottom 
-                   (fn []
-                     (when (= (swap! tick$ inc) (first (:change-ticks @other-model-params$)))
-                       (swap-rest! other-model-params$ :change-ticks)
-                       (reset! curr-mean$ (swap-rest! other-model-params$ :means)))
-                     (ran/next-gaussian @curr-mean$ (:sd @other-model-params$)))))
+                   (let [model-params$ (second other-model-params)]
+                     (fn []
+                       (when (= (swap! tick$ inc) (first (:change-ticks @other-model-params$)))
+                         (swap-rest! other-model-params$ :change-ticks)
+                         (reset! curr-mean$ (swap-rest! other-model-params$ :means)))
+                       (ran/next-gaussian @curr-mean$ (:sd @other-model-params$))))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; epsilon

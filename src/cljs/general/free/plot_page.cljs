@@ -53,7 +53,9 @@
 
 (defonce level-params (map r/atom m/first-stage)) ; no $ on end because it's not a ratom; it's a sequence of ratoms
 
-;; THIS is intentionally not defonce or a ratom.  I want it to be
+;; NOTE we also use m/other-model-params below
+
+;; THIS is intentionally not defonce.  I want it to be
 ;; revisable by reloading to model file and this file.
 (def raw-stages$ (r/atom (m/make-stages (map deref level-params))))
 
@@ -185,7 +187,7 @@
 
 (defn run-model
   [stages$ svg-id params$]
-  (swap! m/other-model-params$ assoc :means m/init-means)
+  (swap! m/other-model-params assoc :means m/init-means)
   (reset! stages$ (m/make-stages (map deref level-params)))
   (make-chart stages$ svg-id params$))
 
@@ -286,23 +288,24 @@
     [:td]))
 
 (defn level-form-elems
-  [colors$ params$ level-num]
+  [colors$ params$ other-params$ level-num]
   (let [float-width 7]
     (vec (into [:tr [:td "level " level-num ":"]]
                      (map (partial level-param-float-input colors$ params$ float-width) 
                           [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt])))))
 
 (defn model-form-elems
-  [params other-params$ colors$]
-  ;; TODO ADD other-params$ elements to form
+  [params other-params colors$]
+  ;; TODO ADD other-params elements to form
   [:table (vec (cons :tbody
                      (map (partial level-form-elems colors$)
                           params
+                          other-params
                           (range))))])
 
 (defn chart-params-form
   "Create form to allow changing model parameters and creating a new chart."
-  [svg-id chart-params$ level-params colors$]
+  [svg-id chart-params$ level-params other-params colors$]
   (let [float-width 7
         int-width 10
         {:keys [x1 x2 x3]} @chart-params$]  ; seems ok: entire form re-rendered(?)
@@ -320,7 +323,7 @@
      [float-input :width chart-params$ colors$ int-width ""]
      [float-input :height chart-params$ colors$ int-width ""]
      [float-input :num-points chart-params$ colors$ int-width ""]
-     [model-form-elems level-params m/other-model-params$ colors$]
+     [model-form-elems level-params other-params colors$]
      ]))
 
 (defn head []
@@ -338,7 +341,11 @@
     (fn []
       [:div {:id "chart-div"}
        [:svg {:id chart-svg-id :height svg-height}]
-       [chart-params-form (str "#" chart-svg-id) chart-params$ level-params chart-param-colors$]])))
+       [chart-params-form (str "#" chart-svg-id)
+                          chart-params$
+                          level-params
+                          m/other-model-params 
+                          chart-param-colors$]])))
 
 
 (defn home-did-mount [this]
