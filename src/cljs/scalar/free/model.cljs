@@ -35,25 +35,25 @@
 
 ;; This will be used by free.plot-pages.  It should have one element for each level--nil if no params needed for that level.
 (defonce other-model-params [nil
-                             (atom {:init-change-ticks [3000 100]
-                                    :init-means [20 2]
-                                    :sd 5})
+                             (atom {:sd 5
+                                    :change-ticks [3000 100]
+                                    :means [20 2]})
                              nil])
 
 (def next-bottom (lvl/make-next-bottom 
                    (let [tick$ (atom 0)
                          model-params$ (second other-model-params)
                          curr-mean$ (atom 2)
-                         means$ (atom (cycle (:init-means @model-params$)))
-                         change-intervals (:init-change-ticks @model-params$)
+                         means-cycle$ (atom (cycle (:means @model-params$)))
+                         change-intervals (:change-ticks @model-params$)
                          interval-1 (first change-intervals)
                          interval-2 (+ interval-1 (second change-intervals))
-                         change-ticks$ (atom (interleave (stepped-range interval-1 interval-1)
+                         change-ticks-cyle$ (atom (interleave (stepped-range interval-1 interval-1)
                                                          (stepped-range interval-2 interval-1)))]
                      (fn []
-                       (when (= (swap! tick$ inc) (first @change-ticks$))
-                         (swap! change-ticks$ rest)
-                         (reset! curr-mean$ (swap-rest! means$)))
+                       (when (= (swap! tick$ inc) (first @change-ticks-cyle$))
+                         (swap! change-ticks-cyle$ rest)
+                         (reset! curr-mean$ (swap-rest! means-cycle$)))
                        (ran/next-gaussian @curr-mean$ (:sd @model-params$))))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
