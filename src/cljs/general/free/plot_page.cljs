@@ -287,31 +287,38 @@
   "Create a text input that accepts numbers."
   (input-fn-maker js/parseFloat identity))
 
-(def seq-input
-  "Create a text input that accepts vectors."
-  (input-fn-maker cljs.reader/read-string str))
-
-(defn level-param-float-input
+(defn param-float-input
   [colors$ params$ size k]
   (if (k @params$) 
     [:td (float-input params$ colors$ size k "")]
     [:td]))
 
+(def seq-input
+  "Create a text input that accepts vectors."
+  (input-fn-maker cljs.reader/read-string str))
+
+(defn param-seq-input
+  [colors$ params$ size k]
+  (if (k @params$) 
+    [:td (seq-input params$ colors$ size k "")]
+    [:td]))
+
 (defn some-kind-of-input
   [colors$ params$ size k]
   (let [val (k @params$)]
-    (cond (number? val) (level-param-float-input colors$ params$ size k)
-          :else (seq-input colors$ params$ size k ""))))
+    (cond (number? val) (param-float-input colors$ params$ size k)
+          :else (param-seq-input colors$ params$ size k))))
 
 (defn level-form-elems
   [colors$ params$ other-params$ level-num]
-  (let [width 7]
+  (let [float-width 7
+        seq-width 12]
     [(into [:tr [:td "level " level-num ":"]]
-           (map (partial level-param-float-input colors$ params$ width) 
+           (map (partial param-float-input colors$ params$ float-width) 
                 [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))
      ;; DOESN'T WORK:
      (if other-params$
-       (into [:tr [:td]] (map (partial some-kind-of-input colors$ other-params$ width)
+       (into [:tr [:td]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
                               (keys @other-params$)))
        [:tr])
     ]
