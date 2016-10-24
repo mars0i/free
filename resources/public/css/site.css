@@ -62,11 +62,13 @@ table {
 }
 /* Use this to put a rule under a table row: */
 tr.bottom-border td {
-  border-bottom: 1px solid black;
+  border-bottom:1px solid black;
+  border-color:#c0c0e0;
 }
 /* Or over a table row: */
 tr.top-border td {
   border-top: 1px solid black;
+  border-color:#c0c0e0;
 }
 
 /* voodoo css based on http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure */
