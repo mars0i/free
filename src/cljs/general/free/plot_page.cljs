@@ -319,18 +319,21 @@
   [colors$ params$ other-params$ level-num]
   (let [float-width 7
         seq-width 12]
-    [(into [:tr [:td "level " level-num ":"]]
-           (map (partial param-float-input colors$ params$ float-width) 
-                [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))
+    [(conj
+       (into [:tr [:td "level " level-num ":"]]
+             (map (partial param-float-input colors$ params$ float-width) 
+                  [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))
+       [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
      (if other-params$
-       (into [:tr {:class "bottom-border"} [:td]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
-                              (keys @other-params$)))
-       [:tr {:class "bottom-border"} [:td {:colspan "0"}]])
-     ]))
+       (conj 
+         (into [:tr {:class "bottom-border"} [:td]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
+                                                         (keys @other-params$)))
+         [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
+       [:tr {:class "bottom-border"} [:td {:col-span "20"}]])])) ; use colspan larger than any number of columns we'd want
 
 (defn model-form-elems
   [params other-params colors$]
-  [:table (into [:tbody [:tr {:class "top-border"} [:td {:colspan "0"}]]]
+  [:table (into [:tbody [:tr {:class "top-border"} [:td {:col-span "20"}]]] ; use colspan larger than any number of columns we'd want
                 (mapcat (partial level-form-elems colors$) params other-params (range)))])
 
 (defn chart-params-form
