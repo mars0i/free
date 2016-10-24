@@ -63,12 +63,14 @@ table {
 /* Use this to put a rule under a table row: */
 tr.bottom-border td {
   border-bottom:1px solid black;
-  border-color:#c0c0e0;
+  border-color:#9090d0;
+  border-style:none none dashed none;
 }
 /* Or over a table row: */
 tr.top-border td {
   border-top: 1px solid black;
-  border-color:#c0c0e0;
+  border-color:#9090d0;
+  border-style:dashed none none none;
 }
 
 /* voodoo css based on http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure */
