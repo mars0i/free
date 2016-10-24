@@ -19,8 +19,6 @@
 
 ;; Default simulation parameters
 
-(def yo m/other-model-params)
-
 (def initial-height 500)
 (def initial-width 1200)
 (def initial-timesteps 6000)
@@ -259,38 +257,51 @@
                (list [:span {:style {:font-size "12px"}} 
                       (pp/cl-format nil "~,4f" n)]))))
 
+(defn input-fn-maker
+  "Returns a function that will display and accept inputs, parsing them using parse-fn."
+  [parse-fn]
+  (letfn [(input-fn
+            ([params$ colors$ size k label] (input-fn params$ colors$ size k label [:em (name k)]))
+            ([params$ colors$ size k label & var-label]
+             (let [id (name k)
+                   old-val (k @params$)]
+               [:span {:id (str id "-span")}
+                (vec (concat [:text label " "] var-label [" : "]))
+                [:input {:id id
+                         :name id
+                         :type "text"
+                         :style {:color (k @colors$)}
+                         :size size
+                         :defaultValue old-val
+                         :on-change #(swap! params$ assoc k (parse-fn (-> % .-target .-value)))}]
+                [spaces 4]])))]
+    input-fn))
+
 ;; For comparison, in lescent, I used d3 to set the onchange of dropdowns to a function that set a single global var for each.
-(defn float-input 
+(def float-input 
   "Create a text input that accepts numbers.  k is keyword to be used to extract
   a default value from params$, and to be passed to swap! assoc.  It will also 
   be converted to a string an set as the id and name properties of the input 
   element.  This string will also be used as the name of the variable in the label,
   unless var-label is present, in which it will be used for that purpose."
-  ([k params$ colors$ size label] (float-input k params$ colors$ size label [:em (name k)]))
-  ([k params$ colors$ size label & var-label]
-   (let [id (name k)
-         old-val (k @params$)]
-     [:span {:id (str id "-span")}
-      (vec (concat [:text label " "] var-label [" : "]))
-      [:input {:id id
-               :name id
-               :type "text"
-               :style {:color (k @colors$)}
-               :size size
-               :defaultValue old-val
-               :on-change #(swap! params$ assoc k (js/parseFloat (-> % .-target .-value)))}]
-      [spaces 4]])))
+  (input-fn-maker js/parseFloat))
 
 (defn level-param-float-input
-  [colors$ params$ float-width k]
+  [colors$ params$ size k]
   (if (k @params$) 
-    [:td (float-input k params$ colors$ float-width "")]
+    [:td (float-input params$ colors$ size k "")]
     [:td]))
 
+(defn seq-input
+  [colors$ params$ size k label]
+  (input-fn-maker js/parseFloat))
+
+
 (defn some-kind-of-input
-  [k colors$ params$ size label]
+  [colors$ params$ size k label]
   (let [val (k @params$)]
-    ))
+    (cond (number? val) (level-param-float-input colors$ params$ size k)
+          :else (seq-input colors$ params$ size k ""))))
 
 
 (defn level-form-elems
@@ -328,10 +339,10 @@
      [:br]
      [level-checkboxes chart-params$]
      [spaces 4]
-     [float-input :timesteps chart-params$ colors$ int-width ""]
-     [float-input :width chart-params$ colors$ int-width ""]
-     [float-input :height chart-params$ colors$ int-width ""]
-     [float-input :num-points chart-params$ colors$ int-width ""]
+     [float-input chart-params$ colors$ int-width :timesteps ""]
+     [float-input chart-params$ colors$ int-width :width ""]
+     [float-input chart-params$ colors$ int-width :height ""]
+     [float-input chart-params$ colors$ int-width :num-points ""]
      [model-form-elems level-params other-params colors$]
      ]))
 
