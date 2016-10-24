@@ -3,7 +3,8 @@
 ;; the file LICENSE.
 
 (ns free.model
-  (:require [free.level :as lvl]
+  (:require [reagent.core :as r]
+            [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
 ;; This file contains whatever is current default model for the Clojurescript
 ;; version of free.  The material below may be repeatedly edited or replaced.
@@ -49,7 +50,7 @@
                          interval-1 (first change-intervals)
                          interval-2 (+ interval-1 (second change-intervals))
                          change-ticks-cyle$ (atom (interleave (stepped-range interval-1 interval-1)
-                                                         (stepped-range interval-2 interval-1)))]
+                                                              (stepped-range interval-2 interval-1)))]
                      (fn []
                        (when (= (swap! tick$ inc) (first @change-ticks-cyle$))
                          (swap! change-ticks-cyle$ rest)
