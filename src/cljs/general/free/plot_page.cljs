@@ -5,6 +5,7 @@
 (ns free.plot-page
   (:require [cljs.pprint :as pp]
             [cljs.spec :as s]
+            [cljs.reader :as cr]
             [reagent.core :as r]
             [reagent.session :as session]
             [secretary.core :as secretary :include-macros true]
@@ -288,6 +289,7 @@
   (input-fn-maker js/parseFloat identity))
 
 (defn param-float-input
+  "Generates a form input for numeric data in a table data element."
   [colors$ params$ size k]
   (if (k @params$) 
     [:td (float-input params$ colors$ size k "")]
@@ -295,39 +297,41 @@
 
 (def seq-input
   "Create a text input that accepts vectors."
-  (input-fn-maker cljs.reader/read-string str))
+  (input-fn-maker cr/read-string str))
 
 (defn param-seq-input
+  "Generates a form input for Clojure sequential data in a table data element."
   [colors$ params$ size k]
   (if (k @params$) 
     [:td (seq-input params$ colors$ size k "")]
     [:td]))
 
 (defn some-kind-of-input
+  "Generates a form input whose properties depend on the type of the value of
+  the key k in params$"
   [colors$ params$ size k]
   (let [val (k @params$)]
     (cond (number? val) (param-float-input colors$ params$ size k)
           :else (param-seq-input colors$ params$ size k))))
 
 (defn level-form-elems
+  "Produces HTML table rows for a single free Level."
   [colors$ params$ other-params$ level-num]
   (let [float-width 7
         seq-width 12]
     [(into [:tr [:td "level " level-num ":"]]
            (map (partial param-float-input colors$ params$ float-width) 
                 [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))
-     ;; DOESN'T WORK:
      (if other-params$
-       (into [:tr [:td]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
+       (into [:tr {:class "bottom-border"} [:td]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
                               (keys @other-params$)))
-       [:tr])
-    ]
-    ))
+       [:tr {:class "bottom-border"} [:td {:colspan "0"}]])
+     ]))
 
 (defn model-form-elems
   [params other-params colors$]
-  [:table (vec (cons :tbody
-                     (mapcat (partial level-form-elems colors$) params other-params (range))))])
+  [:table (into [:tbody [:tr {:class "top-border"} [:td {:colspan "0"}]]]
+                (mapcat (partial level-form-elems colors$) params other-params (range)))])
 
 (defn chart-params-form
   "Create form to allow changing model parameters and creating a new chart."

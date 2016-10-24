@@ -56,6 +56,19 @@ button:active {
   position:relative;
   top:1px;
 }
+/* Remove gaps between columns in tables: */
+table {
+    border-collapse: collapse;
+}
+/* Use this to put a rule under a table row: */
+tr.bottom-border td {
+  border-bottom: 1px solid black;
+}
+/* Or over a table row: */
+tr.top-border td {
+  border-top: 1px solid black;
+}
+
 /* voodoo css based on http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure */
 /* Exlanation:
  * The lines have classes nv-series-0, nv-series-1, etc., depending on the sequence
