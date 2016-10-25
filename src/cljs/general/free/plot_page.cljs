@@ -82,16 +82,22 @@
 ;(defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
 ;(s/def ::max-r (ge-le 0.0 1.0))
 
-(s/def pos-int? (s/and integer? pos?))
+(s/def pos-int?    (s/and integer? pos?))
+
 (s/def ::height pos-int?)
 (s/def ::width pos-int?)
 (s/def ::num-points pos-int?)
 (s/def ::timesteps pos-int?)
-
 (s/def ::chart-params (s/keys :req-un [::height ; require these keys (with single colon), and check that they conform
                                        ::width
                                        ::num-points
                                        ::timesteps]))
+
+;(s/def pos-number? (s/and number? pos?))
+(s/def ::sd (s/and number? pos?))
+;(s/def ::sd pos-number?)
+(s/def ::other-params (s/keys :req-un [::sd]))
+
 
 ;; -------------------------
 ;; run simulations, generate chart
