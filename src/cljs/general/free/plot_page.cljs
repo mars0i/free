@@ -32,11 +32,11 @@
 (def copyright-sym (gs/unescapeEntities "&copy;")) 
 (def nbsp (gs/unescapeEntities "&nbsp;")) 
 
-(def plot-button-labels {:ready-label "re-plot" 
+(def plot-button-labels {:ready-label "re-plot:" 
                          :running-label "plotting ..." 
                          :error-text [:text "Values in red are illegal." ]})
 
-(def run-button-labels {:ready-label "re-run" 
+(def run-button-labels {:ready-label "re-run:" 
                         :running-label "running ..." 
                         :error-text [:text "Values in red are illegal." ]})
 
@@ -321,7 +321,7 @@
   "Produces HTML table rows for a single free Level."
   [colors$ params$ other-params$ level-num]
   (let [float-width 7
-        seq-width 12]
+        seq-width 10]
     [(conj
        (into [:tr [:td "level " level-num ":"]]
              (map (partial param-float-input colors$ params$ float-width) 
@@ -336,7 +336,7 @@
 
 (defn model-form-elems
   [params other-params colors$]
-  [:table (into [:tbody [:tr {:class "top-border"} [:td {:col-span "20"}]]] ; use colspan larger than any number of columns we'd want
+  [:table (into [:tbody [:tr [:td {:col-span "20"}]]] ; use colspan larger than any number of columns we'd want
                 (mapcat (partial level-form-elems colors$) params other-params (range)))])
 
 (defn chart-params-form
@@ -346,8 +346,6 @@
         int-width 10
         {:keys [x1 x2 x3]} @chart-params$]  ; seems ok: entire form re-rendered(?)
     [:form 
-     [button svg-id chart-params$ colors$ run-model  run-button-labels]
-     [spaces 3]
      [button svg-id chart-params$ colors$ make-chart plot-button-labels]
      [:span
       {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}}
@@ -359,6 +357,9 @@
      [float-input chart-params$ colors$ int-width :width ""]
      [float-input chart-params$ colors$ int-width :height ""]
      [float-input chart-params$ colors$ int-width :num-points ""]
+     [:hr {:width (:width @chart-params$)}] ; TODO WHY IS THIS GETTING INDENTED?
+     [button svg-id chart-params$ colors$ run-model run-button-labels]
+     [:br]
      [model-form-elems level-params other-params colors$]
      ]))
 
