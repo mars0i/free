@@ -357,7 +357,7 @@
      [float-input chart-params$ colors$ int-width :width ""]
      [float-input chart-params$ colors$ int-width :height ""]
      [float-input chart-params$ colors$ int-width :num-points ""]
-     [:hr {:width (:width @chart-params$)}] ; TODO WHY IS THIS GETTING INDENTED?
+     [:hr {:class "align-left" :width (:width @chart-params$)}]
      [button svg-id chart-params$ colors$ run-model run-button-labels]
      [:br]
      [model-form-elems level-params other-params colors$]

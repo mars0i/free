@@ -72,6 +72,9 @@ tr.top-border td {
   border-color:#a0a0e0;
   border-style:dashed none none none;
 }
+hr.align-left {
+  margin-left: 0px;
+}
 
 /* voodoo css based on http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure */
 /* Explanation:
