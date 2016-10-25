@@ -57,7 +57,9 @@
 
 ;; THIS is intentionally not defonce.  I want it to be
 ;; revisable by reloading to model file and this file.
-(def raw-stages$ (r/atom (m/make-stages (map deref level-params))))
+(def raw-stages$ (r/atom 
+		   (m/make-stages (map deref level-params)
+		                  (m/make-next-bottom m/other-model-params))))
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -187,7 +189,8 @@
 
 (defn run-model
   [stages$ svg-id params$]
-  (reset! stages$ (m/make-stages (map deref level-params)))
+  (reset! stages$ (m/make-stages (map deref level-params)
+		                  (m/make-next-bottom m/other-model-params)))
   (make-chart stages$ svg-id params$))
 
 ;; -------------------------
