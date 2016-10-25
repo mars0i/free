@@ -74,7 +74,7 @@ tr.top-border td {
 }
 
 /* voodoo css based on http://stackoverflow.com/questions/27892806/css-styling-of-points-in-figure */
-/* Exlanation:
+/* Explanation:
  * The lines have classes nv-series-0, nv-series-1, etc., depending on the sequence
  * in the chart data vector.
  * path.nv-point inside nv-series-0 inside chart-svg is a point that gets drawn.
