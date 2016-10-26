@@ -36,8 +36,8 @@
 
 ;; This will be used by free.plot-pages.  It should have one element for each level--nil if no params needed for that level.
 (defonce other-model-params [nil
-                             (atom {:sd 5
-                                    :change-ticks [3000 100]
+                             (atom {:sd 3
+                                    :change-ticks [1500 100]
                                     :means [20 2]})
                              nil])
 
@@ -79,7 +79,7 @@
               :theta init-theta
               :gen  nil ; unused at bottom since epsilon update uses higher gen
               :gen' nil ; unused at bottom since phi comes from outside
-              :phi-dt 0.01
+              :phi-dt nil
               :epsilon-dt 0.01
               :sigma-dt nil
               :theta-dt nil})
