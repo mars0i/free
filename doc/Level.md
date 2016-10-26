@@ -1,40 +1,7 @@
 Notes on code in level.cljc
 ===
 
-## 
-
-## Notation
-
-`m*`, `m+`, `m-` are either scalar or matrix `*`, `+`, and `-`, depending on the
-value of `use-core-matrix`, which determines which namespace is loaded.
-`e*` is `*`, or elementwise matrix multiplication.  `tr` is matrix transpose,
-or the identity function for scalars.  `inv` is reciprocal, for scalars,
-or matrix inverse, for matrices.  `(make-identity-obj n)` returns an n by n 
-identity matrix, or 1 for scalars.
-
-The derivative of function `f` is called `f'` .  A value of `foo` at the next
-level down is called `-foo`.  A value of `foo` at the next level up is called
-`+foo`.  Also see the docstrings for ``Level`` and other functions.
-
-The functions `next-foo` calculate the next value of `foo`.  Each `next-foo`
-function accepts three `Level` structures as values: The next `Level` down,
-the current `Level`, and the next `Level` up.  However, some of these `Level`s
-might not be used for a given calculation, in which case the parameter
-for that level will be `_` , indicating that it will be ignored.
-
-This version of level.cljc doesn't use a function g, but assumes that g is
-a product of theta with another function `h`, as in many Bogacz's
-examples.
-
-
 ## Overview
-
-Please see the docstring for `->Level` or `map->Level` (at the repl or
-in level.cljc) for information about the fields in the `Level` record
-definition.  Note that each of the data fields also has a corresponding
-`-dt` field that holds the scaling factor that determines how fast the
-field will be updated.  I chose to include these in each Level record to
-allow for the possibility of different speeds at different levesl.
 
 The state of a network consists of a sequence of three or more levels:
 A first (zeroth) and last level, and one or more inner levels.  It's
@@ -60,55 +27,70 @@ but it will be slower than if `use-core-matrix` is false.  Currently
 (9/2016), the value of `use-core-matrix` must be set in levels.cljc
 before that file is loaded, but this will probably change in the future.
 
+## The Level data structure
 
-## Running, creating plots
+Please see the docstring for `->Level` or `map->Level` (at the repl or
+in level.cljc) for information about the fields in the `Level` record
+definition.  Note that each of the data fields also has a corresponding
+`-dt` field that holds the scaling factor that determines how fast the
+field will be updated.  I chose to include these in each Level record to
+allow for the possibility of different speeds at different levesl.
 
-See src/free/exercise_3.cljc or src/free/example_1.cljs for simple
-illustrations of use of this system.  In these examples, there are three
-levels, i.e. a bottom level, a middle level, and a top level (which is
-not a full-fledged level; all it does is to provide the mean of the
-prior distribution).  
 
-Each of these two examples when run (when the file is loaded using `use`
-or `require`), creates a variable named `stages`, which contains a
-virtual sequence of states, or stages, of the cognitive system.  The
-first stage contains the three levels in their initial configurations.
-Subsequent stages contain updated versions of these levels.  (The top
-level never changes, however.)  That is, `stages` is what's known
-as a "lazy sequence" of unlimited length.  When first defined, at
-most only the first or first and second elements of the sequence
-exist (are "realized").  However, if you use subsequent elements,
-they'll be created as needed.
+## Functional programming and laziness
 
-You can use `plot-levels` in src/free/plots to plot the results, or
-see the comment on plotting in src/free/exercise_3.cljc.
+levels.cljc contains the main algorithms for updating the state of a
+model.  It's written in the kind of "functional programming" style for
+which Clojure is designed.  Variables and data structures are never
+updated or modified per se.  Rather, each time the system runs, it
+generates a new data structure representing the state of the system at a
+time.  One can forget the old versions of the data structures, allowing
+them to be "garbage collected" by the underlying system (the JVM or
+Javascript), or one can store a series of data structures at different
+timesteps for later use.
 
-For example, at a Clojure REPL prompt, you can do this:
+The main top-level function that's defined in level.cljc is called `next-levels`.
+Given a sequence of `Level` data structures for a timestep, it produces a
+sequence of levels at the next timestep.
 
-    (use '[free.example-1])
-    ;; Note that stages has now been defined and made available.
-    (use '[free.plots])
-    (plot-level 0 (take 1000 stages))
-    (plot-level 1 (take 1000 stages))
+In my *free* models (e.g. src/cljs/scalar/free/model.cljs, I often
+define a function called `make-stages` or a variable `stages` that
+starts from an initial set of data structures, and then uses
+`next-levels` with Clojure's `iterate` function to generate a "lazy
+sequence" of timestep data structures.  This is a sequence with no fixed
+length; you can think of it as infinite.  Initially, the contents of the
+sequence are "unrealized"; they don't actually exist. When your code
+asks to use elements of the sequence, they are automatially generated as
+needed.  For example, when the result of `make-stages` is passed
+to plotting code (`plot-level` in the Clojure versions of *free*, or the
+plotting code in "plot_pages.cljs", which defines the `free.plot-pages`
+namespace or module for the Clojurescript version), as
+many timesteps are calculated as needed to plot the number of
+timesteps requested by a user.
 
-The last two lines will create two windows containing plots of four
-values from level 0, and four from level 1, in the first 1000 stages.
-(In Bogacz's exercise 3, for example, he runs his model for 5 "units of
-time" (p. 4), but divides `MAXT` (= 5) by 0.01, the value of `DT`.
-Since 5/0.01 = 500, this corresponds to 500 stages here.)
 
-Note that when the first instance of `plot-level` was run above, the
-first 1000 stages (numbered 0 to 999) were generated by the code built
-into the lazy sequence.  The second instance just makes use of the
-stages that have already been generated.  If you decide that you need to
-see what happens after the thousandth stage, you can rerun the same
-command with a new number passed to `take`:
+## Notation
 
-    (plot-level 1 (take 2000 stages))
+`m*`, `m+`, `m-` are either scalar or matrix `*`, `+`, and `-`, depending on the
+value of `use-core-matrix`, which determines which namespace is loaded.
+`e*` is `*`, or elementwise matrix multiplication.  `tr` is matrix transpose,
+or the identity function for scalars.  `inv` is reciprocal, for scalars,
+or matrix inverse, for matrices.  `(make-identity-obj n)` returns an n by n 
+identity matrix, or 1 for scalars.
 
-The first 1000 stages won't be regenerated, as they already exist.  Only
-stages from 1000 to 1999 will be generated as a result of running this
-command.
+The derivative of function `f` is called `f'` .  A value of `foo` at the next
+level down is called `-foo`.  A value of `foo` at the next level up is called
+`+foo`.  Also see the docstrings for ``Level`` and other functions.
+
+The functions `next-foo` calculate the next value of `foo`.  Each `next-foo`
+function accepts three `Level` structures as values: The next `Level` down,
+the current `Level`, and the next `Level` up.  However, some of these `Level`s
+might not be used for a given calculation, in which case the parameter
+for that level will be `_` , indicating that it will be ignored.
+
+This version of level.cljc doesn't use a function g, but assumes that g is
+a product of theta with another function `h`, as in many Bogacz's
+examples.
 
 
 ## Level dependencies
