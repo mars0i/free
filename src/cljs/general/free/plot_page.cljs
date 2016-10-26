@@ -93,10 +93,15 @@
                                        ::num-points
                                        ::timesteps]))
 
-;(s/def pos-number? (s/and number? pos?))
-(s/def ::sd (s/and number? pos?))
+;; Maybe not worth doing validation of form elements from the model, since that 
+;; depends on the model.  Or if so, then ::other-params should be defined in model.cljc
+;; and then get used below.  But this adds complexity to the model file, which could scare
+;; people off from writing their own, and if they do, they'd know what inputs are
+;; acceptable.
+;(s/def pos-number? (s/and number? pos?)) ; doesn't work. why?
+;(s/def ::sd (s/and number? pos?)) ; does work
 ;(s/def ::sd pos-number?)
-(s/def ::other-params (s/keys :req-un [::sd]))
+;(s/def ::other-params (s/keys :req-un [::sd]))
 
 
 ;; -------------------------
