@@ -51,10 +51,10 @@
                                          "src/cljc/general" "src/cljc/matrix"]
                           :java-source-paths ["src/java"]}
 
-             :cljs-scalar {:source-paths ["src/clj/general"  "src/clj/scalar"
+             :cljs-scalar {:source-paths ["src/cljs/general"  "src/cljs/scalar"
                                           "src/cljc/general" "src/cljc/scalar"]}
 
-             :cljs-matrix {:source-paths ["src/clj/general"  "src/clj/matrix"
+             :cljs-matrix {:source-paths ["src/cljs/general"  "src/cljs/matrix"
                                           "src/cljc/general" "src/cljc/matrix"]}
             }
 
@@ -105,7 +105,8 @@
                            :preloads [devtools.preload]}}
                ;; This next build is an compressed minified build for production. You can build this with: lein cljsbuild once min
                {:id "min"
-                :source-paths ["src"]
+                :source-paths ["src/cljc/general" "src/cljc/scalar"
+                               "src/cljs/general" "src/cljs/scalar"]
                 :compiler {:output-to "resources/public/js/compiled/free.js"
                            :main free.core
                            :optimizations :advanced
