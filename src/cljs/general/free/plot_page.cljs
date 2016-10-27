@@ -79,11 +79,6 @@
   (mapcat :path 
           (:cljs.spec/problems data)))
 
-;(defn ge-le [inf sup] (s/and #(>= % inf) #(<= % sup)))
-;(s/def ::max-r (ge-le 0.0 1.0))
-
-(s/def pos-int?    (s/and integer? pos?))
-
 (s/def ::height pos-int?)
 (s/def ::width pos-int?)
 (s/def ::num-points pos-int?)
