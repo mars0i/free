@@ -3,7 +3,8 @@
 ;; the file LICENSE.
 
 (ns free.model
-  (:require [reagent.core :as r]
+  (:require [cljs.spec :as s]    ; only for clojure spec tests a bottom
+            [reagent.core :as r]
             [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
 ;; This file contains whatever is current default model for the Clojurescript
@@ -106,3 +107,11 @@
   [stage next-bottom]
   (iterate (partial lvl/next-levels (make-next-bottom other-model-params)) 
            stage))
+
+;; OPTIONAL CODE
+;; Clojure spec tests--can be used in free.plot-pages for html form validation.
+
+;(s/def pos-number? (s/and number? pos?)) ; doesn't work. why?
+;(s/def ::sd pos-number?)
+(s/def ::sd (s/and number? pos?)) ; does work
+(s/def ::other-params (s/keys :req-un [::sd]))
