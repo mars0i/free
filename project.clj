@@ -53,6 +53,8 @@
 
              :cljs-scalar {:source-paths ["src/cljs/general"  "src/cljs/scalar"
                                           "src/cljc/general" "src/cljc/scalar"]}
+                          ;                "src/clj/general/utils"] ; kludge to make Clojure compilation stage happier?
+                          ;:java-source-paths ["src/java"]}         ; kludge to make Clojure compilation stage happier?
 
              :cljs-matrix {:source-paths ["src/cljs/general"  "src/cljs/matrix"
                                           "src/cljc/general" "src/cljc/matrix"]}
