@@ -31,6 +31,12 @@ h3 {
   font-weight:normal;
   color:#D00000;
 }
+.subtitle {
+  font-family:"Pontano Sans";
+  font-size:100%;
+  font-weight:normal;
+  color:#0080D0;
+}
 form {
   font-family:"Pontano Sans";
   font-size:16px;
@@ -61,17 +67,21 @@ table {
     border-collapse: collapse;
 }
 /* Use this to put a rule under a table row: */
+/* If border-style is dotted or dashed in the third place (bottom), it's absent in Firefox if border-bottom is < 3px, but it looks ugly in other browsers if it's 3px */
 tr.bottom-border td {
-  border-bottom:3px solid black;
-  border-color:#a0a0e0;
-  border-style:none none dashed none;
+  padding:4px;
+  border-bottom:1px solid black;
+  border-color:#d0d0d0;
+  /* border-style:none none dotted none; */
 }
 /* Or over a table row: */
+/*
 tr.top-border td {
   border-bottom:3px solid black;
   border-color:#a0a0e0;
   border-style:dashed none none none;
 }
+*/
 hr.align-left {
   margin-left: 0px;
 }
