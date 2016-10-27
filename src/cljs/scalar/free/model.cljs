@@ -108,10 +108,22 @@
   (iterate (partial lvl/next-levels (make-next-bottom other-model-params)) 
            stage))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OPTIONAL CODE
-;; Clojure spec tests--can be used in free.plot-pages for html form validation.
+;; Clojure spec tests: can be used in free.plot-pages for html form validation.
 
-;(s/def pos-number? (s/and number? pos?)) ; doesn't work. why?
-;(s/def ::sd pos-number?)
-(s/def ::sd (s/and number? pos?)) ; does work
+(s/def ::pos-num (s/and number? pos?)) ; doesn't work. why?
+
+(s/def ::phi number?)
+(s/def ::epsilon number?)
+(s/def ::sigma ::pos-num)
+(s/def ::theta number?)
+
+(s/def ::phi-dt ::pos-num)
+(s/def ::epsilon-dt ::pos-num)
+(s/def ::sigma-dt ::pos-num)
+(s/def ::theta-dt ::pos-num)
+
+(s/def ::sd ::pos-num)
+
 (s/def ::other-params (s/keys :req-un [::sd]))
