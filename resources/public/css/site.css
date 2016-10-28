@@ -37,6 +37,20 @@ h3 {
   font-weight:normal;
   color:#0080D0;
 }
+.nontitle {
+  font-family:"Pontano Sans";
+  font-size:100%;
+  font-weight:normal;
+  color:#808080;
+}
+/* centering and such requires voodoo. width is the key parameter with this scheme. */
+.centerright {
+    width: 122%;
+    position: absolute;
+    left: 0px;
+    margin: auto;
+    text-align: center;
+}
 form {
   font-family:"Pontano Sans";
   font-size:16px;
