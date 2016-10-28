@@ -114,16 +114,9 @@
 
 (s/def ::pos-num (s/and number? pos?)) ; doesn't work. why?
 
-(s/def ::phi number?)
-(s/def ::epsilon number?)
-(s/def ::sigma ::pos-num)
-(s/def ::theta number?)
-
-(s/def ::phi-dt ::pos-num)
-(s/def ::epsilon-dt ::pos-num)
-(s/def ::sigma-dt ::pos-num)
-(s/def ::theta-dt ::pos-num)
-
 (s/def ::sd ::pos-num)
-
-(s/def ::other-params (s/keys :req-un [::sd]))
+(s/def ::change-ticks (s/+ pos-int?))
+(s/def ::means (s/+ number?))
+                                       
+(s/def ::other-params
+  (s/keys :req-un [::sd ::change-ticks ::means]))

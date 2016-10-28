@@ -12,6 +12,7 @@
            (:require [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]] ; could be scalar or matrix
                      [utils.string :as us]))
    :cljs (ns free.level
+           (:require [cljs.spec :as s])    ; only for clojure spec tests a bottom
            ;; free.arithmetic contains macros defined in terms of either 
            ;; Clojure primitives or core.matrix functions.  When Clojurescript
            ;; sees this code, the macros have already been expanded, so if
@@ -243,3 +244,22 @@
 ;    (print-level level)
 ;    (println)))
 
+
+;;;;;;;;;;;;;;;;;;;;;
+;; spec
+
+(s/def ::pos-num (s/and number? pos?)) ; doesn't work. why?
+
+(s/def ::phi number?)
+(s/def ::epsilon number?)
+(s/def ::sigma ::pos-num)
+(s/def ::theta number?)
+
+(s/def ::phi-dt ::pos-num)
+(s/def ::epsilon-dt ::pos-num)
+(s/def ::sigma-dt ::pos-num)
+(s/def ::theta-dt ::pos-num)
+
+(s/def ::level-params 
+  (s/keys :req-un [::phi ::epsilon ::sigma ::theta
+                   ::phi-dt ::epsilon-dt ::sigma-dt ::theta-dt]))
