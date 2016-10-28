@@ -12,6 +12,7 @@
             [accountant.core :as accountant]
             [goog.string :as gs]
             [free.model :as m]
+            [free.level :as l] ; for spec
             [cljsjs.d3]       ; aliases unused but included
             [cljsjs.nvd3])) ; in case Clojurescript likes 'em
 
@@ -55,11 +56,11 @@
 (defonce level-params (map r/atom m/first-stage)) ; no $ on end because it's not a ratom; it's a sequence of ratoms
 ;; NOTE we also use m/other-model-params below
 
-;; THIS is intentionally not defonce.  I want it to be
-;; revisable by reloading to model file and this file.
-(def raw-stages$ (r/atom 
-		   (m/make-stages (map deref level-params)
-		                  (m/make-next-bottom m/other-model-params))))
+;; NO not right.  Complicated because same fieldnames in different levels
+;(def all-params (map deref 
+;                     (concat 
+;                       (conj level-params chart-params$)
+;                       (filter identity m/other-model-params))))
 
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
@@ -68,6 +69,12 @@
 
 (defonce no-error-text [:text])
 (defonce error-text$ (r/atom no-error-text))
+
+;; THIS is intentionally not defonce.  I want it to be
+;; revisable by reloading to model file and this file.
+(def raw-stages$ (r/atom 
+		   (m/make-stages (map deref level-params)
+		                  (m/make-next-bottom m/other-model-params))))
 
 ;; -------------------------
 ;; spec
@@ -83,10 +90,15 @@
 (s/def ::width pos-int?)
 (s/def ::num-points pos-int?)
 (s/def ::timesteps pos-int?)
-(s/def ::chart-params (s/keys :req-un [::height ; require these keys (with single colon), and check that they conform
+
+;; spec tests to be run by plot button
+(s/def ::plot-params (s/keys :req-un [::height ; require these keys (with single colon), and check that they conform
                                        ::width
                                        ::num-points
                                        ::timesteps]))
+
+;; spec tests to be run by run button
+(s/def ::run-params (s/merge ::plot-params :l/level-params :m/other-params))
 
 ;; -------------------------
 ;; run simulations, generate chart
@@ -212,7 +224,7 @@
                 :on-click (fn []
                             (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
                             (reset! error-text$ no-error-text)
-                            (if-let [spec-data (s/explain-data ::chart-params @params$)] ; if bad inputs (nil if ok)
+                            (if-let [spec-data (s/explain-data ::plot-params @params$)] ; if bad inputs (nil if ok)
                               (do
                                 (reset! error-text$ error-text)
                                 (doseq [k (explain-data-problem-keys spec-data)]
