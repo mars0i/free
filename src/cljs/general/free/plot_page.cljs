@@ -341,8 +341,9 @@
          [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
        [:tr {:class "bottom-border"} [:td {:col-span "20"}]])])) ; use colspan larger than any number of columns we'd want
 
-(defn model-form-elems
-  "Produces an HTML table containing for elements for a series of levels, 
+
+(defn model-form-component
+  "Produces an HTML table containing form elements for a series of levels, 
   with params containing a sequence of ratoms containing level parameters,
   and other-params containing a sequence of ratoms (or nils)  containing
   other parameters to be used at that level.  (Note that the result will be
@@ -353,33 +354,37 @@
   use the data you've entered, Reagent has already updated the value in
   the relevant ratom, and the button just causes that data to be used
   in a particular way."
-  [params other-params colors$]
+  [svg-id params other-params colors$]
+  [:span
+     [button svg-id chart-params$ colors$ run-model run-button-labels]
+     [:br]
   [:table (into [:tbody [:tr [:td {:col-span "20"}]]] ; use colspan larger than any number of columns we'd want
-                (mapcat (partial level-form-elems colors$) params other-params (range)))])
+                (mapcat (partial level-form-elems colors$) params other-params (range)))]])
 
-(defn chart-params-form
-  "Create form to allow changing model parameters and creating a new chart."
-  [svg-id chart-params$ level-params other-params colors$]
-  (let [float-width 7
-        int-width 10
-        {:keys [x1 x2 x3]} @chart-params$]  ; seems ok: entire form re-rendered(?)
-    [:form 
+
+(defn chart-form-component
+  "Create form elements for parameters controlling the appearance of the chart."
+  [svg-id chart-params$ colors$]
+  (let [int-width 10]
+    [:span
      [button svg-id chart-params$ colors$ make-chart plot-button-labels]
-     [:span
-      {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}}
-      nbsp nbsp @error-text$]
+     [:span {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} nbsp nbsp @error-text$]
      [:br]
      [level-checkboxes chart-params$]
      [spaces 4]
      [float-input chart-params$ colors$ int-width :timesteps ""]
      [float-input chart-params$ colors$ int-width :width ""]
      [float-input chart-params$ colors$ int-width :height ""]
-     [float-input chart-params$ colors$ int-width :num-points ""]
-     [:hr {:class "align-left" :width (:width @chart-params$)}]
-     [button svg-id chart-params$ colors$ run-model run-button-labels]
-     [:br]
-     [model-form-elems level-params other-params colors$]
-     ]))
+     [float-input chart-params$ colors$ int-width :num-points ""]]))
+
+
+(defn chart-params-form
+  "Create form to allow changing model parameters and creating a new chart."
+  [svg-id chart-params$ level-params other-params colors$]
+    [:form 
+     [chart-form-component svg-id chart-params$ colors$]               ; part of the form that controls chart appearance
+     [:hr {:class "align-left" :width (:width @chart-params$)}]        ; divide the parts
+     [model-form-component svg-id level-params other-params colors$]]) ; part of the form that controls the simulation
 
 (defn head []
   [:head
