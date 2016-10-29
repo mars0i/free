@@ -228,8 +228,8 @@
                 :on-click (fn []
                             (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
                             (reset! error-text$ no-error-text)          ; always reset error message--same idea
-                            (if-let [spec-data (mapcat (partial s/explain-data ::plot-params) ; FIXME ::plot-params isn't right. maybe :req-un isn't right.
-                                                       (flatten params))]
+                            (if-let [spec-data (seq (mapcat (partial s/explain-data ::plot-params) ; FIXME ::plot-params isn't right. maybe :req-un isn't right.
+						            (flatten params)))]
                               (do
                                 (reset! error-text$ error-text)
                                 (doseq [k (explain-data-problem-keys spec-data)]
