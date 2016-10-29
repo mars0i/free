@@ -154,7 +154,7 @@
 
 
 (defn make-chart
-  [raw-stages$ svg-id params$]
+  [raw-stages$ svg-id [params$]]
   "Create an NVD3 line chart with configuration parameters in @params$
   and attach it to SVG object with id svg-id."
   (let [chart (.lineChart js/nv.models)
@@ -197,10 +197,10 @@
 
 
 (defn run-model
-  [stages$ svg-id params$]
+  [stages$ svg-id [chart-params$ level-params other-model-params]]
   (reset! stages$ (m/make-stages (map deref level-params)
-		                  (m/make-next-bottom m/other-model-params)))
-  (make-chart stages$ svg-id params$))
+                                 (m/make-next-bottom other-model-params)))
+  (make-chart stages$ svg-id chart-params$))
 
 
 ;; -------------------------
@@ -212,7 +212,7 @@
   (into [:text] (repeat n nbsp)))
 
 
-;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
+;; a "form-2" Reagent component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
 (defn button
   "Create submit button runs validation tests on form inputs and changes 
   its appearance to indicate that the simulations are running.  svg-id is
@@ -220,15 +220,16 @@
   containing a chart parameter map.  colors$ is an atom containing the text
   colors for each of the inputs in the form.  labels is a map containing
   three labels for the button, indicating ready to run, running, or bad inputs."
-  [svg-id params$ colors$ run-fn labels]
+  [svg-id params colors$ run-fn labels]
   (let [{:keys [ready-label running-label error-text]} labels
         button-label$ (r/atom ready-label)] ; runs only once
-    (fn [svg-id params$ colors$ _]   ; called repeatedly. (already have labels from the let)
+    (fn [svg-id params colors$ _]   ; called repeatedly. (already have labels from the let)
       [:button {:type "button" 
                 :on-click (fn []
                             (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
-                            (reset! error-text$ no-error-text)
-                            (if-let [spec-data (s/explain-data ::plot-params @params$)] ; if bad inputs (nil if ok)
+                            (reset! error-text$ no-error-text)          ; always reset error message--same idea
+                            (if-let [spec-data (mapcat (partial s/explain-data ::plot-params) ; FIXME ::plot-params isn't right. maybe :req-un isn't right.
+                                                       (flatten params))]
                               (do
                                 (reset! error-text$ error-text)
                                 (doseq [k (explain-data-problem-keys spec-data)]
@@ -236,7 +237,7 @@
                               (do
                                 (reset! button-label$ running-label)
                                 (js/setTimeout (fn [] ; allow DOM update b4 make-chart runs so I can change the button to show things are in progress
-                                                 (run-fn raw-stages$ svg-id params$) 
+                                                 (run-fn raw-stages$ svg-id params) 
                                                  (reset! button-label$ ready-label))
                                                100))))}
        @button-label$])))
@@ -364,12 +365,12 @@
   use the data you've entered, Reagent has already updated the value in
   the relevant ratom, and the button just causes that data to be used
   in a particular way."
-  [svg-id params other-params colors$]
+  [svg-id chart-params$ level-params other-params colors$]
   [:span
-     [button svg-id chart-params$ colors$ run-model run-button-labels]
+     [button svg-id [chart-params$ level-params other-params] colors$ run-model run-button-labels]
      [:br]
   [:table (into [:tbody [:tr [:td {:col-span "20"}]]] ; use colspan larger than any number of columns we'd want
-                (mapcat (partial level-form-elems colors$) params other-params (range)))]])
+                (mapcat (partial level-form-elems colors$) level-params other-params (range)))]])
 
 
 (defn chart-form-component
@@ -377,7 +378,7 @@
   [svg-id chart-params$ colors$]
   (let [int-width 10]
     [:span
-     [button svg-id chart-params$ colors$ make-chart plot-button-labels]
+     [button svg-id [chart-params$] colors$ make-chart plot-button-labels]
      [:span {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} nbsp nbsp @error-text$]
      [:br]
      [level-checkboxes chart-params$]
@@ -394,7 +395,7 @@
     [:form 
      [chart-form-component svg-id chart-params$ colors$]               ; part of the form that controls chart appearance
      [:hr {:class "align-left" :width (:width @chart-params$)}]        ; divide the parts
-     [model-form-component svg-id level-params other-params colors$]]) ; part of the form that controls the simulation
+     [model-form-component svg-id chart-params$ level-params other-params colors$]]) ; part of the form that controls the simulation
 
 
 (defn head []
@@ -422,7 +423,7 @@
 
 (defn home-did-mount [this]
   "Add initial chart to main page."
-  (make-chart raw-stages$ (str "#" chart-svg-id) chart-params$))
+  (make-chart raw-stages$ (str "#" chart-svg-id) [chart-params$]))
 
 (defn home-page []
   (r/create-class {:reagent-render home-render
