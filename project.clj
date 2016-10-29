@@ -5,7 +5,7 @@
             :url "http://www.gnu.org/copyleft/gpl.html"}
   :min-lein-version "2.6.1"
   :dependencies [;[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojure "1.9.0-alpha13"]
+                 [org.clojure/clojure "1.9.0-alpha14"]
 
                  ;[org.clojure/clojurescript "1.7.228"] ; version aljabr wants
                  ;[org.clojure/clojurescript "1.9.229"]

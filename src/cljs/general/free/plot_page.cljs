@@ -143,6 +143,7 @@
        {:key (str "sigma "   level-num) :values (xy-pairs (map :sigma level-stages))   :color "#00ff00"}
        {:key (str "theta "   level-num) :values (xy-pairs (map :theta  level-stages))  :color "#0000ff"}])))
 
+
 ;; NOTE code in make-chart assumes that if level 0 exists, it comes first 
 ;; in the output of this function, and its phi data is first in that.
 (defn make-chart-data
@@ -194,11 +195,13 @@
           (style (clj->js {:stroke-opacity 0}))))
     chart)) 
 
+
 (defn run-model
   [stages$ svg-id params$]
   (reset! stages$ (m/make-stages (map deref level-params)
 		                  (m/make-next-bottom m/other-model-params)))
   (make-chart stages$ svg-id params$))
+
 
 ;; -------------------------
 ;; form: set chart parameters, re-run simulations and chart
@@ -207,6 +210,7 @@
   "Returns a text element containing n nbsp;'s."
   [n]
   (into [:text] (repeat n nbsp)))
+
 
 ;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
 (defn button
@@ -261,12 +265,14 @@
         #(level-checkbox % params$)
         (range num-levels)))))
 
+
 (defn float-text
   "Display a number with a label so that size is similar to float inputs."
   [n & label]
   (vec (concat [:text] label [": "]
                (list [:span {:style {:font-size "12px"}} 
                       (pp/cl-format nil "~,4f" n)]))))
+
 
 (defn input-fn-maker
   "Returns a function that will display and accept inputs, parsing them using parse-fn.
@@ -293,7 +299,7 @@
                 [spaces 4]])))]
     input-fn))
 
-;; For comparison, in lescent, I used d3 to set the onchange of dropdowns to a function that set a single global var for each.
+
 (def float-input 
   "Create a text input that accepts numbers."
   (input-fn-maker js/parseFloat identity))
@@ -305,9 +311,11 @@
     [:td (float-input params$ colors$ size k "")]
     [:td]))
 
+
 (def seq-input
   "Create a text input that accepts vectors."
   (input-fn-maker cr/read-string str))
+
 
 (defn param-seq-input
   "Generates a form input for Clojure sequential data in a table data element."
@@ -316,6 +324,7 @@
     [:td (seq-input params$ colors$ size k "")]
     [:td]))
 
+
 (defn some-kind-of-input
   "Generates a form input whose properties depend on the type of the value of
   the key k in params$"
@@ -323,6 +332,7 @@
   (let [val (k @params$)]
     (cond (number? val) (param-float-input colors$ params$ size k)
           :else (param-seq-input colors$ params$ size k))))
+
 
 (defn level-form-elems
   "Produces HTML table rows for a single free Level."
@@ -378,7 +388,7 @@
      [float-input chart-params$ colors$ int-width :num-points ""]]))
 
 
-(defn chart-params-form
+(defn params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id chart-params$ level-params other-params colors$]
     [:form 
@@ -401,7 +411,7 @@
     (fn []
       [:div {:id "chart-div"}
        [:svg {:id chart-svg-id :height svg-height}]
-       [chart-params-form (str "#" chart-svg-id)
+       [params-form (str "#" chart-svg-id)
                           chart-params$
                           level-params
                           m/other-model-params 
