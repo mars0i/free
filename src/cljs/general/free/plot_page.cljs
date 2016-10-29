@@ -33,11 +33,11 @@
 (def copyright-sym (gs/unescapeEntities "&copy;")) 
 (def nbsp (gs/unescapeEntities "&nbsp;")) 
 
-(def plot-button-labels {:ready-label "re-plot:" 
+(def plot-button-labels {:ready-label "re-plot" 
                          :running-label "plotting ..." 
                          :error-text [:text "Values in red are illegal." ]})
 
-(def run-button-labels {:ready-label "re-run:" 
+(def run-button-labels {:ready-label "re-run" 
                         :running-label "running ..." 
                         :error-text [:text "Values in red are illegal." ]})
 
