@@ -396,10 +396,12 @@
      [:hr {:class "align-left" :width (:width @chart-params$)}]        ; divide the parts
      [model-form-component svg-id level-params other-params colors$]]) ; part of the form that controls the simulation
 
+
 (defn head []
   [:head
    [:meta {:charset "utf-8"}]
    [:script {:type "text/javascript" :src "js/compiled/linkage.js"}]])
+
 
 ;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
 ;; Only reason to do this here is so that svg height set only once here--not controlled by reagent, which makes size change while editing field.
