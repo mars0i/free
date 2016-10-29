@@ -1,0 +1,1 @@
+lein clean; lein with-profile cljs-scalar cljsbuild once min
