@@ -9,7 +9,8 @@
 ;; SEE doc/level.md for documentation on general features of the code below.
 
 #?(:clj  (ns free.level
-           (:require [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]] ; could be scalar or matrix
+           (:require [clojure.spec :as s]
+                     [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]] ; could be scalar or matrix
                      [utils.string :as us]))
    :cljs (ns free.level
            (:require [cljs.spec :as s])    ; only for clojure spec tests a bottom
