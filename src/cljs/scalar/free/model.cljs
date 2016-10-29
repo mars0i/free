@@ -36,10 +36,10 @@
 ;; and define next-bottom in that function?
 
 ;; This will be used by free.plot-pages.  It should have one element for each level--nil if no params needed for that level.
-(defonce other-model-params [nil
-                             (atom {:sd 3
+(defonce other-model-params [(atom {:sd 3                      ; params for sensory input data generation function
                                     :change-ticks [1500 100]
                                     :means [20 2]})
+                             nil
                              nil])
 
 (defn make-next-bottom
@@ -49,7 +49,7 @@
   [other-model-params]
   (lvl/make-next-bottom 
     (let [tick$ (atom 0)
-          model-params$ (second other-model-params)
+          model-params$ (first other-model-params)
           curr-mean$ (atom 2)
           means-cycle$ (atom (cycle (:means @model-params$)))
           change-intervals (:change-ticks @model-params$)
