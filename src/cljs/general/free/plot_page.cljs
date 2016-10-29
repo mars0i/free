@@ -342,6 +342,17 @@
        [:tr {:class "bottom-border"} [:td {:col-span "20"}]])])) ; use colspan larger than any number of columns we'd want
 
 (defn model-form-elems
+  "Produces an HTML table containing for elements for a series of levels, 
+  with params containing a sequence of ratoms containing level parameters,
+  and other-params containing a sequence of ratoms (or nils)  containing
+  other parameters to be used at that level.  (Note that the result will be
+  form elements for parameters with the same names different levels, and 
+  maybe the same HTML id's.  This works because input-fn-maker associates
+  each field with particular ratom; different levels have different ratoms--
+  from the sequences just mentioned--so by the time you click a button to
+  use the data you've entered, Reagent has already updated the value in
+  the relevant ratom, and the button just causes that data to be used
+  in a particular way."
   [params other-params colors$]
   [:table (into [:tbody [:tr [:td {:col-span "20"}]]] ; use colspan larger than any number of columns we'd want
                 (mapcat (partial level-form-elems colors$) params other-params (range)))])
