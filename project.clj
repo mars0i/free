@@ -52,9 +52,10 @@
                           :java-source-paths ["src/java"]}
 
              :cljs-scalar {:source-paths ["src/cljs/general"  "src/cljs/scalar"
-                                          "src/cljc/general" "src/cljc/scalar"]}
-                          ;                "src/clj/general/utils"] ; kludge to make Clojure compilation stage happier?
-                          ;:java-source-paths ["src/java"]}         ; kludge to make Clojure compilation stage happier?
+                                          "src/cljc/general" "src/cljc/scalar"
+                                          "src/clj/general"  "src/clj/scalar"   ; kludge to make Clojure compilation stage happier?
+                                          "src/cljc/general" "src/cljc/scalar"] ; kludge to make Clojure compilation stage happier?
+                          :java-source-paths ["src/java"]}                      ; kludge to make Clojure compilation stage happier?
 
              :cljs-matrix {:source-paths ["src/cljs/general"  "src/cljs/matrix"
                                           "src/cljc/general" "src/cljc/matrix"]}
@@ -75,7 +76,8 @@
 			   }
                 :compiler {:main free.core
                            :asset-path "js/compiled/out/scalar"
-                           :output-to "resources/public/js/compiled/free.js"
+                           ;:output-to "resources/public/js/compiled/free.js"
+                           :output-to "resources/public/free.js"
                            :output-dir "resources/public/js/compiled/out/scalar"
                            :pretty-print false
                            :optimizations :none
@@ -97,7 +99,8 @@
 			   }
                 :compiler {:main free.core
                            :asset-path "js/compiled/out/matrix"
-                           :output-to "resources/public/js/compiled/free.js"
+                           ;:output-to "resources/public/js/compiled/free.js"
+                           :output-to "resources/public/free.js"
                            :output-dir "resources/public/js/compiled/out/matrix"
                            :pretty-print false
                            :optimizations :none
@@ -109,7 +112,8 @@
                {:id "min"
                 :source-paths ["src/cljc/general" "src/cljc/scalar"
                                "src/cljs/general" "src/cljs/scalar"]
-                :compiler {:output-to "resources/public/js/compiled/free.js"
+                :compiler {;:output-to "resources/public/js/compiled/free.js"
+                           :output-to "resources/public/free.js"
                            :main free.core
                            :optimizations :advanced
                            :pretty-print false}}]}
