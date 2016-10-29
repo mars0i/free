@@ -112,7 +112,7 @@
 ;; OPTIONAL CODE
 ;; Clojure spec tests: can be used in free.plot-pages for html form validation.
 
-(s/def ::pos-num (s/and number? pos?)) ; doesn't work. why?
+(s/def ::pos-num (s/and number? pos?))
 
 (s/def ::sd ::pos-num)
 (s/def ::change-ticks (s/+ pos-int?))
