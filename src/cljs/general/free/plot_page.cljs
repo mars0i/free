@@ -62,13 +62,10 @@
 ;                       (conj level-params chart-params$)
 ;                       (filter identity m/other-model-params))))
 
-(defn reset-colors-to-default!
-  [colors$]
-  (reset! colors$ (zipmap (keys @colors$)
-                          (repeat default-input-color))))
+(defonce default-chart-param-colors (zipmap (keys @chart-params$) 
+                                            (repeat default-input-color)))
 
-(defonce chart-param-colors$ (r/atom (zipmap (keys @chart-params$)
-                                             (repeat default-input-color))))
+(defonce chart-param-colors$ (r/atom default-chart-param-colors))
 
 (defonce no-error-text [:text])
 (defonce error-text$ (r/atom no-error-text))
@@ -80,7 +77,7 @@
 		                  (m/make-next-bottom m/other-model-params))))
 
 ;; -------------------------
-;; prepare clojure.spec specs for use to validate form inputs:
+;; spec
 
 (defn explain-data-problem-keys
   "Given the result of a call to spec/explain-data, returns the keys of 
@@ -95,13 +92,13 @@
 (s/def ::timesteps pos-int?)
 
 ;; spec tests to be run by plot button
-(s/def ::chart-params (s/keys :req-un [::height ; require these keys (with single colon), and check that they conform
+(s/def ::plot-params (s/keys :req-un [::height ; require these keys (with single colon), and check that they conform
                                        ::width
                                        ::num-points
                                        ::timesteps]))
 
 ;; spec tests to be run by run button
-(s/def ::run-params (s/merge ::chart-params :l/level-params :m/other-params))
+(s/def ::run-params (s/merge ::plot-params :l/level-params :m/other-params))
 
 ;; -------------------------
 ;; run simulations, generate chart
@@ -132,9 +129,6 @@
   (map #(hash-map :x %1 :y %2)
        (range)
        ys))
-
-;; -------------------------
-;; run simulations, generate chart
 
 ;; NOTE code in make-chart assumes that if level 0 exists, it comes first 
 ;; in the output of this function, and its phi data is first in that.
@@ -217,7 +211,8 @@
   [n]
   (into [:text] (repeat n nbsp)))
 
-;; a "form-2" Reagent component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
+
+;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
 (defn button
   "Create submit button runs validation tests on form inputs and changes 
   its appearance to indicate that the simulations are running.  svg-id is
@@ -225,20 +220,16 @@
   containing a chart parameter map.  colors$ is an atom containing the text
   colors for each of the inputs in the form.  labels is a map containing
   three labels for the button, indicating ready to run, running, or bad inputs."
-  [svg-id params colors$ run-fn labels specs]
+  [svg-id params$ colors$ run-fn labels]
   (let [{:keys [ready-label running-label error-text]} labels
         button-label$ (r/atom ready-label)] ; runs only once
     (fn [svg-id params$ colors$ _]   ; called repeatedly. (already have labels from the let)
       [:button {:type "button" 
                 :on-click (fn []
-                            (reset-colors-to-default! colors$) ; alway reset colors--even if persisting bad inputs, others may have been corrected
-                            (reset! error-text$ no-error-text)          ; always reset error message--same idea
-                            ;; TODO not right:
-                            (if-let [spec-data (first (mapcat (comp (partial s/explain-data specs)
-                                                                  deref)
-						            (flatten params)))]
+                            (reset! colors$ default-chart-param-colors) ; alway reset colors--even if persisting bad inputs, others may have been corrected
+                            (reset! error-text$ no-error-text)
+                            (if-let [spec-data (s/explain-data ::plot-params @params$)] ; if bad inputs (nil if ok)
                               (do
-                                (enable-console-print!) (println spec-data) ; DEBUG
                                 (reset! error-text$ error-text)
                                 (doseq [k (explain-data-problem-keys spec-data)]
                                   (swap! colors$ assoc k error-color)))
@@ -375,7 +366,7 @@
   in a particular way."
   [svg-id params other-params colors$]
   [:span
-     [button svg-id [chart-params$ level-params other-params] colors$ run-model run-button-labels ::run-params]
+     [button svg-id chart-params$ colors$ run-model run-button-labels]
      [:br]
   [:table (into [:tbody [:tr [:td {:col-span "20"}]]] ; use colspan larger than any number of columns we'd want
                 (mapcat (partial level-form-elems colors$) params other-params (range)))]])
@@ -386,7 +377,7 @@
   [svg-id chart-params$ colors$]
   (let [int-width 10]
     [:span
-     [button svg-id [chart-params$] colors$ make-chart plot-button-labels ::chart-params]
+     [button svg-id chart-params$ colors$ make-chart plot-button-labels]
      [:span {:id "error-text" :style {:color error-color :font-size "16px" :font-weight "normal" :text-align "left"}} nbsp nbsp @error-text$]
      [:br]
      [level-checkboxes chart-params$]

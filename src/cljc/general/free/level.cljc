@@ -262,5 +262,5 @@
 (s/def ::theta-dt ::pos-num)
 
 (s/def ::level-params 
-  (s/keys :opt-un [::phi ::epsilon ::sigma ::theta
+  (s/keys :req-un [::phi ::epsilon ::sigma ::theta
                    ::phi-dt ::epsilon-dt ::sigma-dt ::theta-dt]))
