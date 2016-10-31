@@ -326,12 +326,13 @@
 
 
 (defn some-kind-of-input
-  "Generates a form input whose properties depend on the type of the value of
-  the key k in params$"
-  [colors$ params$ size k]
+ "Generates a form input whose properties depend on the type of the value of
+ the key k in params$"
+ [colors$ params$ size k]
+ (when-not (= k :description) ; description labels the whole line; it's not an input value
   (let [val (k @params$)]
-    (cond (number? val) (param-float-input colors$ params$ size k)
-          :else (param-seq-input colors$ params$ size k))))
+   (cond (number? val) (param-float-input colors$ params$ size k)
+    :else (param-seq-input colors$ params$ size k)))))
 
 
 (defn level-form-elems
@@ -346,7 +347,7 @@
        [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
      (if other-params$
        (conj 
-         (into [:tr {:class "bottom-border"} [:td]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
+         (into [:tr {:class "bottom-border"} [:td (:description @other-params$)]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
                                                          (keys @other-params$)))
          [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
        [:tr {:class "bottom-border"} [:td {:col-span "20"}]])])) ; use colspan larger than any number of columns we'd want
