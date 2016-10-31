@@ -1,1 +1,3 @@
-lein clean; lein with-profile cljs-scalar cljsbuild once min
+#!/bin/sh
+lein clean
+lein with-profile cljs-scalar cljsbuild once min
