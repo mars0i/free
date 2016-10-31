@@ -41,7 +41,7 @@
   ;:source-paths ["src"]
   ;:java-source-paths ["src/java"]
 
-  :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
+  :clean-targets ^{:protect false} ["resources/public/js/compiled" "resources/public/free.js" "target"]
 
   :profiles {:clj-scalar {:source-paths ["src/clj/general"  "src/clj/scalar"
                                          "src/cljc/general" "src/cljc/scalar"]
