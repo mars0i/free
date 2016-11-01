@@ -43,24 +43,40 @@
        <p> In this model there are distinct "levels" of information that
        interact.  The general idea is that there is a "prediction"
        (<em>phi</em>) at one level, scaled by a multiplier
-       <em>theta</em>; the result is then is compared some version of
-       input data (also <em>phi</em>), but at the at the next level
-       down.  The difference between these two values is an "error"
-       value <em>epsilon</em>>, which is scaled by the inverse of a
-       value <em>sigma</em> to get a scaled error value, which is then
-       used to adjust <em>theta</em> and the first <em>phi</em>.</p>
+       <em>theta</em>; the result is then is compared to some version of
+       data (also called <em>phi</em>) at the at the next level
+       down.  That is, we're in effect comparing a prediction from the
+       higher level about what the data will be at the next level down.
+       The difference between these two values is an "error"
+       value <em>epsilon</em>>.  This is then scaled by the inverse of a
+       value <em>sigma</em> to get a scaled error value.  And this is then
+       used to adjust <em>theta</em> and the first <em>phi</em>.  Then the 
+       process starts over.  It's a feedback loop.  With one proviso:
+       If there are more three (or two--see below) levels, then this
+       process takes place between each two "adjacent" levels, so that
+       the feedback loop involves all of the levels.</p>
 
-       <p>The version of the model displayed in <em>free</em>
-       currently has only three levels--or rather two, level 0 and level 1,
-       since the last level, level 2, isn't really a level per se.  It merely
-       holds some values needed to make the model run in a simpler way.
-       However, by changing one file, <em>free</em> should be able to handle
-       a model involving any number of levels.
-       </p>
+       <p>The version of the model displayed in this web version of
+       <em>free</em> has only three levels--or rather two, level 0 and
+       level 1, since the last level, level 2, isn't really a level per
+       se.  The top level merely holds some values needed to make the
+       model run in a simpler way.  (However, <em>free</em> is designed
+       so that by changing or replacing one file--model.cljc--for the
+       web version, it should be able handle a model involving any
+       number of levels.)</p>
 
        <h4>The plot</h4>
+       
 
       <h3>How to use it?</h3>
+
+
+      <h3>Things to try</h3>
+
+
+      <h3>Going further</h3>
+
+
     </div>
   </body>
 </html>
