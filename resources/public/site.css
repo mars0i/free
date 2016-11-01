@@ -23,7 +23,19 @@ h3 {
   font-family:"Pontano Sans";
   font-size:120%;
   font-weight:normal;
-  color:#C04040;
+  color:#E04040;
+}
+h4 {
+  font-family:"Pontano Sans";
+  font-size:100%;
+  font-weight:normal;
+  color:#E04040;
+}
+p {
+  width:650px;
+}
+blockquote {
+  width:500px;
 }
 .title {
   font-family:"Pontano Sans";
@@ -42,6 +54,12 @@ h3 {
   font-size:100%;
   font-weight:normal;
   color:#808080;
+}
+.normal-text {
+  font-family:"Pontano Sans";
+  font-size:100%;
+  font-weight:normal;
+  color:#000000;
 }
 /* centering and such requires voodoo. width is the key parameter with this scheme. */
 .centerright {
