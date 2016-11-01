@@ -9,9 +9,58 @@
       <text class="subtitle">an implementation of Bogacz's (2015) free error minimization model of perception</text>
     </span>
     <br/>
+    <span>
+      <a class="nontitle" href="http://members.logical.net/~marshall">Marshall Abrams</a>
+      <text class="nontitle">&nbsp;(&copy; 2016)</text>
+    </span>
     <br/>
-    <div>
-      <p class="nontitle">Documentation under construction.</p>
+    <br/>
+    <div class="normal-text">
+      <h3>What is it?</h3>
+
+      <h4>Overview</h4>
+
+      <p> This is a simple model from a class of
+       models of cognition and brain processes that use methods known as
+       "free-energy minimization", "prediction error minimization",
+       "predictive coding"
+       and/or "predictive processing".  The particular model is a fairly
+       literal implementation of a mathematical model described in</p>
+       <blockquote>
+       Rafal Bogacz, "A tutorial on the free-energy framework for
+       modelling perception and learning", <em>Journal of Mathematical
+       Psychology</em>, available online 14 December 2015, ISSN
+       0022-2496, http://dx.doi.org/10.1016/j.jmp.2015.11.003.
+       (http://www.sciencedirect.com/science/article/pii/S0022249615000759)
+       </blockquote>
+       <p>Specifically, this is the scalar model that Bogacz describes in section 2 
+       of his paper.  (There is another version of this software that
+       implements the vector/matrix model that Bogacz describes in section 4.)
+       </p>
+
+      <h4>Levels and variables</h4>
+
+       <p> In this model there are distinct "levels" of information that
+       interact.  The general idea is that there is a "prediction"
+       (<em>phi</em>) at one level, scaled by a multiplier
+       <em>theta</em>; the result is then is compared some version of
+       input data (also <em>phi</em>), but at the at the next level
+       down.  The difference between these two values is an "error"
+       value <em>epsilon</em>>, which is scaled by the inverse of a
+       value <em>sigma</em> to get a scaled error value, which is then
+       used to adjust <em>theta</em> and the first <em>phi</em>.</p>
+
+       <p>The version of the model displayed in <em>free</em>
+       currently has only three levels--or rather two, level 0 and level 1,
+       since the last level, level 2, isn't really a level per se.  It merely
+       holds some values needed to make the model run in a simpler way.
+       However, by changing one file, <em>free</em> should be able to handle
+       a model involving any number of levels.
+       </p>
+
+       <h4>The plot</h4>
+
+      <h3>How to use it?</h3>
     </div>
   </body>
 </html>
