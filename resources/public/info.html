@@ -48,7 +48,7 @@
        down.  That is, we're in effect comparing a prediction from the
        higher level about what the data will be at the next level down.
        The difference between these two values is an "error"
-       value <em>epsilon</em>>.  This is then scaled by the inverse of a
+       value <em>epsilon</em>.  This is then scaled by the inverse of a
        value <em>sigma</em> to get a scaled error value.  And this is then
        used to adjust <em>theta</em> and the first <em>phi</em>.  Then the 
        process starts over.  It's a feedback loop.  With one proviso:
@@ -58,12 +58,12 @@
 
        <p>The version of the model displayed in this web version of
        <em>free</em> has only three levels--or rather two, level 0 and
-       level 1, since the last level, level 2, isn't really a level per
-       se.  The top level merely holds some values needed to make the
-       model run in a simpler way.  (However, <em>free</em> is designed
-       so that by changing or replacing one file--model.cljc for the
-       web version--it should be able handle a model involving any
-       number of levels.)</p>
+       level 1, since the last level, labeled "priors", isn't really a
+       level per se.  This last level merely holds some values
+       (parameters of priors) needed to make the model run in a simpler
+       way.  (However, <em>free</em> is designed so that by changing or
+       replacing one file--model.cljc for the web version--it should be
+       able handle a model involving any number of levels.)</p>
 
        <h4>The plot</h4>
        

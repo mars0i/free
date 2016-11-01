@@ -101,7 +101,7 @@
 (s/def ::run-params (s/merge ::plot-params :l/level-params :m/other-params))
 
 ;; -------------------------
-;; run simulations, generate chart
+;; run simulations and construct data for chart
 
 (defn calc-every-nth
   "Calculate how often to sample stages to generate a certain number of points."
@@ -130,6 +130,9 @@
        (range)
        ys))
 
+;; -------------------------
+;; build chart
+
 ;; NOTE code in make-chart assumes that if level 0 exists, it comes first 
 ;; in the output of this function, and its phi data is first in that.
 (defn make-level-chart-data
@@ -151,7 +154,6 @@
   [stages params$]
   (clj->js (vec (mapcat (partial make-level-chart-data stages)
                         (:levels-to-display @params$)))))
-
 
 (defn make-chart
   [raw-stages$ svg-id params$]
@@ -196,6 +198,9 @@
     chart)) 
 
 
+;; -------------------------
+;; re-run model and remake chart
+
 (defn run-model
   [stages$ svg-id params$]
   (reset! stages$ (m/make-stages (map deref level-params)
@@ -204,13 +209,12 @@
 
 
 ;; -------------------------
-;; form: set chart parameters, re-run simulations and chart
+;; general-purpose form elements
 
 (defn spaces 
   "Returns a text element containing n nbsp;'s."
   [n]
   (into [:text] (repeat n nbsp)))
-
 
 ;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
 (defn button
@@ -241,38 +245,12 @@
                                                100))))}
        @button-label$])))
 
-
-(defn level-checkbox
-  [level-num params$]
-  (let [levels-to-display (:levels-to-display @params$)
-        checked (boolean (levels-to-display level-num))] ; l-t-d is a set, btw
-    [[:text (str " " level-num ": ")]
-     [:input {:type "checkbox"
-              :id (str "level-" level-num)
-              :checked checked
-              :on-change #(swap! params$ 
-                                 update :levels-to-display 
-                                 (if checked disj conj) ; i.e. if checked, now unchecked, so remove level from set; else it's now checked, so add level
-                                 level-num)}]]))
-
-(defn level-checkboxes
-  [params$]
-  (vec 
-    (concat
-      [:span {:id "level-checkboxes"}
-       [:text "Levels to display: "]]
-      (mapcat 
-        #(level-checkbox % params$)
-        (range num-levels)))))
-
-
 (defn float-text
   "Display a number with a label so that size is similar to float inputs."
   [n & label]
   (vec (concat [:text] label [": "]
                (list [:span {:style {:font-size "12px"}} 
                       (pp/cl-format nil "~,4f" n)]))))
-
 
 (defn input-fn-maker
   "Returns a function that will display and accept inputs, parsing them using parse-fn.
@@ -299,7 +277,6 @@
                 [spaces 4]])))]
     input-fn))
 
-
 (def float-input 
   "Create a text input that accepts numbers."
   (input-fn-maker js/parseFloat identity))
@@ -311,11 +288,9 @@
     [:td (float-input params$ colors$ size k "")]
     [:td]))
 
-
 (def seq-input
   "Create a text input that accepts vectors."
   (input-fn-maker cr/read-string str))
-
 
 (defn param-seq-input
   "Generates a form input for Clojure sequential data in a table data element."
@@ -323,7 +298,6 @@
   (if (k @params$) 
     [:td (seq-input params$ colors$ size k "")]
     [:td]))
-
 
 (defn some-kind-of-input
  "Generates a form input whose properties depend on the type of the value of
@@ -335,43 +309,31 @@
     :else (param-seq-input colors$ params$ size k)))))
 
 
-(defn level-form-elems
-  "Produces HTML table rows for a single free Level."
-  [colors$ params$ other-params$ level-num]
-  (let [float-width 7
-        seq-width 10]
-    [(conj
-       (into [:tr [:td "level " level-num ":"]]
-             (map (partial param-float-input colors$ params$ float-width) 
-                  [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))
-       [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
-     (if other-params$
-       (conj 
-         (into [:tr {:class "bottom-border"} [:td (:description @other-params$)]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
-                                                         (keys @other-params$)))
-         [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
-       [:tr {:class "bottom-border"} [:td {:col-span "20"}]])])) ; use colspan larger than any number of columns we'd want
+;; -------------------------
+;; chart-control portion of form
 
+(defn level-checkbox
+  [level-num params$]
+  (let [levels-to-display (:levels-to-display @params$)
+        checked (boolean (levels-to-display level-num))] ; l-t-d is a set, btw
+    [[:text (str " " level-num ": ")]
+     [:input {:type "checkbox"
+              :id (str "level-" level-num)
+              :checked checked
+              :on-change #(swap! params$ 
+                                 update :levels-to-display 
+                                 (if checked disj conj) ; i.e. if checked, now unchecked, so remove level from set; else it's now checked, so add level
+                                 level-num)}]]))
 
-(defn model-form-component
-  "Produces an HTML table containing form elements for a series of levels, 
-  with params containing a sequence of ratoms containing level parameters,
-  and other-params containing a sequence of ratoms (or nils)  containing
-  other parameters to be used at that level.  (Note that the result will be
-  form elements for parameters with the same names different levels, and 
-  maybe the same HTML id's.  This works because input-fn-maker associates
-  each field with particular ratom; different levels have different ratoms--
-  from the sequences just mentioned--so by the time you click a button to
-  use the data you've entered, Reagent has already updated the value in
-  the relevant ratom, and the button just causes that data to be used
-  in a particular way."
-  [svg-id params other-params colors$]
-  [:span
-     [button svg-id chart-params$ colors$ run-model run-button-labels]
-     [:br]
-  [:table (into [:tbody [:tr [:td {:col-span "20"}]]] ; use colspan larger than any number of columns we'd want
-                (mapcat (partial level-form-elems colors$) params other-params (range)))]])
-
+(defn level-checkboxes
+  [params$]
+  (vec 
+    (concat
+      [:span {:id "level-checkboxes"}
+       [:text "Levels to display: "]]
+      (mapcat 
+        #(level-checkbox % params$)
+        (range num-levels)))))
 
 (defn chart-form-component
   "Create form elements for parameters controlling the appearance of the chart."
@@ -389,6 +351,52 @@
      [float-input chart-params$ colors$ int-width :num-points ""]]))
 
 
+;; -------------------------
+;; Level data part of form
+
+(defn level-form-elems
+  "Produces HTML table rows for a single free Level."
+  [colors$ params$ other-params$ label]
+  (let [float-width 7
+        seq-width 10]
+    [(conj
+       (into [:tr [:td label]]
+             (map (partial param-float-input colors$ params$ float-width) 
+                  [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))
+       [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
+     (if other-params$
+       (conj 
+         (into [:tr {:class "bottom-border"} [:td (:description @other-params$)]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
+                                                         (keys @other-params$)))
+         [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
+       [:tr {:class "bottom-border"} [:td {:col-span "20"}]])])) ; use colspan larger than any number of columns we'd want
+
+(defn model-form-component
+  "Produces an HTML table containing form elements for a series of levels, 
+  with params containing a sequence of ratoms containing level parameters,
+  and other-params containing a sequence of ratoms (or nils)  containing
+  other parameters to be used at that level.  (Note that the result will be
+  form elements for parameters with the same names different levels, and 
+  maybe the same HTML id's.  This works because input-fn-maker associates
+  each field with particular ratom; different levels have different ratoms--
+  from the sequences just mentioned--so by the time you click a button to
+  use the data you've entered, Reagent has already updated the value in
+  the relevant ratom, and the button just causes that data to be used
+  in a particular way.)"
+  [svg-id params other-params colors$]
+  [:span
+   [button svg-id chart-params$ colors$ run-model run-button-labels]
+   [:br]
+   [:table (into [:tbody [:tr [:td {:col-span "20"}]]] ; use colspan larger than any number of columns we'd want
+                 (mapcat (partial level-form-elems colors$) params other-params 
+                         (conj ; make level labels, but call the top level "priors":
+                           (vec (map #(str "level " % ":")
+                                     (range (dec (count params)))))
+                           "priors:")))]])
+
+;; -------------------------
+;; build form
+
 (defn params-form
   "Create form to allow changing model parameters and creating a new chart."
   [svg-id chart-params$ level-params other-params colors$]
@@ -397,12 +405,13 @@
      [:hr {:class "align-left" :width (:width @chart-params$)}]        ; divide the parts
      [model-form-component svg-id level-params other-params colors$]]) ; part of the form that controls the simulation
 
+;; -------------------------
+;; build page
 
 (defn head []
   [:head
    [:meta {:charset "utf-8"}]
    [:script {:type "text/javascript" :src "js/compiled/linkage.js"}]])
-
 
 ;; a "form-2" component function: returns a function rather than hiccup (https://github.com/Day8/re-frame/wiki/Creating-Reagent-Components).
 ;; Only reason to do this here is so that svg height set only once here--not controlled by reagent, which makes size change while editing field.
