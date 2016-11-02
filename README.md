@@ -41,7 +41,7 @@ You can use `lein repl` but you need additional arguments to specify
 scalar or matrix mode.  There are unix shell scripts in the directory
 src/scripts that collect the relevant arguments, if you're using OS X or
 Linux or another unix.  For Windows, take a look at the contents of the
-scripts and a script's last line.  In a unix:
+scripts and execute a script's last line.  In a unix:
 
 #### scalar mode
 
