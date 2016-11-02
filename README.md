@@ -9,6 +9,8 @@ perception and learning", *Journal of Mathematical Psychology*,
 Available online 14 December 2015, ISSN 0022-2496,
 http://dx.doi.org/10.1016/j.jmp.2015.11.003 .)
 
+The documentation is a work in progress.  Some of the code is, too.
+
 There is a running demo version of this software here:
 http://members.logical.net/~marshall/free/ .
 
