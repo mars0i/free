@@ -9,6 +9,9 @@ perception and learning", *Journal of Mathematical Psychology*,
 Available online 14 December 2015, ISSN 0022-2496,
 http://dx.doi.org/10.1016/j.jmp.2015.11.003 .)
 
+There is a running demo version of this software here:
+http://members.logical.net/~marshall/free/ .
+
 ## License
 
 This software is copyright 2016 by [Marshall
@@ -23,13 +26,14 @@ released under a different license.
 You should be able to run free either in Clojure or Clojurescript.  I
 describe some ways to do this below (in development).
 
-In either Clojure or Clojurescript, you can run it either in scalar
+In Clojure, you can run it either in scalar
 mode or matrix mode.  The first is designed for learning and
 processing with single scalar values.  The second allows you to use
 vectors and matrices as values; that is, it allows multi-dimensional
 learning.  (You can use matrix mode for "scalars" by using 1x1
 vectors/matrices, but it will be a lot slower, which might matter in
-some situations.)
+some situations.)  At present, the Clojurescript version only supports
+scalar mode.
 
 ### To run in Clojure:
 
@@ -53,16 +57,7 @@ specified after the `:profiles` keyword in project.clj.
 You an delete `rlwrap` below if you don't have that utility installed.
 (rlwrap gives you history in the repl prompt.)
 
-You may have to execute one of these once, and then exit out and run
-it again to flush out some odd warning.
-
-These might not be working right yet.
-
-#### scalar mode
-
     rlwrap lein with-profile dev-scalar figwheel
 
-#### matrix mode
-
-    rlwrap lein with-profile dev-matrix figwheel
-
+As noted above, there is also a constrained version of the model ready
+to run on the web here: https://github.com/mars0i/free .
