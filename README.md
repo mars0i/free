@@ -38,26 +38,38 @@ scalar mode.
 ### To run in Clojure:
 
 You can use `lein repl` but you need additional arguments to specify
-scalar or matrix mode.  Note that the plus signs in the commands below
-are essential.  They tell Clojure to merge the default profile into
-the specified profile, "dev-scalar" or "dev-matrix", which are
-specified after the `:profiles` keyword in project.clj.
+scalar or matrix mode.  There are unix shell scripts in the directory
+src/scripts that collect the relevant arguments, if you're using OS X or
+Linux or another unix.  For Windows, take a look at the contents of the
+scripts and a script's last line.  In a unix:
 
 #### scalar mode
 
-    lein with-profile +dev-scalar repl
+    ./src/scripts/matclj
 
 #### matrix mode
 
-    lein with-profile +dev-matrix repl
+    ./src/scripts/scalclj
 
 
 ### To run in Clojurescript:
 
-You an delete `rlwrap` below if you don't have that utility installed.
-(rlwrap gives you history in the repl prompt.)
+If you're in Windows, see the note above.  In OS X, Linux, or another
+unix, run this script:
 
-    rlwrap lein with-profile dev-scalar figwheel
+    ./src/scripts/scalcljs
 
-As noted above, there is also a constrained version of the model ready
-to run on the web here: https://github.com/mars0i/free .
+If you get an error about rlwrap, either install rlwrap or execute use
+the last line of the script in a shell without the word "rlwrap".
+rlwrap provides command history for the Clojure repl prompt, so it's
+not essential.
+
+To build a version that can be installed on the web, for example, use:
+
+    ./src/scripts/scalcljs-build
+
+This will put the files that make up the application in
+resources/public and resources/public/css.
+
+As noted above, there is also a constrained Clojurescript version of the
+model ready to run on the web here: https://github.com/mars0i/free .
