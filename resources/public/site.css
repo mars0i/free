@@ -69,6 +69,12 @@ blockquote {
     margin: auto;
     text-align: center;
 }
+.right {
+    float: right;
+    /* voodoo to allow links to be clickable, from http://stackoverflow.com/questions/4407878/why-does-adding-floatleft-to-my-css-make-my-link-unclickable: */
+    position: relative;
+    z-index: 10;
+}
 form {
   font-family:"Pontano Sans";
   font-size:16px;

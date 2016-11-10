@@ -13,11 +13,14 @@ Philos Trans R Soc Lond B Biol Sci. 2005 Apr 29;360(1456):815-36
 <html>
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"> <!-- for iOS Safari -->
     <link href="site.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <span style="text-align:left;"><text class="title">free&nbsp;&nbsp;</text>
       <text class="subtitle">an implementation of Bogacz's (2015) free error minimization model of perception</text>
+    <span style="float:right;">
+      <a class="nontitle" href="index.html">Return to the model plot page</a>&nbsp;&nbsp;
     </span>
     <br/>
     <span>
@@ -27,27 +30,37 @@ Philos Trans R Soc Lond B Biol Sci. 2005 Apr 29;360(1456):815-36
     <br/>
     <br/>
     <div class="normal-text">
+      <em>Draft.  Feedback welcome.</em>
+
       <h3>What is it?</h3>
 
       <h4>Overview</h4>
 
-      <p> This is a simple model from a class of
-       models of cognition and brain processes that use methods known as
+       <p> This is a simple model that's a member of a class of
+       models of cognition and brain processes using methods known as
        "free-energy minimization", "prediction error minimization",
-       "predictive coding"
-       and/or "predictive processing".  The particular model is a fairly
-       literal implementation of a mathematical model described in</p>
-       <blockquote>
-       Rafal Bogacz, "A tutorial on the free-energy framework for
-       modelling perception and learning", <em>Journal of Mathematical
-       Psychology</em>, available online 14 December 2015, ISSN
-       0022-2496, http://dx.doi.org/10.1016/j.jmp.2015.11.003.
+       "predictive coding" and/or "predictive processing".  The
+       information below is probably not sufficient to provide an
+       understanding of this model for someone who doesn't already have a
+       basic understanding of related ideas.  The first couple of
+       chapters of Andy Clark's <em>Surfing Uncertainty</em> (Oxford
+       2015) provide an informal introduction.
+       The simulation model described here is a fairly literal
+       implementation of a mathematical model described in</p>
+
+       <blockquote> Rafal Bogacz, "A tutorial on the free-energy
+       framework for modelling perception and learning", <em>Journal of
+       Mathematical Psychology</em>, available online 14 December 2015,
+       ISSN 0022-2496, http://dx.doi.org/10.1016/j.jmp.2015.11.003.
        (http://www.sciencedirect.com/science/article/pii/S0022249615000759)
        </blockquote>
-       <p>Specifically, this is the scalar model that Bogacz describes in section 2 
-       of his paper.  (There is another version of this software that
-       implements the vector/matrix model that Bogacz describes in section 4.)
-       </p>
+
+       <p>This simulation model described here implements the scalar model that
+       Bogacz presents in section 2 of his paper.  (There is another
+       version of <a href="https://github.com/mars0i/free">this
+       software</a> that implements the vector/matrix model that Bogacz
+       describes in section 4.)</p>
+
 
        <p>
        Other sources that have been useful:
@@ -70,7 +83,7 @@ Philos Trans R Soc Lond B Biol Sci. 2005 Apr 29;360(1456):815-36
 
        <p> In this model there are distinct "levels" of information that
        interact.  The general idea is that there is a "prediction"
-       (<em>phi</em>) at one level, scaled by a multiplier
+       (represented by <em>phi</em>) at one level, scaled by a multiplier
        <em>theta</em>; the result is then is compared to some version of
        data (also called <em>phi</em>) at the at the next level
        down.  That is, we're in effect comparing a prediction from the
@@ -79,31 +92,186 @@ Philos Trans R Soc Lond B Biol Sci. 2005 Apr 29;360(1456):815-36
        value <em>epsilon</em>.  This is then scaled by the inverse of a
        value <em>sigma</em> to get a scaled error value.  And this is then
        used to adjust <em>theta</em> and the first <em>phi</em>.  Then the 
-       process starts over.  It's a feedback loop.  With one proviso:
-       If there are more three (or two--see below) levels, then this
+       process starts over.  It's a feedback loop, with the proviso that
+       if there are more three (or two--see below) levels, the
        process takes place between each two "adjacent" levels, so that
-       the feedback loop involves all of the levels.</p>
+       the feedback loop involves all of the levels, each "talking" to
+       the one below and the one above.</p>
 
-       <p>The version of the model displayed in this web version of
+       <p>However, the version of the model displayed in this web version of
        <em>free</em> has only three levels--or rather two, level 0 and
-       level 1, since the last level, labeled "priors", isn't really a
-       level per se.  This last level merely holds some values
+       level 1, since the last level, labeled "priors", isn't a proper
+       level.  In the source code it's treated as a level, but it merely holds some values
        (parameters of priors) needed to make the model run in a simpler
-       way.  (However, <em>free</em> is designed so that by changing or
+       way, and Bogacz and other authors don't treat the specification of
+       these priors as constituting a level.  
+       (<em>free</em> is designed so that by changing or
        replacing one file--model.cljc for the web version--it should be
        able handle a model involving any number of levels.)</p>
 
-       <h4>The plot</h4>
-       
+       <h4>What's plotted?</h4>
 
-      <h3>How to use it?</h3>
+       <p>This model assumes that noisy sensory data at level 0 is a function of the
+       area of a circular object, whose radius is to be estimated at level 1.</p>
+
+       <p>The chart initially plots four level-1 values over time.  The
+       model's <em>phi</em> value is plotted over time by the black
+       curve.  The red <em>epsilon</em> curve is the error--the
+       estimated difference between the current estimate of the area and
+       what the data is saying, roughly on average.  The blue curve
+       represents the changing value of <em>theta</em>, which (by
+       default) performs a long-term adjustment of a weight on the area
+       estimate.  The green curve is for <em>sigma</em>, which is used
+       to scale the error by dividing it by <em>sigma</em>.  This is
+       adjusted in response to the current values of <em>epsilon</em>
+       and <em>sigma</em>.  I currently have <em>sigma</em>'s minimum
+       value set to 1, following a suggestion by Friston that Bogacz
+       cites.  Timesteps are timesteps for the source code: Each timestep
+       represents a new set of points.  You can think of each timestep
+       as corresponding to a small number of milliseconds, though.
+       (This is all pretty vague.  See Bogacz's article or my
+       source file <a
+       href="https://github.com/mars0i/free/blob/master/src/cljc/general/free/level.cljc">level.cljc</a>
+       for details.)</p>
+
+       <h3>How to use it?</h3>
+
+       <h4>Controlling the plot</h4>
+
+       <p>The plot is controlled by the form below it.  The top part of the
+       form allows you to adjust parameters of the plot itself.  The "re-plot"
+       button will regenerated the plot after you change parameters.</p>
+
+       <p>You can make it wider or taller, or adjust the number of points
+       (<em>num-points</em>) plotted.</p>
+
+       <p>You can tell the application to plot more <em>timesteps</em>--as
+       many as you want, as long as your browser can get enough memory
+       for your computer, and as long as your patience lasts.  The code
+       will generate data for new timesteps as needed.  If you then reduce
+       the number of timesteps, the existing data will be used; it won't
+       be regenerated.</p>
+
+       <p>The "Levels to display" checkboxes control which levels are
+       displayed--level 0 or level 0.  If you turn on level 0, you'll
+       see the individual points of simulated sensory data, and the
+       <em>epsilon</em> values at level 0.  Note that the application
+       will only plot as many points as you've specified, so you won't
+       see all of the sensory data points unless you change
+       <em>num-points</em> and <em>timesteps</em> to the same value.
+       Plotting a lot of points might take a while--even if the underlying
+       data has already been generated (see above), the plotting
+       step takes time.</p>
+
+       <h4>Controlling the model</h4>
+
+       <p>The bottom part of the control form contains parameters that
+       affect the data generated by the model, rather than how and how
+       much of the data is displayed.  The "re-run" button will regenerate
+       the data if you've changed paramters.</p>
+
+       <p>Parameters are divided into levels.  By default, every level has eight
+       parameters, but some of these are ignored at the bottom and top level,
+       so they're hidden.  Also, at level 0, there are some
+       additional "sensory" parameters that control the randomly generated
+       sensory data.  The first four default parameters are:</p>
+
+       <table>
+       <tr><td><em>phi</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>initial data at this level</td></tr>
+       <tr><td><em>epsilon</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>initial error: difference between data at this level and the "prediction" from the level above</td></tr>
+       <tr><td><em>sigma</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>initial variance used to scale the error (inverse of precision)</td></tr>
+       <tr><td><em>theta</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>initial learning parameter</td></tr>
+       </table>
+
+       <p>The first four values are usually changed as the model runs;
+       their changing values are what are then plotted.  At higher
+       levels, <em>phi</em> and <em>theta</em> are parameters of a
+       "generative model" function whose value given those parameters is
+       what's compared with the <em>phi</em> value at the next level
+       down.  In theory, <em>theta</em> should change more slowly than
+       <em>phi</em>, because it represents adjustment by long-term
+       learning rather than immediate perceptual inferences, which is
+       what the adjustment of <em>phi</em> provides.  In Bogacz's model,
+       <em>theta</em> can only linearly scale the value of the
+       generative function after its basic value is calculated from
+       <em>phi</em>.</p>
+
+       <p>The other four default parameters are:</p>
+
+       <table>
+       <tr><td><em>phi-dt</em></td></tr>
+       <tr><td><em>epsilon-dt</em></td></tr>
+       <tr><td><em>sigma-dt</em></td></tr>
+       <tr><td><em>theta-dt</em></td></tr>
+       </table>
+
+	<p>These specify the rate at which the corresponding variables
+	change.  For each of the four main variables <em>phi</em>,
+	<em>epsilon</em>, <em>sigma</em>, and <em>theta</em>, an
+	increment is calculated in each timestep, <em>and then</em> that
+	increment is reduced by multiplying it by the corresponding
+	<em>-dt</em> value.  The result of this multiplication is then
+	added to the old value of the parameter to determine its new
+	value in the next timestep.  A smaller value thus means that the
+	corresponding parameter will change more smoothly and more
+	slowly, and will ignore more fluctuation in the other parameters
+	from which it's calculated.  Notice, For example, since
+	<em>theta</em> is supposed to change more slowly than
+	<em>phi</em>, I have <em>theta-dt</em> set to a smaller value
+	than <em>phi-dt</em>.  (However, it's interesting to see what
+	happens when you adjust these values so that this relative size
+	assumption is violated.)</p>
+
+	<p>At level 0, there are also these additional parameters, which
+	are specific to the way in which level 0 "sensory" data
+	<em>phi</em> is generated on each timestep (in the version of
+	model.cljc used in this web simulation).  This version of the
+	sensory data generation uses two normal distributions, both with
+	the same standard deviation, but with different means.  The two
+	distributions alternate.  You can specify the means, standard
+	deviation, and numbers of timesteps for each alternating
+	distribution.
+
+       <table>
+       <tr><td><em>sd</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>standard deviation of data</td></tr>
+       <tr><td><em>change-ticks</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>How long does the mean remain unchanged?</td></tr>
+       <tr><td><em>means</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>What are the two means?</td></tr>
+       </table>
+
+       <p>For example, if the value of <em>change-ticks</em> is [1500 100],
+       and the value of <em>means</em> is [2 20], then the sensory data
+       will have a mean value of 2 for 1500 timesteps, and then a mean
+       value of 20 for 100 timesteps, after which it will again have a
+       mean of 2 for 1500 timesteps, and so on.  This provides a way of
+       seeing the effects of changing distributions that's
+       easily observable and understandable.</p>
 
 
+<!--
       <h3>Things to try</h3>
 
+-->
 
       <h3>Going further</h3>
 
+      <p>It's possible to change things other than the parameters available
+      for modification in the form.  For example, one might want to add
+      more levels, or change the generative function, or change the
+      sensory data generation.  At present, doing any of these things
+      requires editing the Clojurescript source code, and recompiling
+      the model.  To do this you need to install Clojure and install the
+      entire <em>free</em> package from github.  Then you can run the
+      model either directly in Clojure, or using Clojurescript, in a
+      browser.  The way in which this is done is fairly easy if you're
+      used to Clojure or Clojurescript.  At some point I'll provide
+      instructions to help those unfamiliar with these languages get
+      started modifying <em>free</em>.</p>
+
+      <p>It's also possible to enhance this web version to allow some of the
+      preceding modifications from inside a browser, by editing and
+      uploading bits of Clojurescript source code.  I haven't added this
+      capability, but if you're interested in having it available, let me
+      know.</p>
 
     </div>
   </body>

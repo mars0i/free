@@ -39,7 +39,7 @@
 (defonce other-model-params [(atom {:description "sensory:"
 			            :sd 3                      ; params for sensory input data generation function
                                     :change-ticks [1500 100]
-                                    :means [20 2]})
+                                    :means [2 20]})
                              nil
                              nil])
 
@@ -50,9 +50,9 @@
   [other-model-params]
   (lvl/make-next-bottom 
     (let [tick$ (atom 0)
-          model-params$ (first other-model-params)
-          curr-mean$ (atom 2)
-          means-cycle$ (atom (cycle (:means @model-params$)))
+          model-params$ (first other-model-params) ; we only use level 0 params, to generate sensory data
+          curr-mean$ (atom (first (:means @model-params$)))
+          means-cycle$ (atom (rest (cycle (:means @model-params$)))) ; skip first value, since it's now in curr-mean$
           change-intervals (:change-ticks @model-params$)
           interval-1 (first change-intervals)
           interval-2 (+ interval-1 (second change-intervals))

@@ -288,9 +288,14 @@
     [:td (float-input params$ colors$ size k "")]
     [:td]))
 
+;(def seq-input
+;  "Create a text input that accepts vectors."
+;  (input-fn-maker cr/read-string str))
+
 (def seq-input
   "Create a text input that accepts vectors."
-  (input-fn-maker cr/read-string str))
+  (input-fn-maker #(cr/read-string (str "[" % "]")) ; wrap string with multiple numbers in brackets and make a vector
+                  #(apply str (interpose \ %))))    ; stringify the space-separated elements of a collection
 
 (defn param-seq-input
   "Generates a form input for Clojure sequential data in a table data element."

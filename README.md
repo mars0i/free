@@ -9,6 +9,11 @@ perception and learning", *Journal of Mathematical Psychology*,
 Available online 14 December 2015, ISSN 0022-2496,
 http://dx.doi.org/10.1016/j.jmp.2015.11.003 .)
 
+The documentation is a work in progress.  Some of the code is, too.
+
+There is a running demo version of this software here:
+http://members.logical.net/~marshall/free/ .
+
 ## License
 
 This software is copyright 2016 by [Marshall
@@ -23,46 +28,50 @@ released under a different license.
 You should be able to run free either in Clojure or Clojurescript.  I
 describe some ways to do this below (in development).
 
-In either Clojure or Clojurescript, you can run it either in scalar
+In Clojure, you can run it either in scalar
 mode or matrix mode.  The first is designed for learning and
 processing with single scalar values.  The second allows you to use
 vectors and matrices as values; that is, it allows multi-dimensional
 learning.  (You can use matrix mode for "scalars" by using 1x1
 vectors/matrices, but it will be a lot slower, which might matter in
-some situations.)
+some situations.)  At present, the Clojurescript version only supports
+scalar mode.
 
 ### To run in Clojure:
 
 You can use `lein repl` but you need additional arguments to specify
-scalar or matrix mode.  Note that the plus signs in the commands below
-are essential.  They tell Clojure to merge the default profile into
-the specified profile, "dev-scalar" or "dev-matrix", which are
-specified after the `:profiles` keyword in project.clj.
+scalar or matrix mode.  There are unix shell scripts in the directory
+src/scripts that collect the relevant arguments, if you're using OS X or
+Linux or another unix.  For Windows, take a look at the contents of the
+scripts and execute a script's last line.  In a unix:
 
 #### scalar mode
 
-    lein with-profile +dev-scalar repl
+    ./src/scripts/matclj
 
 #### matrix mode
 
-    lein with-profile +dev-matrix repl
+    ./src/scripts/scalclj
 
 
 ### To run in Clojurescript:
 
-You an delete `rlwrap` below if you don't have that utility installed.
-(rlwrap gives you history in the repl prompt.)
+If you're in Windows, see the note above.  In OS X, Linux, or another
+unix, run this script:
 
-You may have to execute one of these once, and then exit out and run
-it again to flush out some odd warning.
+    ./src/scripts/scalcljs
 
-These might not be working right yet.
+If you get an error about rlwrap, either install rlwrap or execute use
+the last line of the script in a shell without the word "rlwrap".
+rlwrap provides command history for the Clojure repl prompt, so it's
+not essential.
 
-#### scalar mode
+To build a version that can be installed on the web, for example, use:
 
-    rlwrap lein with-profile dev-scalar figwheel
+    ./src/scripts/scalcljs-build
 
-#### matrix mode
+This will put the files that make up the application in
+resources/public and resources/public/css.
 
-    rlwrap lein with-profile dev-matrix figwheel
-
+As noted above, there is also a constrained Clojurescript version of the
+model ready to run on the web here: https://github.com/mars0i/free .
