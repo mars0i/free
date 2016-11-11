@@ -39,10 +39,10 @@
 ;; and define next-bottom in that function?
 
 ;; This will be used by free.plot-pages.  It should have one element for each level--nil if no params needed for that level.
-(defonce other-model-params [(atom {:description "sensory:"
-			            :sd 3                      ; params for sensory input data generation function
+(defonce other-model-params [(atom {:description "sensory:" ; params for sensory input data generation function
                                     :change-ticks [1500 100]
-                                    :means [2 20]})
+                                    :means [2 20]
+			            :stddevs [3]})
                              nil
                              nil])
 
@@ -56,12 +56,15 @@
           model-params$ (first other-model-params) ; we only use level 0 params, to generate sensory data
           curr-mean$ (atom (first (:means @model-params$)))
           means-cycle$ (atom (rest (cycle (:means @model-params$)))) ; skip first value, since it's now in curr-mean$
+          curr-sd$ (atom (first (:stddevs @model-params$)))
+          sds-cycle$ (atom (rest (cycle (:stddevs @model-params$)))) ; skip first value, since it's now in curr-mean$
           change-ticks-cycle$ (atom (reductions + (cycle (:change-ticks @model-params$))))] ; sequence of ticks separated by cycling values in change-ticks
       (fn []
         (when (= (swap! tick$ inc) (first @change-ticks-cycle$))
           (swap! change-ticks-cycle$ rest)
-          (reset! curr-mean$ (swap-rest! means-cycle$)))
-        (ran/next-gaussian @curr-mean$ (:sd @model-params$))))))
+          (reset! curr-mean$ (swap-rest! means-cycle$))
+          (reset! curr-sd$ (swap-rest! sds-cycle$)))
+        (ran/next-gaussian @curr-mean$ @curr-sd$)))))
 
 (def sigma-u 2) ; controls degree of fluctuation in phi at level 1
 (def error-u 0) ; epsilon
@@ -114,9 +117,9 @@
 
 (s/def ::pos-num (s/and number? pos?))
 
-(s/def ::sd ::pos-num)
+(s/def ::stddevs (s/+ ::pos-num))
 (s/def ::change-ticks (s/+ pos-int?))
 (s/def ::means (s/+ number?))
                                        
 (s/def ::other-params
-  (s/keys :req-un [::sd ::change-ticks ::means]))
+  (s/keys :req-un [::stddevs ::change-ticks ::means]))
