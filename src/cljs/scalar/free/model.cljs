@@ -30,6 +30,25 @@
     (swap! seq$ rest)
     prev-first))
 
+(defn chicks 
+  "Given a finite sequence of increments and an initial sequence of ticks,
+  returns a sequence that starts with the original sequence and adds ticks
+  that are separated by increments."
+  [ticks increments]
+  (if increments
+    (recur (conj ticks
+                 (+ (last ticks) (first increments)))
+           (next increments))
+    ticks))
+
+;; FIXME BROKEN
+(defn shticks
+  [[ticks increments]]
+  (lazy-seq 
+    (shticks [(conj ticks
+                   (+ (last ticks) (first increments)))
+             (next increments)])))
+
 ;; all this atom stuff is "bad", below but is really just implementing a loop while allowing the function to be arg-less
 ;; then again, now I'm having to set it here from plot-pages.
 ;; shouldn't it be passed into a function that creates a new model?
