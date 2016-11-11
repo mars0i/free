@@ -363,7 +363,7 @@
   "Produces HTML table rows for a single free Level."
   [colors$ params$ other-params$ label]
   (let [float-width 7
-        seq-width 10]
+        seq-width 12]
     [(conj
        (into [:tr [:td label]]
              (map (partial param-float-input colors$ params$ float-width) 
