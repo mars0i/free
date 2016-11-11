@@ -30,17 +30,6 @@
     (swap! seq$ rest)
     prev-first))
 
-(defn chicks 
-  "Given a finite sequence of increments and an initial sequence of ticks,
-  returns a sequence that starts with the original sequence and adds ticks
-  that are separated by increments."
-  [ticks increments]
-  (if increments
-    (recur (conj ticks
-                 (+ (last ticks) (first increments)))
-           (next increments))
-    ticks))
-
 ;USE THIS:
 (take 30 (reductions + (cycle [1 10 100 1000])))
 
@@ -67,14 +56,10 @@
           model-params$ (first other-model-params) ; we only use level 0 params, to generate sensory data
           curr-mean$ (atom (first (:means @model-params$)))
           means-cycle$ (atom (rest (cycle (:means @model-params$)))) ; skip first value, since it's now in curr-mean$
-          change-intervals (:change-ticks @model-params$)
-          interval-1 (first change-intervals)
-          interval-2 (+ interval-1 (second change-intervals))
-          change-ticks-cyle$ (atom (interleave (stepped-range interval-1 interval-1)
-                                               (stepped-range interval-2 interval-1)))]
+          change-ticks-cycle$ (atom (reductions + (cycle (:change-ticks @model-params$))))] ; sequence of ticks separated by cycling values in change-ticks
       (fn []
-        (when (= (swap! tick$ inc) (first @change-ticks-cyle$))
-          (swap! change-ticks-cyle$ rest)
+        (when (= (swap! tick$ inc) (first @change-ticks-cycle$))
+          (swap! change-ticks-cycle$ rest)
           (reset! curr-mean$ (swap-rest! means-cycle$)))
         (ran/next-gaussian @curr-mean$ (:sd @model-params$))))))
 
