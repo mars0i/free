@@ -16,10 +16,9 @@
       <a class="nontitle" href="http://members.logical.net/~marshall">Marshall Abrams</a>
       <text class="nontitle">&nbsp;(&copy; 2016)</text>
     </span>
-    <br/>
-    <br/>
     <div class="normal-text">
-      <em>Draft.  Feedback welcome.</em>
+
+      <p><a href="#how-to-use-it">(Jump to "How to use it?")</a></p>
 
       <h3>What is it?</h3>
 
@@ -63,12 +62,19 @@
        The difference between these two values is an "error"
        value <em>epsilon</em>.  This is then scaled by the inverse of a
        value <em>sigma</em> to get a scaled error value.  And this is then
-       used to adjust <em>theta</em> and the first <em>phi</em>.  Then the 
-       process starts over.  It's a feedback loop, with the proviso that
-       if there are more three (or two--see below) levels, the
-       process takes place between each two "adjacent" levels, so that
-       the feedback loop involves all of the levels, each "talking" to
-       the one below and the one above.</p>
+       used to adjust <em>theta</em> and the first <em>phi</em>.  
+       You can think of
+       (<em>theta</em> &#10005; <em>phi</em> ) as an adjusted version of 
+       the level 2 (top level) <em>phi</em>: While the system originally
+       assumes that the data will be a noisy version of <em>phi</em><sup>2</sup>,
+       it tries to adjust <em>theta</em> so that the data is a noisy
+       version of (<em>theta</em> &#10005; <em>phi</em> )<sup>2</sup>.</p>
+
+       <p>Then the process starts over.  It's a feedback loop, with the
+       proviso that if there are more three (or two--see below) levels,
+       the process takes place between each two "adjacent" levels, so
+       that the feedback loop involves all of the levels, each "talking"
+       to the one below and the one above.</p>
 
        <p>However, the version of the model displayed in this web version of
        <em>free</em> has only three levels--or rather two, level 0 and
@@ -106,7 +112,8 @@
        href="https://github.com/mars0i/free/blob/master/src/cljc/general/free/level.cljc">level.cljc</a>
        for details.)</p>
 
-       <h3>How to use it?</h3>
+
+       <h3 id="how-to-use-it">How to use it?</h3>
 
        <h4>Controlling the plot</h4>
 
@@ -114,15 +121,21 @@
        form allows you to adjust parameters of the plot itself.  The "re-plot"
        button will regenerated the plot after you change parameters.</p>
 
-       <p>You can make it wider or taller, or adjust the number of points
-       (<em>num-points</em>) plotted.</p>
+       <table>
+       <tr><td><em>Levels to display</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>Display which levels?</td></tr>
+       <tr><td><em>timesteps</em>:</td>		<td>&nbsp;&nbsp;&nbsp;</td>	<td>How many timesteps to display?</td></tr>
+       <tr><td><em>width</em>:</td>		<td>&nbsp;&nbsp;&nbsp;</td>	<td>How wide should the plot be?</td></tr>
+       <tr><td><em>height</em>:</td>		<td>&nbsp;&nbsp;&nbsp;</td>	<td>How tall should the plot be?</td></tr>
+       <tr><td><em>num-points</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>How many points should be plotted?</td></tr>
+       </table>
 
-       <p>You can tell the application to plot more <em>timesteps</em>--as
-       many as you want, as long as your browser can get enough memory
-       for your computer, and as long as your patience lasts.  The code
-       will generate data for new timesteps as needed.  If you then reduce
-       the number of timesteps, the existing data will be used; it won't
-       be regenerated.</p>
+       <p>You can tell the application to plot more or fewer
+       <em>timesteps</em>--as many as you want, as long as your browser
+       can get enough memory for your computer, and as long as your
+       patience lasts.  The code will generate data for new timesteps as
+       needed.  If you then reduce the number of timesteps, the existing
+       data will be used; it won't be regenerated if you merely click 
+       on "Re-plot".  ("Re-run will regenerate the data.)</p>
 
        <p>The "Levels to display" checkboxes control which levels are
        displayed--level 0 or level 0.  If you turn on level 0, you'll
@@ -133,7 +146,12 @@
        <em>num-points</em> and <em>timesteps</em> to the same value.
        Plotting a lot of points might take a while--even if the underlying
        data has already been generated (see above), the plotting
-       step takes time.</p>
+       step takes time.  (Values other than the sensory <em>phi</em>
+       will be plotted with a continuous line no matter how many or
+       how few points are plotted.)</p>
+
+       <p>You can also make the plot wider or taller within your browser
+       window using <em>width</em> and <em>height</em>.
 
        <h4>Controlling the model</h4>
 
@@ -146,7 +164,11 @@
        parameters, but some of these are ignored at the bottom and top level,
        so they're hidden.  Also, at level 0, there are some
        additional "sensory" parameters that control the randomly generated
-       sensory data.  The first four default parameters are:</p>
+       sensory data.</p>
+
+       <h5>Free energy minimization initialization parameters</h5>
+       
+       <p>The first four default parameters are:</p>
 
        <table>
        <tr><td><em>phi</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>initial data at this level</td></tr>
@@ -155,8 +177,9 @@
        <tr><td><em>theta</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>initial learning parameter</td></tr>
        </table>
 
-       <p>The first four values are usually changed as the model runs;
-       their changing values are what are then plotted.  At higher
+       <p>The values in the form are just the initial values of
+       these variables.  Their values will typically change as the 
+       model runs; the changing values are what are plotted.  At higher
        levels, <em>phi</em> and <em>theta</em> are parameters of a
        "generative model" function whose value given those parameters is
        what's compared with the <em>phi</em> value at the next level
@@ -167,6 +190,9 @@
        <em>theta</em> can only linearly scale the value of the
        generative function after its basic value is calculated from
        <em>phi</em>.</p>
+
+
+       <h5>Integration increment parameters</h5>
 
        <p>The other four default parameters are:</p>
 
@@ -194,29 +220,42 @@
 	happens when you adjust these values so that this relative size
 	assumption is violated.)</p>
 
-	<p>At level 0, there are also these additional parameters, which
+
+       <h5>Sensory data generation parameters</h5>
+
+	<p>At level 0, there are also additional parameters that
 	are specific to the way in which level 0 "sensory" data
 	<em>phi</em> is generated on each timestep (in the version of
 	model.cljc used in this web simulation).  This version of the
-	sensory data generation uses two normal distributions, both with
-	the same standard deviation, but with different means.  The two
-	distributions alternate.  You can specify the means, standard
-	deviation, and numbers of timesteps for each alternating
-	distribution.
+	sensory data generation uses one or more normal distributions,
+	used in different time periods.  They can have different means
+	and/or different standard deviations.
 
        <table>
-       <tr><td><em>sd</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>standard deviation of data</td></tr>
-       <tr><td><em>change-ticks</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>How long does the mean remain unchanged?</td></tr>
-       <tr><td><em>means</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>What are the two means?</td></tr>
+       <tr><td><em>change-ticks</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>Means and sd's will change after these intervals of time.</td></tr>
+       <tr><td><em>means</em>:</td>		<td>&nbsp;&nbsp;&nbsp;</td>	<td>These means will be used one after another, starting over when they run out.</td></tr>
+       <tr><td><em>stddevs</em>:</td>		<td>&nbsp;&nbsp;&nbsp;</td>	<td>These standard deviations will be used, starting over, etc.</td></tr>
        </table>
 
-       <p>For example, if the value of <em>change-ticks</em> is [1500 100],
-       and the value of <em>means</em> is [2 20], then the sensory data
-       will have a mean value of 2 for 1500 timesteps, and then a mean
-       value of 20 for 100 timesteps, after which it will again have a
-       mean of 2 for 1500 timesteps, and so on.  This provides a way of
-       seeing the effects of changing distributions that's
-       easily observable and understandable.</p>
+       <p>For example, if the value of <em>change-ticks</em> is [500 100
+       10], and the value of <em>means</em> is [2 20 5], then the
+       sensory data will have a mean value of 2 for 500 timesteps, and
+       then a mean value of 20 for the next 100 timesteps, followed by a
+       mean of 5 for the next 10 timesteps.  Then the cycle starts over.
+       If in addition, <em>stddevs</em> is [1 10 1], then the first and
+       third distributions will have a standard deviation of 1, and the
+       second will have a standard deviation of 10.  after which it will
+       again have a mean of 2 for 1500 timesteps, and so on.
+
+       If you want a constant sensory distribution, list only one
+       value each for <em>means</em> and <em>stddevs</em>, or set
+       </em>change-ticks</em> to 0.
+
+       <p>(Cyclic sensory data distribution changes provide a way of
+       seeing the effects of changing distributions on <em>theta</em>,
+       for example, that's similar to random changes in the sensory
+       distributions, but is more that's easily observable and
+       understandable.)</p>
 
 
 <!--
@@ -248,7 +287,7 @@
       <h3>Sources</h3>
 
        <p>
-       In addition to the Bogacz article mentioned above, these 
+       In addition to the Bogacz article cited above, these 
        sources that helped me understand a few points about the model:
        <blockquote>
        Friston Karl J., 
