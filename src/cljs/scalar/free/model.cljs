@@ -23,8 +23,8 @@
 
 (defn swap-rest!
   "Replace the sequence value of key k in the map to which map-atom$ refers
-  with the rest of the sequence.  Unlike swap!, returns the previous first 
-  element."
+  with the rest of the sequence, then return the previous first element.
+  (The last step differs from the behavior of swap!.)"
   [seq$]
   (let [prev-first (first @seq$)]
     (swap! seq$ rest)
@@ -54,10 +54,10 @@
   (lvl/make-next-bottom 
     (let [tick$ (atom 0)
           model-params$ (first other-model-params) ; we only use level 0 params, to generate sensory data
-          curr-mean$ (atom (first (:means @model-params$)))
+          curr-mean$ (atom (first (:means @model-params$))) ; need to store current value across ticks, but allow it to be altered
+          curr-sd$ (atom (first (:stddevs @model-params$))) ; ditto
           means-cycle$ (atom (rest (cycle (:means @model-params$)))) ; skip first value, since it's now in curr-mean$
-          curr-sd$ (atom (first (:stddevs @model-params$)))
-          sds-cycle$ (atom (rest (cycle (:stddevs @model-params$)))) ; skip first value, since it's now in curr-mean$
+          sds-cycle$ (atom (rest (cycle (:stddevs @model-params$)))) ; skip first value, since it's now in curr-sd$
           change-ticks-cycle$ (atom (reductions + (cycle (:change-ticks @model-params$))))] ; sequence of ticks separated by cycling values in change-ticks
       (fn []
         (when (= (swap! tick$ inc) (first @change-ticks-cycle$))
