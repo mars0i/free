@@ -247,15 +247,20 @@
        second will have a standard deviation of 10.  after which it will
        again have a mean of 2 for 1500 timesteps, and so on.
 
-       If you want a constant sensory distribution, list only one
+       <p>If you want a constant sensory distribution, list only one
        value each for <em>means</em> and <em>stddevs</em>, or set
-       </em>change-ticks</em> to 0.
+       </em>change-ticks</em> to 0.</p>
 
-       <p>(Cyclic sensory data distribution changes provide a way of
+       <p>Cyclic sensory data distribution changes provide a way of
        seeing the effects of changing distributions on <em>theta</em>,
        for example, that's similar to random changes in the sensory
        distributions, but is more that's easily observable and
-       understandable.)</p>
+       understandable.  However, you could generate a random sequence
+       of sensory changes using the current web version of free
+       by generating sequence of random numbers and pasting them
+       into the sensory data fields.  It's not hard to program the
+       model to generate random changes, but that requires installing
+       the full <em>free</em> package (see below).</p>
 
 
 <!--
