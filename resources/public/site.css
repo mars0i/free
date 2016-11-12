@@ -7,6 +7,10 @@ text {
 .text {
   font-family:"Pontano Sans";
 }
+/* Give every element a left margin: */
+* {
+  margin-left: 0.05in;
+}
 h1 {
   font-family:"Pontano Sans";
   font-size:180%;
@@ -21,11 +25,17 @@ h2 {
 }
 h3 {
   font-family:"Pontano Sans";
-  font-size:120%;
+  font-size:130%;
   font-weight:normal;
   color:#E04040;
 }
 h4 {
+  font-family:"Pontano Sans";
+  font-size:115%;
+  font-weight:normal;
+  color:#E04040;
+}
+h5 {
   font-family:"Pontano Sans";
   font-size:100%;
   font-weight:normal;
