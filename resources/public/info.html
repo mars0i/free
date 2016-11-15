@@ -54,21 +54,21 @@
 
        <p> In this model there are distinct "levels" of information that
        interact.  The general idea is that there is a "prediction"
-       (represented by <em>phi</em>) at one level, scaled by a multiplier
-       <em>theta</em>; the result is then is compared to some version of
-       data (also called <em>phi</em>) at the at the next level
-       down.  That is, we're in effect comparing a prediction from the
-       higher level about what the data will be at the next level down.
-       The difference between these two values is an "error"
+       (represented by <em>phi</em>) at one level, scaled by a
+       multiplier <em>theta</em>; the result is then is compared to some
+       version of data (also called <em>phi</em>) at the at the next
+       level down.  That is, we're in effect comparing a prediction from
+       the higher level about what the data will be at the next level
+       down.  The difference between these two values is an "error"
        value <em>epsilon</em>.  This is then scaled by the inverse of a
-       value <em>sigma</em> to get a scaled error value.  And this is then
-       used to adjust <em>theta</em> and the first <em>phi</em>.  
-       You can think of
-       (<em>theta</em> &#10005; <em>phi</em> ) as an adjusted version of 
-       the level 2 (top level) <em>phi</em>: While the system originally
-       assumes that the data will be a noisy version of <em>phi</em><sup>2</sup>,
-       it tries to adjust <em>theta</em> so that the data is a noisy
-       version of (<em>theta</em> &#10005; <em>phi</em> )<sup>2</sup>.</p>
+       value <em>sigma</em> to get a scaled error value.  And this is
+       then used to adjust <em>theta</em> and the first <em>phi</em>.
+       You can think of (<em>theta</em> &#10005; <em>phi</em> ) as an
+       adjusted version of the "priors" level (the top level)
+       <em>phi</em>: While the system originally assumes that the data
+       will be a noisy version of <em>phi</em><sup>2</sup>, it tries to
+       adjust <em>theta</em> so that the data is a noisy version of
+       (<em>theta</em> &#10005; <em>phi</em> )<sup>2</sup>.</p>
 
        <p>Then the process starts over.  It's a feedback loop, with the
        proviso that if there are more three (or two--see below) levels,
@@ -131,21 +131,21 @@
 
        <p>You can tell the application to plot more or fewer
        <em>timesteps</em>--as many as you want, as long as your browser
-       can get enough memory for your computer, and as long as your
-       patience lasts.  The code will generate data for new timesteps as
-       needed.  If you then reduce the number of timesteps, the existing
-       data will be used; it won't be regenerated if you merely click 
-       on "Re-plot".  ("Re-run will regenerate the data.)</p>
+       can get enough memory and your patience lasts.  The code will
+       generate data for new timesteps as needed.  If you then reduce
+       the number of timesteps, the existing data will be used; it won't
+       be regenerated if you merely click on "Re-plot".  ("Re-run" will
+       regenerate the data, however.)</p>
 
        <p>The "Levels to display" checkboxes control which levels are
-       displayed--level 0 or level 0.  If you turn on level 0, you'll
-       see the individual points of simulated sensory data, and the
+       displayed--level 0 or level 1.  If you turn on level 0, you'll
+       see the individual points of simulated sensory data as well as the
        <em>epsilon</em> values at level 0.  Note that the application
        will only plot as many points as you've specified, so you won't
        see all of the sensory data points unless you change
        <em>num-points</em> and <em>timesteps</em> to the same value.
        Plotting a lot of points might take a while--even if the underlying
-       data has already been generated (see above), the plotting
+       data has already been generated (see above); the plotting
        step takes time.  (Values other than the sensory <em>phi</em>
        will be plotted with a continuous line no matter how many or
        how few points are plotted.)</p>
@@ -160,11 +160,11 @@
        much of the data is displayed.  The "re-run" button will regenerate
        the data if you've changed paramters.</p>
 
-       <p>Parameters are divided into levels.  By default, every level has eight
-       parameters, but some of these are ignored at the bottom and top level,
-       so they're hidden.  Also, at level 0, there are some
-       additional "sensory" parameters that control the randomly generated
-       sensory data.</p>
+       <p>Parameters are divided into levels.  By default, every level
+       has eight parameters, but some of these are ignored at the bottom
+       and top/priors level, so they're hidden.  Also, at level 0,
+       there are some additional "sensory" parameters that control the
+       randomly generated sensory data.</p>
 
        <h5>Free energy minimization initialization parameters</h5>
        
@@ -210,26 +210,27 @@
 	increment is reduced by multiplying it by the corresponding
 	<em>-dt</em> value.  The result of this multiplication is then
 	added to the old value of the parameter to determine its new
-	value in the next timestep.  A smaller value thus means that the
-	corresponding parameter will change more smoothly and more
-	slowly, and will ignore more fluctuation in the other parameters
-	from which it's calculated.  Notice, For example, since
-	<em>theta</em> is supposed to change more slowly than
-	<em>phi</em>, I have <em>theta-dt</em> set to a smaller value
-	than <em>phi-dt</em>.  (However, it's interesting to see what
-	happens when you adjust these values so that this relative size
-	assumption is violated.)</p>
+	value in the next timestep.  A smaller value for a <em>-dt</em>
+	parameter thus means that the corresponding data parameter will
+	change more smoothly and more slowly, and will reflect to a
+	lesser degree fluctuation in other parameters from which it's
+	calculated.  Notice, For example, since <em>theta</em> is
+	supposed to change more slowly than <em>phi</em>, I have
+	<em>theta-dt</em> set to a smaller value than <em>phi-dt</em>.
+	(However, it's interesting to see what happens when you adjust
+	these values so that this relative size assumption is
+	violated.)</p>
 
 
        <h5>Sensory data generation parameters</h5>
 
-	<p>At level 0, there are also additional parameters that
-	are specific to the way in which level 0 "sensory" data
-	<em>phi</em> is generated on each timestep (in the version of
-	model.cljc used in this web simulation).  This version of the
-	sensory data generation uses one or more normal distributions,
-	used in different time periods.  They can have different means
-	and/or different standard deviations.
+	<p>At level 0, there are also additional parameters that are
+	specific to the way in which level 0 "sensory" data <em>phi</em>
+	is generated on each timestep (in the version of model.cljc used
+	in this web simulation).  This version of the sensory data
+	generation uses one or more normal distributions, which may
+	differ from one time period to another.  They can have different
+	means and/or different standard deviations.
 
        <table>
        <tr><td><em>change-ticks</em>:</td>	<td>&nbsp;&nbsp;&nbsp;</td>	<td>Means and sd's will change after these intervals of time.</td></tr>
@@ -237,15 +238,14 @@
        <tr><td><em>stddevs</em>:</td>		<td>&nbsp;&nbsp;&nbsp;</td>	<td>These standard deviations will be used, starting over, etc.</td></tr>
        </table>
 
-       <p>For example, if the value of <em>change-ticks</em> is [500 100
-       10], and the value of <em>means</em> is [2 20 5], then the
+       <p>For example, if the value of <em>change-ticks</em> is "500 100
+       10", and the value of <em>means</em> is "2 20 5", then the
        sensory data will have a mean value of 2 for 500 timesteps, and
        then a mean value of 20 for the next 100 timesteps, followed by a
        mean of 5 for the next 10 timesteps.  Then the cycle starts over.
-       If in addition, <em>stddevs</em> is [1 10 1], then the first and
+       If in addition, <em>stddevs</em> is "1 10 1", then the first and
        third distributions will have a standard deviation of 1, and the
-       second will have a standard deviation of 10.  after which it will
-       again have a mean of 2 for 1500 timesteps, and so on.
+       second will have a standard deviation of 10.
 
        <p>If you want a constant sensory distribution, list only one
        value each for <em>means</em> and <em>stddevs</em>, or set
@@ -253,14 +253,15 @@
 
        <p>Cyclic sensory data distribution changes provide a way of
        seeing the effects of changing distributions on <em>theta</em>,
-       for example, that's similar to random changes in the sensory
-       distributions, but is more that's easily observable and
-       understandable.  However, you could generate a random sequence
-       of sensory changes using the current web version of free
-       by generating sequence of random numbers and pasting them
-       into the sensory data fields.  It's not hard to program the
-       model to generate random changes, but that requires installing
-       the full <em>free</em> package (see below).</p>
+       for example.  The effect is similar that from random changes in
+       the sensory distributions, but is more easily observable and
+       understandable because you know when the underlying input data
+       will change.  (However, you could generate a random sequence of
+       sensory changes using the current web version of free by
+       generating sequence of random numbers and pasting them into the
+       sensory data fields.  It's not hard to program the model to
+       generate random changes, but that requires installing the full
+       <em>free</em> package--see below).</p>
 
 
 <!--
@@ -279,9 +280,9 @@
       entire <em>free</em> package from github.  Then you can run the
       model either directly in Clojure, or using Clojurescript, in a
       browser.  The way in which this is done is fairly easy if you're
-      used to Clojure or Clojurescript.  At some point I'll provide
+      used to Clojure or Clojurescript.  I intend to provide
       instructions to help those unfamiliar with these languages get
-      started modifying <em>free</em>.</p>
+      started modifying <em>free</em>, but might not have done so yet.</p>
 
       <p>It's also possible to enhance this web version to allow some of the
       preceding modifications from inside a browser, by editing and
