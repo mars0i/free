@@ -56,12 +56,6 @@
 (defonce level-params (map r/atom m/first-stage)) ; no $ on end because it's not a ratom; it's a sequence of ratoms
 ;; NOTE we also use m/other-model-params below
 
-;; NO not right.  Complicated because same fieldnames in different levels
-;(def all-params (map deref 
-;                     (concat 
-;                       (conj level-params chart-params$)
-;                       (filter identity m/other-model-params))))
-
 (defonce default-chart-param-colors (zipmap (keys @chart-params$) 
                                             (repeat default-input-color)))
 
@@ -319,8 +313,7 @@
 
 (defn level-checkbox
   [level-num params$]
-  (let [levels-to-display (:levels-to-display @params$)
-        checked (boolean (levels-to-display level-num))] ; l-t-d is a set, btw
+  (let [checked (boolean ((:levels-to-display @params$) level-num))] ; l-t-d is a set, btw
     [[:text (str " " level-num ": ")]
      [:input {:type "checkbox"
               :id (str "level-" level-num)

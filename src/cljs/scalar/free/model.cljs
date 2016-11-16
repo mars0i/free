@@ -30,9 +30,6 @@
     (swap! seq$ rest)
     prev-first))
 
-;USE THIS:
-(take 30 (reductions + (cycle [1 10 100 1000])))
-
 ;; all this atom stuff is "bad", below but is really just implementing a loop while allowing the function to be arg-less
 ;; then again, now I'm having to set it here from plot-pages.
 ;; shouldn't it be passed into a function that creates a new model?
