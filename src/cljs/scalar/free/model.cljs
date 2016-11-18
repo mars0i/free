@@ -36,7 +36,7 @@
 ;; and define next-bottom in that function?
 
 ;; This will be used by free.plot-pages.  It should have one element for each level--nil if no params needed for that level.
-(defonce other-model-params [(atom {:description "sensory:" ; params for sensory input data generation function
+(defonce other-model-params [(atom {:description "sensory phi:" ; params for sensory input data generation function
                                     :change-ticks [1500 100]
                                     :means [2 20]
 			            :stddevs [3]})
