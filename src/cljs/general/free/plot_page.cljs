@@ -155,9 +155,7 @@
   and attach it to SVG object with id svg-id."
   (let [chart (.lineChart js/nv.models)
         every-nth (calc-every-nth params$)
-        sampled-stages (sample-stages raw-stages$
-                                      (:timesteps @params$)
-                                      every-nth)]
+        sampled-stages (sample-stages raw-stages$ (:timesteps @params$) every-nth)]
     ;; configure nvd3 chart:
     (-> chart
         (.height (:height @params$))
@@ -357,17 +355,16 @@
   [colors$ params$ other-params$ label]
   (let [float-width 7
         seq-width 12]
-    [(conj
+    [(when other-params$
+       (conj 
+         (into [:tr [:td (:description @other-params$)]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
+                                                         (keys @other-params$)))))
+     (conj
        (into [:tr [:td label]]
              (map (partial param-float-input colors$ params$ float-width) 
                   [:phi :epsilon :sigma :theta :phi-dt :epsilon-dt :sigma-dt :theta-dt]))
        [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
-     (if other-params$
-       (conj 
-         (into [:tr {:class "bottom-border"} [:td (:description @other-params$)]] (map (partial some-kind-of-input colors$ other-params$ seq-width)
-                                                         (keys @other-params$)))
-         [:td {:col-span "20"}]) ; add filler td to match however many td's there are in other rows
-       [:tr {:class "bottom-border"} [:td {:col-span "20"}]])])) ; use colspan larger than any number of columns we'd want
+     [:tr {:class "bottom-border"} [:td {:col-span "20"}]]])) ; add filler td to match however many td's there are in other rows; use colspan larger than any number of columns we'd want
 
 (defn model-form-component
   "Produces an HTML table containing form elements for a series of levels, 
