@@ -13,7 +13,7 @@
                      [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]] ; could be scalar or matrix
                      [utils.string :as us]))
    :cljs (ns free.level
-           (:require [cljs.spec :as s])    ; only for clojure spec tests a bottom
+           (:require [cljs.spec :as s])    ; for clojure spec tests at bottom of this file
            ;; free.arithmetic contains macros defined in terms of either 
            ;; Clojure primitives or core.matrix functions.  When Clojurescript
            ;; sees this code, the macros have already been expanded, so if
