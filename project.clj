@@ -43,6 +43,11 @@
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "resources/public/free.js" "target"]
 
+  ;; There are four Clojure compilation profiles here, for scalar and matrix 
+  ;; versions of free, and for Clojure and Clojurescript versions.  
+  ;; Clojurescript compilation depends mostly on the cljsbuild builds below,
+  ;; but there's a Clojure stage to Clojurescript compilation, and the cljs-*
+  ;; profiles here are intended to make that stage work right.  (Do they?)
   :profiles {:clj-scalar {:source-paths ["src/clj/general"  "src/clj/scalar"
                                          "src/cljc/general" "src/cljc/scalar"]
                           :java-source-paths ["src/java"]}
