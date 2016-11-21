@@ -57,35 +57,33 @@
 ;(def pm mx/pm)
 
 (defmacro m* 
-  "Scalar analogue of matrix multiplication and inner product, i.e. scalar
-  multiplication."
+  "Matrix multiplication."
   ([x y] `(mx/mmul ~x ~y))
   ([x y z] `(mx/mmul ~x ~y ~z)))
 
 (defmacro e* 
-  "Scalar analogue of elementwise (Hadamard) multiplication, i.e. scalar 
-  multiplication."
+  "Elementwise (Hadamard) multiplication of matrices."
   ([x y] `(mx/mul ~x ~y))
   ([x y z] `(mx/mul ~x ~y ~z)))
 
 (defmacro m+ 
-  "Scalar analogue of elementwise addition, i.e. scalar addition."
+  "Elementwise addition, i.e. matrix addition."
   ([x y] `(mx/add ~x ~y))
   ([x y z] `(mx/add ~x ~y ~z)))
 
 (defmacro m- 
-  "Scalar analogue of elementwise subtraction, i.e. scalar subtraction."
+  "Elementwise subtraction, i.e. matrix subtraction."
   ([x] `(mx/sub ~x))
   ([x y] `(mx/sub ~x ~y))
   ([x y z] `(mx/sub ~x ~y ~z)))
 
 (defmacro tr
-  "Scalar analogue of transposition; returns the argument unchanged."
+  "Matrix transposition; returns the argument unchanged."
   [x]
   `(mx/transpose ~x))
 
 (defmacro inv
-  "Scalar analogue of matrix inversion, i.e. scalar reciprocal, divide into 1.0."
+  "Matrix inversion."
   [x]
   `(mx/inverse ~x))
 
