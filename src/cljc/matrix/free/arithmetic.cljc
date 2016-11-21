@@ -82,6 +82,11 @@
   [x]
   `(mx/transpose ~x))
 
+
+;; re implementing inverse, these seem especially helpful:
+;; http://www.math.nyu.edu/~neylon/linalgfall04/project1/jja/group7.htm
+;; www.caam.rice.edu/~yzhang/caam335/F09/handouts/lu.pdf
+
 (defmacro inv22
   "Simplistic compultation of inverse of a 2x2 matrix."
   [m] 
