@@ -82,10 +82,23 @@
   [x]
   `(mx/transpose ~x))
 
+(defmacro inv22
+  "Simplistic compultation of inverse of a 2x2 matrix."
+  [m] 
+  `(mx/div
+    (mx/matrix [[   (mget ~m 1 1)  (- (mget ~m 0 1))]
+                [(- (mget ~m 1 0))    (mget ~m 0 0)]]
+               (mx/det ~m))))
+
 (defmacro inv
   "Matrix inversion."
   [x]
-  `(mx/inverse ~x))
+  #?(:clj  `(mx/inverse ~x)
+     :cljs `(case (shape ~x)
+              nil (/ 1 ~x)
+              [2 2] (inv22 ~x)
+              (throw (js/Error. (str "Clojure matrix inversion not implemented yet for " ~x))))))
+
 
 (defmacro make-identity-obj
   "Returns an identity matrix with dims rows."
