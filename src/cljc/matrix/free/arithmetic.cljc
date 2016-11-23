@@ -100,7 +100,9 @@
   [x]
   #?(:clj  `(mx/inverse ~x)
      :cljs `(case (shape ~x)
-              nil (/ 1 ~x)
+              nil   (/ 1 ~x)
+              [1]   (mx/matrix [ (/ 1 (mx/mget ~x 0)) ] )
+              [1 1] (mx/matrix [[(/ 1 (mx/mget ~x 0 0)) ]] )
               [2 2] (inv22 ~x)
               (throw (js/Error. (str "Clojure matrix inversion not implemented yet for " ~x))))))
 
