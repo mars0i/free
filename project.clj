@@ -62,7 +62,7 @@
                                           "src/cljc/general" "src/cljc/scalar"] ; kludge to make Clojure compilation stage happier?
                           :java-source-paths ["src/java"]}                      ; kludge to make Clojure compilation stage happier?
 
-             :cljs-matrix {:source-paths ["src/cljs/general"  "src/cljs/matrix"
+             :cljs-matrix {:source-paths ["src/cljs/general"  ; "src/cljs/matrix" ; currently empty/nonexistent
                                           "src/cljc/general" "src/cljc/matrix"]}
             }
 
@@ -92,7 +92,7 @@
                            :preloads [devtools.preload]}}
                {:id "dev-matrix"
                 :source-paths ["src/cljc/general" "src/cljc/matrix"
-                               "src/cljs/general" "src/cljs/matrix"
+                               "src/cljs/general" ; "src/cljs/matrix" ; currently empty/nonexistent
                                "dev"]
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
                 :figwheel {:on-jsload "free.core/on-js-reload"
