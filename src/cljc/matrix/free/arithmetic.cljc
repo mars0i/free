@@ -82,10 +82,10 @@
   [x]
   `(mx/transpose ~x))
 
-(defmacro inv
-  "Matrix inversion."
-  [x]
-  `(mx/inverse ~x))
+;(defmacro inv
+;  "Matrix inversion."
+;  [x]
+;  `(mx/inverse ~x))
 
 ;; Initial attempt to kludge up an inverse for Clojurescript/aljabr that
 ;; would be OK for small matrices:
@@ -93,29 +93,49 @@
 ;; re implementing inverse, these seem especially helpful:
 ;; http://www.math.nyu.edu/~neylon/linalgfall04/project1/jja/group7.htm
 ;; www.caam.rice.edu/~yzhang/caam335/F09/handouts/lu.pdf
-;; 
-;(defmacro inv22
-;  "Simplistic compultation of inverse of a 2x2 matrix."
-;  [m] 
-;  `(mx/div
-;    (mx/matrix [[   (mget ~m 1 1)  (- (mget ~m 0 1))]
-;                [(- (mget ~m 1 0))    (mget ~m 0 0)]]
-;               (mx/det ~m))))
-;;; Oops, I don't think determinant is implemented generically either, so I can't
-;;; even use a bad algorithm for inverse like this.
-;;; See https://github.com/mikera/core.matrix/issues/38
-;
-;(defmacro inv
-;  "Matrix inversion."
-;  [x]
-;  #?(:clj  `(mx/inverse ~x)
-;     :cljs `(case (shape ~x)
-;              nil   (/ 1 ~x)
-;              [1]   (mx/matrix [ (/ 1 (mx/mget ~x 0)) ] )
-;              [1 1] (mx/matrix [[(/ 1 (mx/mget ~x 0 0)) ]] )
-;              [2 2] (inv22 ~x)
-;              (throw (js/Error. (str "Clojure matrix inversion not implemented yet for " ~x))))))
+;; also cf https://github.com/mikera/core.matrix/issues/38
 
+;; aljabr has neither inverse nor determinant as of Nov 2016.
+;; Nor does core.matrix have Clojure versions of these routines;
+;; they default to using vectorz, which is Java so isn't available
+;; in Clojurescript.
+(defmacro inv22
+  "Simplistic compultation of inverse of a 2x2 matrix.  (Note that due to
+  floating point imprecision, multiplying the result by the original might 
+  produce an 'identity' matrix only very close to what it should be.)"
+  [m] 
+  `(let [m00# (mx/mget ~m 0 0)
+         m01# (mx/mget ~m 0 1)
+         m10# (mx/mget ~m 1 0)
+         m11# (mx/mget ~m 1 1)
+         adj# (mx/matrix [[m11#  (- m01#)]     ; adjoint
+                          [(- m10#) m00#]])
+         det# (- (* m00# m11#) (* m01# m10#))] ; determinant
+     (mx/div adj# det#)))
+
+(defmacro mat-reciprocal
+  "Returns the reciprocal of number x wrapped in a 1x1 matrix."
+  [x]
+  `(mx/matrix [[ (/ 1 ~x) ]]) )
+
+;; Putting the reader conditional inside the defmacro caused problems:
+;; Invoking the macro in Clojurescript was calling the Clojure version,
+;; I suppose because it was defined during the Clojure compilation stage.
+;; Nope, still doesn't work.
+#?(:clj  (defmacro inv
+           "Matrix inversion."
+           [x]
+           `(mx/inverse ~x))
+   :cljs (defmacro inv
+           "Kludgey matrix inversion defined for Clojurescript free."
+           [x]
+           `(case (shape ~x)
+              nil   (/ 1 ~x)
+              [1]   (mat-reciprocal ~x) ; this is what core.matrix's inverse does
+              [1 1] (mat-reciprocal ~x)
+              [2 2] (inv22 ~x)
+              (throw (js/Error. (str "Clojurescript matrix inversion not implemented in free for " ~x)))))
+  )
 
 (defmacro make-identity-obj
   "Returns an identity matrix with dims rows."
