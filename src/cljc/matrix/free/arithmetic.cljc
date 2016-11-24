@@ -82,29 +82,39 @@
   [x]
   `(mx/transpose ~x))
 
+(defmacro inv
+  "Matrix inversion."
+  [x]
+  `(mx/inverse ~x))
+
+;; Initial attempt to kludge up an inverse for Clojurescript/aljabr that
+;; would be OK for small matrices:
 
 ;; re implementing inverse, these seem especially helpful:
 ;; http://www.math.nyu.edu/~neylon/linalgfall04/project1/jja/group7.htm
 ;; www.caam.rice.edu/~yzhang/caam335/F09/handouts/lu.pdf
-
-(defmacro inv22
-  "Simplistic compultation of inverse of a 2x2 matrix."
-  [m] 
-  `(mx/div
-    (mx/matrix [[   (mget ~m 1 1)  (- (mget ~m 0 1))]
-                [(- (mget ~m 1 0))    (mget ~m 0 0)]]
-               (mx/det ~m))))
-
-(defmacro inv
-  "Matrix inversion."
-  [x]
-  #?(:clj  `(mx/inverse ~x)
-     :cljs `(case (shape ~x)
-              nil   (/ 1 ~x)
-              [1]   (mx/matrix [ (/ 1 (mx/mget ~x 0)) ] )
-              [1 1] (mx/matrix [[(/ 1 (mx/mget ~x 0 0)) ]] )
-              [2 2] (inv22 ~x)
-              (throw (js/Error. (str "Clojure matrix inversion not implemented yet for " ~x))))))
+;; 
+;(defmacro inv22
+;  "Simplistic compultation of inverse of a 2x2 matrix."
+;  [m] 
+;  `(mx/div
+;    (mx/matrix [[   (mget ~m 1 1)  (- (mget ~m 0 1))]
+;                [(- (mget ~m 1 0))    (mget ~m 0 0)]]
+;               (mx/det ~m))))
+;;; Oops, I don't think determinant is implemented generically either, so I can't
+;;; even use a bad algorithm for inverse like this.
+;;; See https://github.com/mikera/core.matrix/issues/38
+;
+;(defmacro inv
+;  "Matrix inversion."
+;  [x]
+;  #?(:clj  `(mx/inverse ~x)
+;     :cljs `(case (shape ~x)
+;              nil   (/ 1 ~x)
+;              [1]   (mx/matrix [ (/ 1 (mx/mget ~x 0)) ] )
+;              [1 1] (mx/matrix [[(/ 1 (mx/mget ~x 0 0)) ]] )
+;              [2 2] (inv22 ~x)
+;              (throw (js/Error. (str "Clojure matrix inversion not implemented yet for " ~x))))))
 
 
 (defmacro make-identity-obj
