@@ -87,18 +87,18 @@
 ;  [x]
 ;  `(mx/inverse ~x))
 
-; ;; Initial attempt to kludge up an inverse for Clojurescript/aljabr that
-; ;; would be OK for small matrices:
-; 
-; ;; re implementing inverse, these seem especially helpful:
-; ;; http://www.math.nyu.edu/~neylon/linalgfall04/project1/jja/group7.htm
-; ;; www.caam.rice.edu/~yzhang/caam335/F09/handouts/lu.pdf
-; ;; also cf https://github.com/mikera/core.matrix/issues/38
-; 
-; ;; aljabr has neither inverse nor determinant as of Nov 2016.
-; ;; Nor does core.matrix have Clojure versions of these routines;
-; ;; they default to using vectorz, which is Java so isn't available
-; ;; in Clojurescript.
+;; Initial attempt to kludge up an inverse for Clojurescript/aljabr that
+;; would be OK for small matrices:
+
+;; re implementing inverse, these seem especially helpful:
+;; http://www.math.nyu.edu/~neylon/linalgfall04/project1/jja/group7.htm
+;; www.caam.rice.edu/~yzhang/caam335/F09/handouts/lu.pdf
+;; also cf https://github.com/mikera/core.matrix/issues/38
+
+;; aljabr has neither inverse nor determinant as of Nov 2016.
+;; Nor does core.matrix have Clojure versions of these routines;
+;; they default to using vectorz, which is Java so isn't available
+;; in Clojurescript.
 ; (defmacro inv22
 ;   "Simplistic compultation of inverse of a 2x2 matrix.  (Note that due to
 ;   floating point imprecision, multiplying the result by the original might 
@@ -122,23 +122,18 @@
 ; ;; Invoking the macro in Clojurescript was calling the Clojure version,
 ; ;; I suppose because it was defined during the Clojure compilation stage.
 ; ;; Nope, still doesn't work.
-;#?(:clj  
-
+; #?(:clj  
 (defmacro inv
   "Matrix inversion."
   [x]
   `(mx/inverse ~x))
-
 ;   :cljs (defmacro inv
-;           "Kludgey matrix inversion defined for Clojurescript free."
+;           "Kludgey matrix inversion."
 ;           [x]
-;           `(case (shape ~x)
+;           `(case (mx/shape ~x)
 ;              nil   (/ 1 ~x)
-;              [1]   (mat-reciprocal ~x) ; this is what core.matrix's inverse does
-;              [1 1] (mat-reciprocal ~x)
 ;              [2 2] (inv22 ~x)
-;              (throw (js/Error. (str "Clojurescript matrix inversion not implemented in free for " ~x)))))
-;  )
+;              (throw (js/Error. (str "Clojurescript matrix inversion not implemented for " ~x))))))
 
 (defmacro make-identity-obj
   "Returns an identity matrix with dims rows."
