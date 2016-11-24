@@ -11,8 +11,7 @@
                  ;[org.clojure/clojurescript "1.9.229"]
                  [org.clojure/clojurescript "1.9.293"]
 
-                 [net.mikera/core.matrix "0.55.0"]
-                 ;[net.mikera/core.matrix "0.55.1-SNAPSHOT"]
+                 [net.mikera/core.matrix "0.57.0"]
                  [net.mikera/vectorz-clj "0.45.0"]
                  ;[thinktopic/aljabr "0.1.1"]
                  [thinktopic/aljabr "0.1.2-SNAPSHOT"]
