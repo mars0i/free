@@ -113,6 +113,7 @@
 ;; Since Clojurescript uses Clojure to compile macros, we can't use reader 
 ;; conditionals to choose between macro definitions.  Instead I use this env
 ;; trick from https://github.com/tonsky/datascript/blob/master/src/datascript/arrays.cljc.
+;; A blog post on it: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing
 (defmacro inv
   "Matrix inverse."
   [m]
