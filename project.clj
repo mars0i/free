@@ -89,7 +89,8 @@
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
-                           :preloads [devtools.preload]}}
+                           :preloads [devtools.preload]
+                           :external-config {:devtools-config {:features-to-install [:formatters :hints]}}}}
                {:id "dev-matrix"
                 :source-paths ["src/cljc/general" "src/cljc/matrix"
                                "src/cljs/general" ; "src/cljs/matrix" ; currently empty/nonexistent
@@ -112,7 +113,8 @@
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
-                           :preloads [devtools.preload]}}
+                           :preloads [devtools.preload]
+                           :external-config {:devtools-config {:features-to-install [:formatters :hints]}}}}
                ;; This next build is an compressed minified build for production. You can build this with: lein cljsbuild once min
                {:id "min"
                 :source-paths ["src/cljc/general" "src/cljc/scalar"
