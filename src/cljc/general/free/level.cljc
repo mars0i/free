@@ -13,7 +13,8 @@
                      [free.arithmetic :refer [e* m* m+ m- tr inv make-identity-obj limit-sigma]] ; could be scalar or matrix
                      [utils.string :as us]))
    :cljs (ns free.level
-           (:require [cljs.spec :as s])    ; for clojure spec tests at bottom of this file
+           (:require [cljs.spec :as s]    ; for clojure spec tests at bottom of this file
+                     [clojure.core.matrix :as mx]) ; needed for matrix arithmetic macros even though not explicitly used below. s/b irrelevant for scalar version.
            ;; free.arithmetic contains macros defined in terms of either 
            ;; Clojure primitives or core.matrix functions.  When Clojurescript
            ;; sees this code, the macros have already been expanded, so if
@@ -125,7 +126,18 @@
   the identity function, which the next level down will use to update eps.
   Other fields will be nil."
   [phi]
-  (map->Level {:phi phi :gen identity})) ; other fields will be nil
+  (map->Level {:phi phi :gen identity})) ; other fields will be nil, normally
+              ;; DEBUG:
+              ; :epsilon 0.01
+              ; :sigma 0.01
+              ; :theta 0.01
+              ; :gen' identity
+              ; :phi-dt 0.01
+              ; :epsilon-dt 0.01
+              ; :sigma-dt 0.01
+              ; :theta-dt 0.01
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; phi update
@@ -172,10 +184,20 @@
   [level +level]
   (let [{:keys [phi epsilon epsilon-dt sigma theta]} level
         +phi (:phi +level)
-        +gen (:gen +level)]
-    (m+ epsilon
-        (e* epsilon-dt
-            (epsilon-inc epsilon phi +phi sigma theta +gen)))))
+        +gen (:gen +level)
+        scaled-increment (e* epsilon-dt (epsilon-inc epsilon phi +phi sigma theta +gen))]
+    (m+ epsilon scaled-increment)))
+
+;(defn next-epsilon
+;  "Calculates the next-timestep 'error' epsilon from this level and the one
+;  above."
+;  [level +level]
+;  (let [{:keys [phi epsilon epsilon-dt sigma theta]} level
+;        +phi (:phi +level)
+;        +gen (:gen +level)]
+;    (m+ epsilon
+;        (e* epsilon-dt
+;            (epsilon-inc epsilon phi +phi sigma theta +gen)))))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; sigma update
