@@ -65,4 +65,4 @@
 ;; make it a macro simply because the others are (hack for Clojurescript)
 (defmacro limit-sigma
   [sigma]
-  ~(max ~sigma ~sigma-min))
+  ~(max ~sigma sigma-min))

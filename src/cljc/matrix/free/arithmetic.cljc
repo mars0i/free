@@ -142,7 +142,7 @@
 (defmacro mat-max
   "Returns the max of numbers x and y wrapped in a 1x1 matrix."
   [x y]
-  `(mx/matrix [[(max ~x ~y)]]) )
+  `(mx/matrix [[(max ~x ~y)]]))
 
 ;; see Bogacz end of sect 2.4
 ;; make it a macro simply because the others are (hack for Clojurescript)
@@ -154,10 +154,10 @@
   2x2 size, just return it as is, because I'm not yet sure how to limit it.  
   (Using determinant > n? positive definite? Neither's widely implemented in core.matrix.)"
   [sigma]
-  `(case (mx/shape ~m)
-       nil   (max     ~sigma ~sigma-min)
-       [1]   (mat-max ~sigma ~sigma-min)
-       [[1]] (mat-max ~sigma ~sigma-min)
+  `(case (mx/shape ~sigma)
+       nil   (max     ~sigma scalar-sigma-min)
+       [1]   (mat-max ~sigma scalar-sigma-min)
+       [[1]] (mat-max ~sigma scalar-sigma-min)
      ~sigma))
 
 ;#?(:clj   (def pm clojure.pprint/pprint)
