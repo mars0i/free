@@ -155,9 +155,9 @@
   (Using determinant > n? positive definite? Neither's widely implemented in core.matrix.)"
   [sigma]
   `(case (mx/shape ~sigma)
-       nil   (max     ~sigma scalar-sigma-min)
-       [1]   (mat-max ~sigma scalar-sigma-min)
-       [[1]] (mat-max ~sigma scalar-sigma-min)
+       nil   (max     ~sigma ~scalar-sigma-min)
+       [1]   (mat-max ~sigma ~scalar-sigma-min)
+       [[1]] (mat-max ~sigma ~scalar-sigma-min)
      ~sigma))
 
 ;#?(:clj   (def pm clojure.pprint/pprint)
