@@ -8,7 +8,7 @@
 ;; the file LICENSE.
 
 (ns free.model
-  (:require [cljs.spec :as s]    ; only for clojure spec tests a bottom
+  (:require [clojure.spec :as s]    ; only for clojure spec tests a bottom
             [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
 ;; This file contains whatever is current default model for the Clojurescript
