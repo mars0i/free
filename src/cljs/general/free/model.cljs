@@ -1,3 +1,7 @@
+
+;;; EXPERIMENT for aljabr: all nils are replaced with legit values
+
+
 ;; This software is copyright 2016 by Marshall Abrams, and is distributed
 ;; under the Gnu General Public License version 3.0 as specified in the
 ;; the file LICENSE.
@@ -74,16 +78,16 @@
 (def sigma-p 2) ; controls how close to true value at level 1
 (def error-p 0)
 
-(def bot-map {:phi nil ; APPARENTLY NOT: needs a number for epsilon-inc on 1st tick; immediately replaced by next-bottom
+(def bot-map {:phi -1    ; -1 indicates dummy value: for aljabr but not vectorz needs a number for epsilon-inc on 1st tick (?); immediately replaced by next-bottom
               :epsilon error-u
               :sigma sigma-u
               :theta init-theta
-              :gen  nil ; unused at bottom since epsilon update uses higher gen
-              :gen' nil ; unused at bottom since phi comes from outside
-              :phi-dt nil
-              :epsilon-dt 0.01
-              :sigma-dt nil
-              :theta-dt nil})
+              :gen  identity ; unused at bottom since epsilon update uses higher gen
+              :gen' identity ; unused at bottom since phi comes from outside
+              :phi-dt 0.00001
+              :epsilon-dt 0.00001
+              :sigma-dt 0.00001
+              :theta-dt 0.00001})
 
 (def mid-map {:phi v-p
               :epsilon error-p
