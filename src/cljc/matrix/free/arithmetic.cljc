@@ -56,6 +56,8 @@
 ;(def make-identity-obj mx/identity-matrix)
 ;(def pm mx/pm)
 
+(def scalar-sigma-min 1.0)
+
 (defmacro m* 
   "Matrix multiplication."
   ([x y] `(mx/mmul ~x ~y))
@@ -131,12 +133,32 @@
   [dims]
   `(mx/identity-matrix ~dims))
 
-;; Should use 'positive-definite?'?, which is not yet implemented in core.matrix
-;; or maybe test for determinant being > 0 or some larger number
 ;; make it a macro simply because the others are (hack for Clojurescript)
 (defmacro limit-sigma
   [sigma]
   sigma)
+
+
+(defmacro mat-max
+  "Returns the max of numbers x and y wrapped in a 1x1 matrix."
+  [x y]
+  `(mx/matrix [[(max ~x ~y)]]) )
+
+;; see Bogacz end of sect 2.4
+;; make it a macro simply because the others are (hack for Clojurescript)
+;; For matrices, should use 'positive-definite?'?, which is not yet implemented 
+;; in core.matrix or maybe test for determinant being > 0 or some larger number?
+(defmacro limit-sigma
+  "If sigma is a scalar variance or a single-element vector or matrix, then clip the
+  value to be no less than sigma-min.  If sigma is a covariance matrix of at least 
+  2x2 size, just return it as is, because I'm not yet sure how to limit it.  
+  (Using determinant > n? positive definite? Neither's widely implemented in core.matrix.)"
+  [sigma]
+  `(case (mx/shape ~m)
+       nil   (max     ~sigma ~sigma-min)
+       [1]   (mat-max ~sigma ~sigma-min)
+       [[1]] (mat-max ~sigma ~sigma-min)
+     ~sigma))
 
 ;#?(:clj   (def pm clojure.pprint/pprint)
 ;    :cljs (def pm cljs.pprint/pprint))
