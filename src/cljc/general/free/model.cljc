@@ -82,8 +82,8 @@
               :epsilon error-u
               :sigma sigma-u
               :theta init-theta
-              :gen  identity ; unused at bottom since epsilon update uses higher gen
-              :gen' identity ; unused at bottom since phi comes from outside
+              :gen  nil ; unused at bottom since epsilon update uses higher gen
+              :gen' nil ; unused at bottom since phi comes from outside
               :phi-dt 0.0
               :epsilon-dt 0.01
               :sigma-dt 0.0
