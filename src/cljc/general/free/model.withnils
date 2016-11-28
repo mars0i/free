@@ -4,7 +4,6 @@
 
 (ns free.model
   (:require [cljs.spec :as s]    ; only for clojure spec tests a bottom
-            [reagent.core :as r]
             [free.level :as lvl]
             [free.random :as ran])) ; will be clj or cljs depending on dialect
 ;; This file contains whatever is current default model for the Clojurescript
