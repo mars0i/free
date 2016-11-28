@@ -147,7 +147,7 @@
       epsilon))
 
 (defn next-phi 
-  "Calculates the the next-timestep 'hypothesis' phi from this level 
+  "Calculates the next-timestep 'hypothesis' phi from this level 
   and the one below."
   [-level level]
   (let [{:keys [phi phi-dt epsilon gen']} level
