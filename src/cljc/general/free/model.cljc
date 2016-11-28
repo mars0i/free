@@ -84,7 +84,7 @@
               :theta init-theta
               :gen  nil ; unused at bottom since epsilon update uses higher gen
               :gen' nil ; unused at bottom since phi comes from outside
-              :phi-dt 0.0
+              :phi-dt 0.01
               :epsilon-dt 0.01
               :sigma-dt 0.0
               :theta-dt 0.0})
