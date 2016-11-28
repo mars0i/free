@@ -39,7 +39,9 @@ It turns out that it's correct that those -dt params are in fact used.
    I simply pass through the argument when there's only one argument.
    If something along these lines provides the explanation, then it's 
    not surprising that the problem was revealed only when I switched to
-   using matrix operators.)
+   using matrix operators.)  Hmm: There's also some problem with
+   model.cljc not being seen by figwheel, and it using an old compiled
+   version.  Maybe I was never using nils??
 
 # phi
 
