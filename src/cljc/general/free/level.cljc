@@ -91,7 +91,7 @@
         (conj
           (vec (map next-level            ; Each middle level depends on levels
                  (partition 3 1 levels))) ;  immediately below and above it.
-          (last levels))))                ; Top is carried forward as-is
+          (last levels))))                ; Top is carried forward as is
 
 (defn next-levels-3
   "Version of next-levels that may be more efficient with exactly three levels.
