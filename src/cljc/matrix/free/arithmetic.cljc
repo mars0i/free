@@ -133,12 +133,6 @@
   [dims]
   `(mx/identity-matrix ~dims))
 
-;; make it a macro simply because the others are (hack for Clojurescript)
-(defmacro limit-sigma
-  [sigma]
-  sigma)
-
-
 (defmacro mat-max
   "Returns the max of numbers x and y wrapped in a 1x1 matrix."
   [x y]
