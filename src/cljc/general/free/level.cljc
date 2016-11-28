@@ -126,9 +126,9 @@
   the identity function, which the next level down will use to update eps.
   Other fields will be nil."
   [phi]
-  (map->Level {:phi phi :gen identity;})) ; other fields will be nil, normally
+  (map->Level {:phi phi :gen identity})) ; other fields will be nil, normally
               ;; DEBUG: 
-               :epsilon 0.01 :sigma 0.01 :theta 0.01 :gen' identity :phi-dt 0.01 :epsilon-dt 0.01 :sigma-dt 0.01 :theta-dt 0.01}))
+              ; :epsilon 0.01 :sigma 0.01 :theta 0.01 :gen' identity :phi-dt 0.01 :epsilon-dt 0.01 :sigma-dt 0.01 :theta-dt 0.01}))
 
 
 
