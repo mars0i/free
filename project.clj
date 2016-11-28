@@ -56,7 +56,7 @@
                                          "src/cljc/general" "src/cljc/matrix"]
                           :java-source-paths ["src/java"]}
 
-             :cljs-scalar {:source-paths ["src/cljs/general" "src/cljs/scalar"
+             :cljs-scalar {:source-paths ["src/cljs/general" ; "src/cljs/scalar" ; currently empty/nonexistent
                                           "src/cljc/general" "src/cljc/scalar"
                                           "src/clj/general"  "src/clj/scalar"] ; kludge to make Clojure compilation stage happier?
                           :java-source-paths ["src/java"]}                     ; kludge to make Clojure compilation stage happier?
@@ -68,7 +68,7 @@
 
   :cljsbuild {:builds
               [{:id "dev-scalar"
-                :source-paths ["src/cljs/general" "src/cljs/scalar"
+                :source-paths ["src/cljs/general" ; "src/cljs/scalar" ; currently empty/nonexistent
 			       "src/cljc/general" "src/cljc/scalar"
                                "dev"]
                 ;; The presence of a :figwheel configuration here will cause figwheel to inject the figwheel client into your build
