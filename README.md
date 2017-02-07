@@ -45,11 +45,11 @@ src/scripts that collect the relevant arguments, if you're using OS X or
 Linux or another unix.  For Windows, take a look at the contents of the
 scripts and execute a script's last line.  In a unix:
 
-#### scalar mode
+#### matrix mode
 
     ./src/scripts/matclj
 
-#### matrix mode
+#### scalar mode
 
     ./src/scripts/scalclj
 
